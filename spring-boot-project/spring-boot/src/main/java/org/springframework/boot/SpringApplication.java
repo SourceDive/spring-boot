@@ -272,12 +272,17 @@ public class SpringApplication {
 	}
 
 	/**
+	 * @author ongoing
+	 * @date 2025-04-06 09:54:51
+	 * @description 创建SpringApplication
+	 */
+	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified primary sources (see {@link SpringApplication class-level}
 	 * documentation for details. The instance can be customized before calling
 	 * {@link #run(String...)}.
 	 * @param resourceLoader the resource loader to use
-	 * @param primarySources the primary bean sources
+	 * @param primarySources the primary bean sources 主配置资源
 	 * @see #run(Class, String[])
 	 * @see #setSources(Set)
 	 */
@@ -288,8 +293,11 @@ public class SpringApplication {
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
 		this.bootstrapRegistryInitializers = getBootstrapRegistryInitializersFromSpringFactories();
+		// 设置应用初始化器
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		// 设置监听器
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+		// 确认主启动类
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
@@ -465,6 +473,7 @@ public class SpringApplication {
 				this.applicationStartup);
 	}
 
+	// 使用了SPI加载机制
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type) {
 		return getSpringFactoriesInstances(type, new Class<?>[] {});
 	}
@@ -472,6 +481,7 @@ public class SpringApplication {
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes, Object... args) {
 		ClassLoader classLoader = getClassLoader();
 		// Use names and ensure unique to protect against duplicates
+		// SPI
 		Set<String> names = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(type, classLoader));
 		List<T> instances = createSpringFactoriesInstances(type, parameterTypes, classLoader, args, names);
 		AnnotationAwareOrderComparator.sort(instances);
