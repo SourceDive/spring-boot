@@ -55,6 +55,7 @@ public interface SpringApplicationRunListener {
 	}
 
 	/**
+	 * 环境已创建好，但是在 applicationContext 创建之前
 	 * Called once the environment has been prepared, but before the
 	 * {@link ApplicationContext} has been created.
 	 * @param bootstrapContext the bootstrap context
