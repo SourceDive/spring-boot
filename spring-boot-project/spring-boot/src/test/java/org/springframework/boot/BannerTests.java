@@ -83,6 +83,19 @@ class BannerTests {
 		assertThat(output).contains("My Banner");
 	}
 
+	/**
+	 * @author ongoing
+	 * @date 2025-04-10 15:22:35
+	 * @description 测试我的Banner
+	 */
+	@Test
+	void testMyBanner(CapturedOutput output) {
+		SpringApplication application = createSpringApplication();
+		application.setBanner(new OngoingBanner());
+		this.context = application.run();
+		assertThat(output).contains("测试我的Banner");
+	}
+
 	@Test
 	void testBannerInContext() {
 		SpringApplication application = createSpringApplication();
@@ -106,10 +119,16 @@ class BannerTests {
 				any(PrintStream.class));
 	}
 
+	/**
+	 * @author ongoing
+	 * @date 2025-04-10 15:13:59
+	 * @description 这个测试案例作用：测试禁用 Banner.
+	 * 验证OK
+	 */
 	@Test
 	void testDisableBannerInContext() {
 		SpringApplication application = createSpringApplication();
-		application.setBannerMode(Mode.OFF);
+		application.setBannerMode(Mode.CONSOLE);
 		this.context = application.run();
 		assertThat(this.context.containsBean("springBootBanner")).isFalse();
 	}
@@ -128,6 +147,21 @@ class BannerTests {
 		}
 
 	}
+	/**
+	 * @author ongoing
+	 * @date 2025-04-10 15:18:27
+	 * @description 我也来实现一个banner
+	 */
+	static class OngoingBanner implements Banner {
+
+		@Override
+		public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
+			out.println("测试我的Banner");
+			out.println("XXXXXXX");
+			out.println("测试完毕!");
+		}
+	}
+
 
 	@Configuration(proxyBeanMethods = false)
 	static class Config {
