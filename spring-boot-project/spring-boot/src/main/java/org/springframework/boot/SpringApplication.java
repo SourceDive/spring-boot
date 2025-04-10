@@ -339,6 +339,7 @@ public class SpringApplication {
 		ConfigurableApplicationContext context = null;
 		// 设置java无头模式
 		configureHeadlessProperty();
+		// 获取监听器
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting(bootstrapContext, this.mainApplicationClass);
 		try {

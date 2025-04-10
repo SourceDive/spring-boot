@@ -814,6 +814,11 @@ class SpringApplicationTests {
 		assertThat(this.context).isNotNull();
 	}
 
+	/**
+	 * @author ongoing
+	 * @date 2025-04-08 20:10:43
+	 * @description 测试启动入口
+	 */
 	@Test
 	void runComponents() {
 		this.context = SpringApplication.run(new Class<?>[] { ExampleWebConfig.class, Object.class }, new String[0]);
