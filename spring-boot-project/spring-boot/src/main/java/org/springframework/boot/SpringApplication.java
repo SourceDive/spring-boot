@@ -349,8 +349,10 @@ public class SpringApplication {
 			configureIgnoreBeanInfo(environment);
 			// 打印banner
 			Banner printedBanner = printBanner(environment);
+			// 创建空的IOC容器
 			context = createApplicationContext();
 			context.setApplicationStartup(this.applicationStartup);
+			// 初始化容器
 			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
@@ -626,6 +628,11 @@ public class SpringApplication {
 		return bannerPrinter.print(environment, this.mainApplicationClass, System.out);
 	}
 
+	/**
+	 * @author ongoing
+	 * @date 2025-04-10 15:50:11
+	 * @description 这里 springboot 2.3.x 是比较原始的写法，switch写法，这里的版本进行了优化
+	 */
 	/**
 	 * Strategy method used to create the {@link ApplicationContext}. By default this
 	 * method will respect any explicitly set application context class or factory before
