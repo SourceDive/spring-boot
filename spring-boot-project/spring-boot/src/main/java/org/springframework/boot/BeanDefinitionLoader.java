@@ -76,6 +76,11 @@ class BeanDefinitionLoader {
 	private ResourceLoader resourceLoader;
 
 	/**
+	 * @author ongoing
+	 * @date 2025-04-11 19:59:48
+	 * @description 外观模式？ todo
+	 */
+	/**
 	 * Create a new {@link BeanDefinitionLoader} that will load beans into the specified
 	 * {@link BeanDefinitionRegistry}.
 	 * @param registry the bean definition registry that will contain the loaded beans

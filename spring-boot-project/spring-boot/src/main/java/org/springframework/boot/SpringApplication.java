@@ -434,6 +434,7 @@ public class SpringApplication {
 			ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
 			ApplicationArguments applicationArguments, Banner printedBanner) {
 		context.setEnvironment(environment);
+		// IOC容器后置处理
 		postProcessApplicationContext(context);
 		applyInitializers(context);
 		listeners.contextPrepared(context);
@@ -444,7 +445,9 @@ public class SpringApplication {
 		}
 		// Add boot specific singleton beans
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+		// 注册bean
 		beanFactory.registerSingleton("springApplicationArguments", applicationArguments);
+		// 注册bean
 		if (printedBanner != null) {
 			beanFactory.registerSingleton("springBootBanner", printedBanner);
 		}
@@ -457,8 +460,10 @@ public class SpringApplication {
 		}
 		context.addBeanFactoryPostProcessor(new PropertySourceOrderingBeanFactoryPostProcessor(context));
 		// Load the sources
+		// 获取配置源
 		Set<Object> sources = getAllSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
+		// 加载配置源
 		load(context, sources.toArray(new Object[0]));
 		listeners.contextLoaded(context);
 	}
@@ -668,6 +673,14 @@ public class SpringApplication {
 		}
 	}
 
+	/**
+	 * @author ongoing
+	 * @date 2025-04-11 19:24:03
+	 * @description
+	 * 设置可以查看
+	 * @see SpringApplication#SpringApplication(ResourceLoader, Class[])中的步骤【设置应用初始化器】
+	 * 下面方法涉及的initializer都是上面这个步骤进行设置的
+	 */
 	/**
 	 * Apply any {@link ApplicationContextInitializer}s to the context before it is
 	 * refreshed.
@@ -1392,7 +1405,7 @@ public class SpringApplication {
 	/**
 	 * Static helper that can be used to run a {@link SpringApplication} from the
 	 * specified sources using default settings and user supplied arguments.
-	 * @param primarySources the primary sources to load
+	 * @param primarySources the primary sources to load 主配置类
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return the running {@link ApplicationContext}
 	 */
