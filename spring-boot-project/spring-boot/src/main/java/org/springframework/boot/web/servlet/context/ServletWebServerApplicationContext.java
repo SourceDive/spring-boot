@@ -134,8 +134,10 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	 */
 	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		// 注册回调
 		beanFactory.addBeanPostProcessor(new WebApplicationContextServletContextAwareProcessor(this));
 		beanFactory.ignoreDependencyInterface(ServletContextAware.class);
+		// 注册web应用作用域
 		registerWebApplicationScopes();
 	}
 
@@ -244,8 +246,11 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	}
 
 	private void registerWebApplicationScopes() {
+		// 拿出beanfactory中存在的自定义的作用域，防止下一步的覆盖
 		ExistingWebApplicationScopes existingScopes = new ExistingWebApplicationScopes(getBeanFactory());
+		// 注册默认的作用域
 		WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory());
+		// 恢复自定义的作用域
 		existingScopes.restore();
 	}
 
@@ -346,6 +351,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 
 		static {
 			Set<String> scopes = new LinkedHashSet<>();
+			// 初始化支持2个作用域： request/session
 			scopes.add(WebApplicationContext.SCOPE_REQUEST);
 			scopes.add(WebApplicationContext.SCOPE_SESSION);
 			SCOPES = Collections.unmodifiableSet(scopes);
