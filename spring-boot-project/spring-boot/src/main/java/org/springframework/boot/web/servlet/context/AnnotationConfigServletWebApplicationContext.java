@@ -197,8 +197,14 @@ public class AnnotationConfigServletWebApplicationContext extends GenericWebAppl
 		super.prepareRefresh();
 	}
 
+	/**
+	 * @author ongoing
+	 * @date 2025-04-15 15:43:15
+	 * @description 默认整合webmav时的 post 实现
+	 */
 	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		// 回调父类方法
 		super.postProcessBeanFactory(beanFactory);
 		if (!ObjectUtils.isEmpty(this.basePackages)) {
 			this.scanner.scan(this.basePackages);
