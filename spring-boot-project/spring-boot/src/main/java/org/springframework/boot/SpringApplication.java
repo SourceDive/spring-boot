@@ -355,6 +355,7 @@ public class SpringApplication {
 			context.setApplicationStartup(this.applicationStartup);
 			// 初始化容器
 			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
+			// 核心步骤：刷新
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
