@@ -341,6 +341,7 @@ public class SpringApplication {
 		configureHeadlessProperty();
 		// 获取监听器
 		SpringApplicationRunListeners listeners = getRunListeners(args);
+		// application starting
 		listeners.starting(bootstrapContext, this.mainApplicationClass);
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
@@ -360,7 +361,9 @@ public class SpringApplication {
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
 			}
+			// application started
 			listeners.started(context);
+			// 处理两种Runner
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
@@ -369,6 +372,7 @@ public class SpringApplication {
 		}
 
 		try {
+			// application running
 			listeners.running(context);
 		}
 		catch (Throwable ex) {
@@ -438,6 +442,7 @@ public class SpringApplication {
 		postProcessApplicationContext(context);
 		applyInitializers(context);
 		listeners.contextPrepared(context);
+		// 发布关闭事件
 		bootstrapContext.close(context);
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
@@ -870,6 +875,7 @@ public class SpringApplication {
 			try {
 				handleExitCode(context, exception);
 				if (listeners != null) {
+					// application failed
 					listeners.failed(context, exception);
 				}
 			}
