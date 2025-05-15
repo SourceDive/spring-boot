@@ -19,6 +19,7 @@ package org.springframework.boot.web.context;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.SmartLifecycle;
 
+// 优雅停 GracefulShutdown
 /**
  * {@link SmartLifecycle} to trigger {@link WebServer} graceful shutdown.
  *
