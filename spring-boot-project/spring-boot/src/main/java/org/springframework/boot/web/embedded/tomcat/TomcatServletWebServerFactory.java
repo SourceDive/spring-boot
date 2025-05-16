@@ -141,6 +141,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private int backgroundProcessorDelay;
 
+	// MBean: Managed Bean
+	// 是 JMX 中资源管理的标准化组件
+	// 此变量用于关闭 Tomcat 的 JMX 监控支持，适用于对性能或安全有特殊要求的场景。
 	private boolean disableMBeanRegistry = true;
 
 	/**
@@ -190,7 +193,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		for (LifecycleListener listener : this.serverLifecycleListeners) {
 			tomcat.getServer().addLifecycleListener(listener);
 		}
-		Connector connector = new Connector(this.protocol);
+		Connector connector = new Connector(this.protocol); // 默认为 NIO
 		connector.setThrowOnFailure(true);
 		tomcat.getService().addConnector(connector);
 		customizeConnector(connector);

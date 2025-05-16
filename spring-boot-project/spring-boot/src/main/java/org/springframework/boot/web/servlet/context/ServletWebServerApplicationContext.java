@@ -205,6 +205,8 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	 * Returns the {@link ServletWebServerFactory} that should be used to create the
 	 * embedded {@link WebServer}. By default this method searches for a suitable bean in
 	 * the context itself.
+	 * 返回用于创建嵌入式 webserver 的 ServletWebServerFactory。
+	 * 默认情况下，此方法会在上下文中查找符合条件的 bean.
 	 * @return a {@link ServletWebServerFactory} (never {@code null})
 	 */
 	protected ServletWebServerFactory getWebServerFactory() {
