@@ -25,6 +25,7 @@ package org.springframework.boot.web.server;
 public enum Shutdown {
 
 	/**
+	 * <p>优雅停机</p>
 	 * The {@link WebServer} should support graceful shutdown, allowing active requests
 	 * time to complete.
 	 */

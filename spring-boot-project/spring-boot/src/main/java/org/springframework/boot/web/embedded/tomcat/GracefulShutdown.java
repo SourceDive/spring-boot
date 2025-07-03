@@ -49,6 +49,7 @@ final class GracefulShutdown {
 		this.tomcat = tomcat;
 	}
 
+	// commence 意思：begin
 	void shutDownGracefully(GracefulShutdownCallback callback) {
 		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
 		new Thread(() -> doShutdown(callback), "tomcat-shutdown").start();
@@ -56,6 +57,7 @@ final class GracefulShutdown {
 
 	private void doShutdown(GracefulShutdownCallback callback) {
 		List<Connector> connectors = getConnectors();
+		// 关闭了 connector ，就不再接受客户端发来的请求
 		connectors.forEach(this::close);
 		try {
 			for (Container host : this.tomcat.getEngine().findChildren()) {
@@ -66,7 +68,7 @@ final class GracefulShutdown {
 							callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
 							return;
 						}
-						Thread.sleep(50);
+						Thread.sleep(50); // 每隔50ms检查一次。
 					}
 				}
 			}

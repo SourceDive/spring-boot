@@ -56,6 +56,7 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 
 	private String serverHeader;
 
+	// 默认立即关机
 	private Shutdown shutdown = Shutdown.IMMEDIATE;
 
 	/**
