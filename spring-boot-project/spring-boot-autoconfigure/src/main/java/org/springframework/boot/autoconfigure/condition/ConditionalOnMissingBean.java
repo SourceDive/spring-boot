@@ -27,6 +27,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Conditional;
 
 /**
+ * <p>容器中不存在某bean，才去进行创建。</p>
  * {@link Conditional @Conditional} that only matches when no beans meeting the specified
  * requirements are already contained in the {@link BeanFactory}. None of the requirements
  * must be met for the condition to match and the requirements do not have to be met by
