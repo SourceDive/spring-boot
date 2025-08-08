@@ -85,6 +85,7 @@ import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 
 /**
+ * <p>用于引导 Spring 应用。</p>
  * Class that can be used to bootstrap and launch a Spring application from a Java main
  * method. By default class will perform the following steps to bootstrap your
  * application:

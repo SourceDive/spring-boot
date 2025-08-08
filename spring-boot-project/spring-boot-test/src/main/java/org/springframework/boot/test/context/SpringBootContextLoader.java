@@ -66,6 +66,7 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
 /**
+ * <p>"SpringBootContextLoader 是专为 Spring Boot 应用设计的上下文加载器，但开发者应通过 @SpringBootTest 注解触发其自动加载，而非手动配置"</p>
  * A {@link ContextLoader} that can be used to test Spring Boot applications (those that
  * normally startup using {@link SpringApplication}). Although this loader can be used
  * directly, most test will instead want to use it with

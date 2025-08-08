@@ -43,6 +43,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
+ * <p>开发者应该用这个注解作为入口。</p>
+ * <p>会启动一个 spring ApplicationContext。</p>
  * Annotation that can be specified on a test class that runs Spring Boot based tests.
  * Provides the following features over and above the regular <em>Spring TestContext
  * Framework</em>:
