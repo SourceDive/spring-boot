@@ -144,6 +144,7 @@ class BeanDefinitionLoader {
 
 	private void load(Object source) {
 		Assert.notNull(source, "Source must not be null");
+		// 引导作用：加载主类就像是抛出了引导整个应用程序配置的“锚点”。
 		if (source instanceof Class<?>) {
 			load((Class<?>) source);
 			return;

@@ -55,6 +55,7 @@ class SpringApplicationShutdownHook implements Runnable {
 
 	private final Handlers handlers = new Handlers();
 
+	// 可以管理多个 application context.
 	private final Set<ConfigurableApplicationContext> contexts = new LinkedHashSet<>();
 
 	private final Set<ConfigurableApplicationContext> closedContexts = Collections.newSetFromMap(new WeakHashMap<>());
@@ -71,13 +72,14 @@ class SpringApplicationShutdownHook implements Runnable {
 
 	void registerApplicationContext(ConfigurableApplicationContext context) {
 		addRuntimeShutdownHookIfNecessary();
-		synchronized (SpringApplicationShutdownHook.class) {
+		synchronized (SpringApplicationShutdownHook.class) { // 类锁，同步多个实例
 			assertNotInProgress();
 			context.addApplicationListener(this.contextCloseListener);
 			this.contexts.add(context);
 		}
 	}
 
+	// 一次性需求
 	private void addRuntimeShutdownHookIfNecessary() {
 		if (this.shutdownHookAdded.compareAndSet(false, true)) {
 			addRuntimeShutdownHook();

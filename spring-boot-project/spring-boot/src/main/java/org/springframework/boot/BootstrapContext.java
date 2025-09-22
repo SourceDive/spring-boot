@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
 /**
+ * <p>引导上下文。</p>
  * A simple bootstrap context that is available during startup and {@link Environment}
  * post-processing up to the point that the {@link ApplicationContext} is prepared.
  * <p>

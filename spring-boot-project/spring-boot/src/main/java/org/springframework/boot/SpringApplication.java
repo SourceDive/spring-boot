@@ -206,6 +206,8 @@ public class SpringApplication {
 
 	private static final Log logger = LogFactory.getLog(SpringApplication.class);
 
+	// 一个静态字段. jvm管理，全局唯一。
+	// 必须能够在 JVM 级别协调多个 Spring Boot 应用的关闭过程，确保所有应用都能优雅地关闭。
 	static final SpringApplicationShutdownHook shutdownHook = new SpringApplicationShutdownHook();
 
 	private Set<Class<?>> primarySources;
@@ -298,7 +300,7 @@ public class SpringApplication {
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		// 设置监听器
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
-		// 确认主启动类
+		// 确认主启动类(含有main方法的类。)
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
@@ -315,6 +317,7 @@ public class SpringApplication {
 	private Class<?> deduceMainApplicationClass() {
 		try {
 			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
+			// 遍历栈帧
 			for (StackTraceElement stackTraceElement : stackTrace) {
 				if ("main".equals(stackTraceElement.getMethodName())) {
 					return Class.forName(stackTraceElement.getClassName());
@@ -336,7 +339,9 @@ public class SpringApplication {
 	public ConfigurableApplicationContext run(String... args) {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
+		// 创建引导上下文。
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
+		// 应用上下文。
 		ConfigurableApplicationContext context = null;
 		// 设置java无头模式
 		configureHeadlessProperty();
@@ -345,6 +350,7 @@ public class SpringApplication {
 		// application starting
 		listeners.starting(bootstrapContext, this.mainApplicationClass);
 		try {
+			// 应用启动时参数对象。
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
 			// 准备运行时环境
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
@@ -358,6 +364,7 @@ public class SpringApplication {
 			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
 			// 核心步骤：刷新
 			refreshContext(context);
+			// 容器刷新后的行为。
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
 			if (this.logStartupInfo) {
@@ -439,6 +446,7 @@ public class SpringApplication {
 	private void prepareContext(DefaultBootstrapContext bootstrapContext, ConfigurableApplicationContext context,
 			ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
 			ApplicationArguments applicationArguments, Banner printedBanner) {
+		// 设置环境
 		context.setEnvironment(environment);
 		// IOC容器后置处理
 		postProcessApplicationContext(context);
@@ -467,7 +475,7 @@ public class SpringApplication {
 		}
 		context.addBeanFactoryPostProcessor(new PropertySourceOrderingBeanFactoryPostProcessor(context));
 		// Load the sources
-		// 获取配置源
+		// 获取配置源(一般就是你的主启动类)
 		Set<Object> sources = getAllSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
 		// 加载配置源
@@ -495,6 +503,7 @@ public class SpringApplication {
 	}
 
 	// 使用了SPI加载机制
+	// 根据类型去取对应的实例，seata中也有类似的使用。
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type) {
 		return getSpringFactoriesInstances(type, new Class<?>[] {});
 	}
@@ -503,6 +512,7 @@ public class SpringApplication {
 		ClassLoader classLoader = getClassLoader();
 		// Use names and ensure unique to protect against duplicates
 		// @ongoing SPI
+		// 从文件中获取 META-INF/spring.factories
 		Set<String> names = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(type, classLoader));
 		List<T> instances = createSpringFactoriesInstances(type, parameterTypes, classLoader, args, names);
 		AnnotationAwareOrderComparator.sort(instances);
@@ -515,9 +525,12 @@ public class SpringApplication {
 		List<T> instances = new ArrayList<>(names.size());
 		for (String name : names) {
 			try {
+				// 获取类
 				Class<?> instanceClass = ClassUtils.forName(name, classLoader);
 				Assert.isAssignable(type, instanceClass);
+				// 得到构造函数
 				Constructor<?> constructor = instanceClass.getDeclaredConstructor(parameterTypes);
+				// 实例化。
 				T instance = (T) BeanUtils.instantiateClass(constructor, args);
 				instances.add(instance);
 			}
@@ -628,7 +641,7 @@ public class SpringApplication {
 
 	// 打印启动时的横幅
 	private Banner printBanner(ConfigurableEnvironment environment) {
-		if (this.bannerMode == Banner.Mode.OFF) {
+		if (this.bannerMode == Banner.Mode.OFF) { // 默认是控制台。
 			return null;
 		}
 		ResourceLoader resourceLoader = (this.resourceLoader != null) ? this.resourceLoader
@@ -762,7 +775,9 @@ public class SpringApplication {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Loading source " + StringUtils.arrayToCommaDelimitedString(sources));
 		}
+		// 创建
 		BeanDefinitionLoader loader = createBeanDefinitionLoader(getBeanDefinitionRegistry(context), sources);
+		// 配置
 		if (this.beanNameGenerator != null) {
 			loader.setBeanNameGenerator(this.beanNameGenerator);
 		}
@@ -772,6 +787,7 @@ public class SpringApplication {
 		if (this.environment != null) {
 			loader.setEnvironment(this.environment);
 		}
+		// 加载
 		loader.load();
 	}
 

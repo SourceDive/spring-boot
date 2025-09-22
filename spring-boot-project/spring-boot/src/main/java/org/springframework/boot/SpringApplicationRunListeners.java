@@ -30,6 +30,7 @@ import org.springframework.core.metrics.StartupStep;
 import org.springframework.util.ReflectionUtils;
 
 /**
+ * <p>监听事件的集合类。</p>
  * A collection of {@link SpringApplicationRunListener}.
  *
  * @author Phillip Webb

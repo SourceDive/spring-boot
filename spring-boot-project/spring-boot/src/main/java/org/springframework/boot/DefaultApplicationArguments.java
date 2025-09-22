@@ -26,6 +26,7 @@ import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.util.Assert;
 
 /**
+ * <p>一个简单的包装类。</p>
  * Default implementation of {@link ApplicationArguments}.
  *
  * @author Phillip Webb

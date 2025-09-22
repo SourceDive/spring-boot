@@ -45,16 +45,19 @@ public interface Banner {
 	enum Mode {
 
 		/**
+		 * 禁止。
 		 * Disable printing of the banner.
 		 */
 		OFF,
 
 		/**
+		 * <p>控制台打印。</p>
 		 * Print the banner to System.out.
 		 */
 		CONSOLE,
 
 		/**
+		 * <p>日志文件。</p>
 		 * Print the banner to the log file.
 		 */
 		LOG
