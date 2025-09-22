@@ -62,6 +62,11 @@ import org.springframework.util.ObjectUtils;
 public class AnnotationConfigReactiveWebServerApplicationContext extends ReactiveWebServerApplicationContext
 		implements AnnotationConfigRegistry {
 
+
+	/**
+	 * 这个方法中会去进行 reader/scanner 的触发。
+	 * @see AnnotationConfigReactiveWebServerApplicationContext#postProcessBeanFactory(ConfigurableListableBeanFactory)
+	 */
 	private final AnnotatedBeanDefinitionReader reader;
 
 	private final ClassPathBeanDefinitionScanner scanner;

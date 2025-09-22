@@ -100,6 +100,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	private static final Log logger = LogFactory.getLog(ServletWebServerApplicationContext.class);
 
 	/**
+	 * <p>servlet的名称。</p>
 	 * Constant value for the DispatcherServlet bean name. A Servlet bean with this name
 	 * is deemed to be the "main" servlet and is automatically given a mapping of "/" by
 	 * default. To change the default behavior you can use a
@@ -107,10 +108,12 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	 */
 	public static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
 
+	// web服务
 	private volatile WebServer webServer;
 
 	private ServletConfig servletConfig;
 
+	// 服务命名空间
 	private String serverNamespace;
 
 	/**
@@ -198,6 +201,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 				throw new ApplicationContextException("Cannot initialize servlet context", ex);
 			}
 		}
+		// 初始化属性源。
 		initPropertySources();
 	}
 
@@ -205,8 +209,10 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	 * Returns the {@link ServletWebServerFactory} that should be used to create the
 	 * embedded {@link WebServer}. By default this method searches for a suitable bean in
 	 * the context itself.
+	 * <p>
 	 * 返回用于创建嵌入式 webserver 的 ServletWebServerFactory。
 	 * 默认情况下，此方法会在上下文中查找符合条件的 bean.
+	 * </p>
 	 * @return a {@link ServletWebServerFactory} (never {@code null})
 	 */
 	protected ServletWebServerFactory getWebServerFactory() {

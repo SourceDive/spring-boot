@@ -98,6 +98,7 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 					new WebServerStartStopLifecycle(this.serverManager));
 			createWebServer.end();
 		}
+		// 初始化属性源。
 		initPropertySources();
 	}
 

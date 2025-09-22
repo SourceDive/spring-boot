@@ -24,6 +24,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
+ * <p>创建应用上下文。</p>
  * Strategy interface for creating the {@link ConfigurableApplicationContext} used by a
  * {@link SpringApplication}. Created contexts should be returned in their default form,
  * with the {@code SpringApplication} responsible for configuring and refreshing the
@@ -37,6 +38,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 public interface ApplicationContextFactory {
 
 	/**
+	 * <p>默认上下文。</p>
 	 * A default {@link ApplicationContextFactory} implementation that will create an
 	 * appropriate context for the {@link WebApplicationType}.
 	 */

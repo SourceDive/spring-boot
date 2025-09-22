@@ -98,6 +98,7 @@ public interface BootstrapRegistry {
 	interface InstanceSupplier<T> {
 
 		/**
+		 * <p>获取实例。</p>
 		 * Factory method used to create the instance when needed.
 		 * @param context the {@link BootstrapContext} which may be used to obtain other
 		 * bootstrap instances.
@@ -106,6 +107,7 @@ public interface BootstrapRegistry {
 		T get(BootstrapContext context);
 
 		/**
+		 * <p>获取作用域。</p>
 		 * Return the scope of the supplied instance.
 		 * @return the scope
 		 * @since 2.4.2

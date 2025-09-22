@@ -35,6 +35,7 @@ import org.springframework.core.env.Environment;
 public interface BootstrapContext {
 
 	/**
+	 * <p>根据给定类型从上下文中获取实例。</p>
 	 * Return an instance from the context if the type has been registered. The instance
 	 * will be created it if it hasn't been accessed previously.
 	 * @param <T> the instance type
