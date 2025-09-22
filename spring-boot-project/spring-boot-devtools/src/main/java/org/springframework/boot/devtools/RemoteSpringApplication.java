@@ -38,6 +38,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.ClassPathResource;
 
 /**
+ * <p>remote update: 基于字节码的热交换。支持class文件同步，不是源代码的同步。</p>
  * Application that can be used to establish a link to remotely running Spring Boot code.
  * Allows remote updates (if enabled). This class should be launched from within your IDE
  * and should have the same classpath configuration as the locally developed application.
