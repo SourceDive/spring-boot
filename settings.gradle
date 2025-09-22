@@ -23,7 +23,7 @@ pluginManagement {
 
 plugins {
 	id "com.gradle.enterprise" version "3.9"
-	id "io.spring.ge.conventions" version "0.0.9"
+//	id "io.spring.ge.conventions" version "0.0.9"
 }
 
 rootProject.name="spring-boot-build"
@@ -75,6 +75,7 @@ include "spring-boot-tests:spring-boot-integration-tests:spring-boot-configurati
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-launch-script-tests"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-loader-tests"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-server-tests"
+include "spring-boot-tests:my-debug-module"
 
 file("${rootDir}/spring-boot-project/spring-boot-starters").eachDirMatch(~/spring-boot-starter.*/) {
 	include "spring-boot-project:spring-boot-starters:${it.name}"

@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: simple-debug-app
+
+server:
+  port: 8082
+
+logging:
+  level:
+    root: INFO
+    com.example.debug: DEBUG

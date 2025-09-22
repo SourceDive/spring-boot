@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: my-debug-module
+
+server:
+  port: 8081
+
+logging:
+  level:
+    com.example.debug: DEBUG
+    org.springframework.boot: DEBUG
+    org.springframework: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# 调试相关配置
+debug: true
