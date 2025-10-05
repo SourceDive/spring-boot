@@ -174,6 +174,7 @@ public enum EmbeddedDatabaseConnection {
 	}
 
 	/**
+	 * <p>判断给定的数据源是否为嵌入式数据库。</p>
 	 * Convenience method to determine if a given data source represents an embedded
 	 * database type.
 	 * @param dataSource the data source to interrogate

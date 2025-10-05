@@ -25,6 +25,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
+ * <p>
+ * 常见的数据库驱动类型。
+ * </p>
  * Enumeration of common database drivers.
  *
  * @author Phillip Webb

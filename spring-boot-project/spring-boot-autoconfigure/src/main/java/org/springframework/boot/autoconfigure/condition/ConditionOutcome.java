@@ -20,6 +20,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
+ * <p>条件匹配的结果。</p>
  * Outcome for a condition match, including log message.
  *
  * @author Phillip Webb
@@ -100,6 +101,7 @@ public class ConditionOutcome {
 	}
 
 	/**
+	 * <p>如果匹配成功，则返回true.</p>
 	 * Return {@code true} if the outcome was a match.
 	 * @return {@code true} if the outcome matches
 	 */
