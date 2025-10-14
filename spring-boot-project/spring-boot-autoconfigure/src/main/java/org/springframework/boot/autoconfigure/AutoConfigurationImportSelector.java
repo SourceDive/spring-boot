@@ -110,6 +110,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	}
 
 	/**
+	 * <p>获取注解元数据信息。</p>
 	 * Return the {@link AutoConfigurationEntry} based on the {@link AnnotationMetadata}
 	 * of the importing {@link Configuration @Configuration} class.
 	 * @param annotationMetadata the annotation metadata of the configuration class

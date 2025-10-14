@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
+ * <p>触发的时机：？</p>
  * Enable auto-configuration of the Spring Application Context, attempting to guess and
  * configure beans that you are likely to need. Auto-configuration classes are usually
  * applied based on your classpath and what beans you have defined. For example, if you
@@ -41,6 +42,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * {@link TomcatServletWebServerFactory} (unless you have defined your own
  * {@link ServletWebServerFactory} bean).
  * <p>
+ *     <p>使用了@SpringBootApplication注解，这个特性自动生效，可以去看下这个注解。</p>
  * When using {@link SpringBootApplication @SpringBootApplication}, the auto-configuration
  * of the context is automatically enabled and adding this annotation has therefore no
  * additional effect.
@@ -59,6 +61,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * not using {@code @SpringBootApplication}) in a root package so that all sub-packages
  * and classes can be searched.
  * <p>
+ *     <p>推荐将它放在项目的根包，这样当前及子包都会被扫描。</p>
  * Auto-configuration classes are regular Spring {@link Configuration @Configuration}
  * beans. They are located using the {@link SpringFactoriesLoader} mechanism (keyed
  * against this class). Generally auto-configuration beans are
