@@ -29,10 +29,13 @@ jobs:
         run: |
           ./gradlew -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false \
             --no-daemon \
+            --no-configuration-cache \
             --max-workers=4 \
+            -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=1024m" \
             build
         env:
           CI: true
+          GRADLE_OPTS: "-Xmx2048m -XX:MaxMetaspaceSize=1024m"
       
       - name: Upload build scan
         if: always()
