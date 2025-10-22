@@ -35,6 +35,11 @@ jobs:
             -x checkFormat \
             -x checkstyleMain \
             -x checkstyleTest \
+            -x javadoc \
+            -x asciidoctor \
+            -x asciidoctorPdf \
+            -x :spring-boot-project:spring-boot-docs:aggregatedJavadoc \
+            -x :spring-boot-project:spring-boot-docs:documentStarters \
             build
         env:
           CI: true
