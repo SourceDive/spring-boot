@@ -75,7 +75,7 @@ jobs:
         run: |
           ./gradlew -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false \
             --build-cache \
-            --configuration-cache \
+            --no-configuration-cache \
             --parallel \
             --max-workers=4 \
             -x checkFormat \

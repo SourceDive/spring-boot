@@ -51,6 +51,7 @@ jobs:
           ./gradlew -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false \
             --build-cache \
             --no-daemon \
+            --no-configuration-cache \
             --max-workers=4 \
             -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=1024m" \
             -x checkFormat \
