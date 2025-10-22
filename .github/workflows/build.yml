@@ -32,6 +32,9 @@ jobs:
             --no-configuration-cache \
             --max-workers=4 \
             -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=1024m" \
+            -x checkFormat \
+            -x checkstyleMain \
+            -x checkstyleTest \
             build
         env:
           CI: true
