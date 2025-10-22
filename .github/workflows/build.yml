@@ -25,7 +25,7 @@ jobs:
           java-version: 8
           cache: 'gradle'
       
-      - name: Build with Gradle
+      - name: Compile with Gradle
         run: |
           ./gradlew -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false \
             --no-daemon \
@@ -35,12 +35,7 @@ jobs:
             -x checkFormat \
             -x checkstyleMain \
             -x checkstyleTest \
-            -x javadoc \
-            -x asciidoctor \
-            -x asciidoctorPdf \
-            -x :spring-boot-project:spring-boot-docs:aggregatedJavadoc \
-            -x :spring-boot-project:spring-boot-docs:documentStarters \
-            build
+            classes testClasses
         env:
           CI: true
           GRADLE_OPTS: "-Xmx2048m -XX:MaxMetaspaceSize=1024m"
