@@ -25,9 +25,31 @@ jobs:
           java-version: 8
           cache: 'gradle'
       
+      # 缓存 Gradle Build Cache
+      - name: Cache Gradle Build Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches/build-cache-*
+          key: ${{ runner.os }}-gradle-build-cache-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-build-cache-
+      
+      # 缓存编译后的类文件
+      - name: Cache Compiled Classes
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/build/classes
+            **/build/generated
+          key: ${{ runner.os }}-compiled-classes-${{ hashFiles('**/*.java', '**/*.kt', '**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-compiled-classes-
+      
       - name: Compile with Gradle
         run: |
           ./gradlew -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false \
+            --build-cache \
             --no-daemon \
             --no-configuration-cache \
             --max-workers=4 \
@@ -39,6 +61,7 @@ jobs:
         env:
           CI: true
           GRADLE_OPTS: "-Xmx2048m -XX:MaxMetaspaceSize=1024m"
+          GRADLE_USER_HOME: ~/.gradle
       
       - name: Upload build scan
         if: always()

@@ -1,0 +1,77 @@
+name: Test Cache Configuration
+
+on:
+  push:
+    branches:
+      - 'cursor/**'
+  workflow_dispatch:
+
+jobs:
+  test-cache:
+    name: Test Gradle Cache
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 8
+          cache: 'gradle'
+      
+      # 缓存 Gradle Build Cache
+      - name: Cache Gradle Build Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches/build-cache-*
+          key: ${{ runner.os }}-gradle-build-cache-test-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-build-cache-test-
+            ${{ runner.os }}-gradle-build-cache-
+      
+      - name: Display cache information
+        run: |
+          echo "=== Gradle Cache Information ==="
+          echo "GRADLE_USER_HOME: $GRADLE_USER_HOME"
+          echo "Current directory: $(pwd)"
+          echo ""
+          echo "=== Gradle version ==="
+          ./gradlew --version
+          echo ""
+          echo "=== Cache directories ==="
+          ls -la ~/.gradle/ || echo "~/.gradle not found yet"
+          echo ""
+          echo "=== Gradle properties ==="
+          cat gradle.properties
+      
+      - name: Run minimal Gradle build
+        run: |
+          echo "Running minimal Gradle build to test cache..."
+          ./gradlew help --build-cache
+        env:
+          GRADLE_OPTS: "-Xmx1024m"
+      
+      - name: Check cache statistics
+        run: |
+          echo "=== Post-build cache information ==="
+          echo "Gradle caches directory:"
+          ls -la ~/.gradle/caches/ 2>/dev/null || echo "No caches directory"
+          echo ""
+          echo "Build cache directory:"
+          ls -la ~/.gradle/caches/build-cache-* 2>/dev/null || echo "No build cache found"
+          echo ""
+          echo "Cache size:"
+          du -sh ~/.gradle/caches/ 2>/dev/null || echo "Cannot calculate cache size"
+      
+      - name: Summary
+        run: |
+          echo "✅ GitHub Actions 缓存测试完成！"
+          echo "This workflow tested:"
+          echo "- Gradle wrapper caching (via setup-java)"
+          echo "- Gradle build cache"
+          echo "- Basic Gradle functionality"
