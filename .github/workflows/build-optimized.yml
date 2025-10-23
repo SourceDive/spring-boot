@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [8, 11, 17]
+        java: [8, 11]  # 暂时移除 JDK 17，因为 Gradle 6.9.2 不支持
     
     steps:
       - name: Checkout code
