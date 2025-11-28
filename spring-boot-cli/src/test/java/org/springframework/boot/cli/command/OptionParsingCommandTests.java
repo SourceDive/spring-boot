@@ -24,18 +24,18 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link OptionParsingCommand}.
- * 
+ *
  * @author Dave Syer
  */
 public class OptionParsingCommandTests {
 
-	@Test
-	public void optionHelp() {
-		OptionHandler handler = new OptionHandler();
-		handler.option("bar", "Bar");
-		OptionParsingCommand command = new OptionParsingCommand("foo", "Foo", handler) {
-		};
-		assertThat(command.getHelp(), containsString("--bar"));
-	}
+    @Test
+    public void optionHelp() {
+        OptionHandler handler = new OptionHandler();
+        handler.option("bar", "Bar");
+        OptionParsingCommand command = new OptionParsingCommand("foo", "Foo", handler) {
+        };
+        assertThat(command.getHelp(), containsString("--bar"));
+    }
 
 }

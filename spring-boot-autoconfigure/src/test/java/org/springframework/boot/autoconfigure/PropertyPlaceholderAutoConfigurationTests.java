@@ -30,63 +30,63 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link PropertyPlaceholderAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class PropertyPlaceholderAutoConfigurationTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+    @After
+    public void close() {
+        if (this.context != null) {
+            this.context.close();
+        }
+    }
 
-	@Test
-	public void propertyPlaceholderse() throws Exception {
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				PlaceholderConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo:two");
-		this.context.refresh();
-		assertEquals("two", this.context.getBean(PlaceholderConfig.class).getFoo());
-	}
+    @Test
+    public void propertyPlaceholderse() throws Exception {
+        this.context.register(PropertyPlaceholderAutoConfiguration.class,
+                PlaceholderConfig.class);
+        EnvironmentTestUtils.addEnvironment(this.context, "foo:two");
+        this.context.refresh();
+        assertEquals("two", this.context.getBean(PlaceholderConfig.class).getFoo());
+    }
 
-	@Test
-	public void propertyPlaceholdersOverride() throws Exception {
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				PlaceholderConfig.class, PlaceholdersOverride.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "foo:two");
-		this.context.refresh();
-		assertEquals("spam", this.context.getBean(PlaceholderConfig.class).getFoo());
-	}
+    @Test
+    public void propertyPlaceholdersOverride() throws Exception {
+        this.context.register(PropertyPlaceholderAutoConfiguration.class,
+                PlaceholderConfig.class, PlaceholdersOverride.class);
+        EnvironmentTestUtils.addEnvironment(this.context, "foo:two");
+        this.context.refresh();
+        assertEquals("spam", this.context.getBean(PlaceholderConfig.class).getFoo());
+    }
 
-	@Configuration
-	static class PlaceholderConfig {
+    @Configuration
+    static class PlaceholderConfig {
 
-		@Value("${foo:bar}")
-		private String foo;
+        @Value("${foo:bar}")
+        private String foo;
 
-		public String getFoo() {
-			return this.foo;
-		}
+        public String getFoo() {
+            return this.foo;
+        }
 
-	}
+    }
 
-	@Configuration
-	static class PlaceholdersOverride {
+    @Configuration
+    static class PlaceholdersOverride {
 
-		@Bean
-		public static PropertySourcesPlaceholderConfigurer morePlaceholders() {
-			PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
-			configurer.setProperties(StringUtils.splitArrayElementsIntoProperties(
-					new String[] { "foo=spam" }, "="));
-			configurer.setLocalOverride(true);
-			configurer.setOrder(0);
-			return configurer;
-		}
+        @Bean
+        public static PropertySourcesPlaceholderConfigurer morePlaceholders() {
+            PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
+            configurer.setProperties(StringUtils.splitArrayElementsIntoProperties(
+                    new String[]{"foo=spam"}, "="));
+            configurer.setLocalOverride(true);
+            configurer.setOrder(0);
+            return configurer;
+        }
 
-	}
+    }
 
 }

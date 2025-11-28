@@ -17,11 +17,7 @@
 package org.springframework.boot.autoconfigure.security;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -32,7 +28,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * WebSecurityConfigurerAdapter, he is trying to use a custom security setup. The app
  * would fail in a confusing way without this shim configuration, which just helpfully
  * defines an empty <code>@EnableWebSecurity</code>.
- * 
+ *
  * @author Dave Syer
  */
 @ConditionalOnExpression("!${security.basic.enabled:true}")

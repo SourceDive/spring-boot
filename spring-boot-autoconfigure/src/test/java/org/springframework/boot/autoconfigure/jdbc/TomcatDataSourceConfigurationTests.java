@@ -16,10 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import java.lang.reflect.Field;
-
-import javax.sql.DataSource;
-
 import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.apache.tomcat.jdbc.pool.interceptor.SlowQueryReport;
@@ -31,111 +27,112 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.ReflectionUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import javax.sql.DataSource;
+import java.lang.reflect.Field;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link TomcatDataSourceConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class TomcatDataSourceConfigurationTests {
 
-	private static final String PREFIX = "spring.datasource.";
+    private static final String PREFIX = "spring.datasource.";
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@After
-	public void restore() {
-		EmbeddedDatabaseConnection.override = null;
-	}
+    @After
+    public void restore() {
+        EmbeddedDatabaseConnection.override = null;
+    }
 
-	@Test
-	public void testDataSourceExists() throws Exception {
-		this.context.register(TomcatDataSourceConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-		assertNotNull(this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class));
-	}
+    @Test
+    public void testDataSourceExists() throws Exception {
+        this.context.register(TomcatDataSourceConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context.getBean(DataSource.class));
+        assertNotNull(this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class));
+    }
 
-	@Test
-	public void testDataSourcePropertiesOverridden() throws Exception {
-		this.context.register(TomcatDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "url:jdbc:foo//bar/spam");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testWhileIdle:true");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnBorrow:true");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnReturn:true");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "timeBetweenEvictionRunsMillis:10000");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "minEvictableIdleTimeMillis:12345");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "maxWait:1234");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "jdbcInterceptors:SlowQueryReport");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "validationInterval:9999");
-		this.context.refresh();
-		org.apache.tomcat.jdbc.pool.DataSource ds = this.context
-				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
-		assertEquals("jdbc:foo//bar/spam", ds.getUrl());
-		assertEquals(true, ds.isTestWhileIdle());
-		assertEquals(true, ds.isTestOnBorrow());
-		assertEquals(true, ds.isTestOnReturn());
-		assertEquals(10000, ds.getTimeBetweenEvictionRunsMillis());
-		assertEquals(12345, ds.getMinEvictableIdleTimeMillis());
-		assertEquals(1234, ds.getMaxWait());
-		assertEquals(9999L, ds.getValidationInterval());
-		assertDataSourceHasInterceptors(ds);
-	}
+    @Test
+    public void testDataSourcePropertiesOverridden() throws Exception {
+        this.context.register(TomcatDataSourceConfiguration.class);
+        EnvironmentTestUtils.addEnvironment(this.context, PREFIX
+                + "url:jdbc:foo//bar/spam");
+        EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testWhileIdle:true");
+        EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnBorrow:true");
+        EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnReturn:true");
+        EnvironmentTestUtils.addEnvironment(this.context, PREFIX
+                + "timeBetweenEvictionRunsMillis:10000");
+        EnvironmentTestUtils.addEnvironment(this.context, PREFIX
+                + "minEvictableIdleTimeMillis:12345");
+        EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "maxWait:1234");
+        EnvironmentTestUtils.addEnvironment(this.context, PREFIX
+                + "jdbcInterceptors:SlowQueryReport");
+        EnvironmentTestUtils.addEnvironment(this.context, PREFIX
+                + "validationInterval:9999");
+        this.context.refresh();
+        org.apache.tomcat.jdbc.pool.DataSource ds = this.context
+                .getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
+        assertEquals("jdbc:foo//bar/spam", ds.getUrl());
+        assertEquals(true, ds.isTestWhileIdle());
+        assertEquals(true, ds.isTestOnBorrow());
+        assertEquals(true, ds.isTestOnReturn());
+        assertEquals(10000, ds.getTimeBetweenEvictionRunsMillis());
+        assertEquals(12345, ds.getMinEvictableIdleTimeMillis());
+        assertEquals(1234, ds.getMaxWait());
+        assertEquals(9999L, ds.getValidationInterval());
+        assertDataSourceHasInterceptors(ds);
+    }
 
-	private void assertDataSourceHasInterceptors(DataSourceProxy ds)
-			throws ClassNotFoundException {
-		PoolProperties.InterceptorDefinition[] interceptors = ds
-				.getJdbcInterceptorsAsArray();
-		for (PoolProperties.InterceptorDefinition interceptor : interceptors) {
-			if (SlowQueryReport.class == interceptor.getInterceptorClass()) {
-				return;
-			}
-		}
-		fail("SlowQueryReport interceptor should have been set.");
-	}
+    private void assertDataSourceHasInterceptors(DataSourceProxy ds)
+            throws ClassNotFoundException {
+        PoolProperties.InterceptorDefinition[] interceptors = ds
+                .getJdbcInterceptorsAsArray();
+        for (PoolProperties.InterceptorDefinition interceptor : interceptors) {
+            if (SlowQueryReport.class == interceptor.getInterceptorClass()) {
+                return;
+            }
+        }
+        fail("SlowQueryReport interceptor should have been set.");
+    }
 
-	@Test
-	public void testDataSourceDefaultsPreserved() throws Exception {
-		this.context.register(TomcatDataSourceConfiguration.class);
-		this.context.refresh();
-		org.apache.tomcat.jdbc.pool.DataSource ds = this.context
-				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
-		assertEquals(5000, ds.getTimeBetweenEvictionRunsMillis());
-		assertEquals(60000, ds.getMinEvictableIdleTimeMillis());
-		assertEquals(30000, ds.getMaxWait());
-		assertEquals(30000L, ds.getValidationInterval());
-	}
+    @Test
+    public void testDataSourceDefaultsPreserved() throws Exception {
+        this.context.register(TomcatDataSourceConfiguration.class);
+        this.context.refresh();
+        org.apache.tomcat.jdbc.pool.DataSource ds = this.context
+                .getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
+        assertEquals(5000, ds.getTimeBetweenEvictionRunsMillis());
+        assertEquals(60000, ds.getMinEvictableIdleTimeMillis());
+        assertEquals(30000, ds.getMaxWait());
+        assertEquals(30000L, ds.getValidationInterval());
+    }
 
-	@Test(expected = BeanCreationException.class)
-	public void testBadUrl() throws Exception {
-		EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
-		this.context.register(TomcatDataSourceConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-	}
+    @Test(expected = BeanCreationException.class)
+    public void testBadUrl() throws Exception {
+        EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
+        this.context.register(TomcatDataSourceConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context.getBean(DataSource.class));
+    }
 
-	@Test(expected = BeanCreationException.class)
-	public void testBadDriverClass() throws Exception {
-		EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
-		this.context.register(TomcatDataSourceConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-	}
+    @Test(expected = BeanCreationException.class)
+    public void testBadDriverClass() throws Exception {
+        EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
+        this.context.register(TomcatDataSourceConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context.getBean(DataSource.class));
+    }
 
-	@SuppressWarnings("unchecked")
-	public static <T> T getField(Class<?> target, String name) {
-		Field field = ReflectionUtils.findField(target, name, null);
-		ReflectionUtils.makeAccessible(field);
-		return (T) ReflectionUtils.getField(field, target);
-	}
+    @SuppressWarnings("unchecked")
+    public static <T> T getField(Class<?> target, String name) {
+        Field field = ReflectionUtils.findField(target, name, null);
+        ReflectionUtils.makeAccessible(field);
+        return (T) ReflectionUtils.getField(field, target);
+    }
 }

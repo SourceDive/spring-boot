@@ -45,7 +45,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Basic integration tests for demo application.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -55,27 +55,27 @@ import static org.junit.Assert.assertEquals;
 @DirtiesContext
 public class NonAutoConfigurationSampleTomcatApplicationTests {
 
-	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
-	@ComponentScan(basePackageClasses = { SampleController.class, HelloWorldService.class })
-	public static class NonAutoConfigurationSampleTomcatApplication {
+    @Configuration
+    @Import({EmbeddedServletContainerAutoConfiguration.class,
+            DispatcherServletAutoConfiguration.class,
+            ServerPropertiesAutoConfiguration.class, WebMvcAutoConfiguration.class,
+            HttpMessageConvertersAutoConfiguration.class,
+            PropertyPlaceholderAutoConfiguration.class})
+    @ComponentScan(basePackageClasses = {SampleController.class, HelloWorldService.class})
+    public static class NonAutoConfigurationSampleTomcatApplication {
 
-		public static void main(String[] args) throws Exception {
-			SpringApplication.run(SampleTomcatApplication.class, args);
-		}
+        public static void main(String[] args) throws Exception {
+            SpringApplication.run(SampleTomcatApplication.class, args);
+        }
 
-	}
+    }
 
-	@Test
-	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("Hello World", entity.getBody());
-	}
+    @Test
+    public void testHome() throws Exception {
+        ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:8080", String.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        assertEquals("Hello World", entity.getBody());
+    }
 
 }

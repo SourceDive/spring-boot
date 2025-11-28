@@ -26,8 +26,8 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class SampleJettyApplication {
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleJettyApplication.class, args);
-	}
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(SampleJettyApplication.class, args);
+    }
 
 }

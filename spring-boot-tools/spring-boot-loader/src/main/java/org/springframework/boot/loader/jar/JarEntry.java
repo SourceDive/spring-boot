@@ -26,61 +26,61 @@ import java.util.jar.Manifest;
 
 /**
  * Extended variant of {@link java.util.jar.JarEntry} returned by {@link JarFile}s.
- * 
+ *
  * @author Phillip Webb
  */
 public class JarEntry extends java.util.jar.JarEntry {
 
-	private final JarEntryData source;
+    private final JarEntryData source;
 
-	private Certificate[] certificates;
+    private Certificate[] certificates;
 
-	private CodeSigner[] codeSigners;
+    private CodeSigner[] codeSigners;
 
-	public JarEntry(JarEntryData source) {
-		super(source.getName().toString());
-		this.source = source;
-	}
+    public JarEntry(JarEntryData source) {
+        super(source.getName().toString());
+        this.source = source;
+    }
 
-	/**
-	 * Return the source {@link JarEntryData} that was used to create this entry.
-	 */
-	public JarEntryData getSource() {
-		return this.source;
-	}
+    /**
+     * Return the source {@link JarEntryData} that was used to create this entry.
+     */
+    public JarEntryData getSource() {
+        return this.source;
+    }
 
-	/**
-	 * Return a {@link URL} for this {@link JarEntry}.
-	 */
-	public URL getUrl() throws MalformedURLException {
-		return new URL(this.source.getSource().getUrl(), getName());
-	}
+    /**
+     * Return a {@link URL} for this {@link JarEntry}.
+     */
+    public URL getUrl() throws MalformedURLException {
+        return new URL(this.source.getSource().getUrl(), getName());
+    }
 
-	@Override
-	public Attributes getAttributes() throws IOException {
-		Manifest manifest = this.source.getSource().getManifest();
-		return (manifest == null ? null : manifest.getAttributes(getName()));
-	}
+    @Override
+    public Attributes getAttributes() throws IOException {
+        Manifest manifest = this.source.getSource().getManifest();
+        return (manifest == null ? null : manifest.getAttributes(getName()));
+    }
 
-	@Override
-	public Certificate[] getCertificates() {
-		if (this.source.getSource().isSigned() && this.certificates == null) {
-			this.source.getSource().setupEntryCertificates();
-		}
-		return this.certificates;
-	}
+    @Override
+    public Certificate[] getCertificates() {
+        if (this.source.getSource().isSigned() && this.certificates == null) {
+            this.source.getSource().setupEntryCertificates();
+        }
+        return this.certificates;
+    }
 
-	@Override
-	public CodeSigner[] getCodeSigners() {
-		if (this.source.getSource().isSigned() && this.codeSigners == null) {
-			this.source.getSource().setupEntryCertificates();
-		}
-		return this.codeSigners;
-	}
+    @Override
+    public CodeSigner[] getCodeSigners() {
+        if (this.source.getSource().isSigned() && this.codeSigners == null) {
+            this.source.getSource().setupEntryCertificates();
+        }
+        return this.codeSigners;
+    }
 
-	void setupCertificates(java.util.jar.JarEntry entry) {
-		this.certificates = entry.getCertificates();
-		this.codeSigners = entry.getCodeSigners();
-	}
+    void setupCertificates(java.util.jar.JarEntry entry) {
+        this.certificates = entry.getCertificates();
+        this.codeSigners = entry.getCodeSigners();
+    }
 
 }

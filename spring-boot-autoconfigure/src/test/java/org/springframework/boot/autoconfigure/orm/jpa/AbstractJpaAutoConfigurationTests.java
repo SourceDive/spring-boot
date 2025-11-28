@@ -16,12 +16,6 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,216 +42,218 @@ import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import javax.sql.DataSource;
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.Map;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Base for JPA tests and tests for {@link JpaBaseConfiguration}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
 public abstract class AbstractJpaAutoConfigurationTests {
 
-	@Rule
-	public ExpectedException expected = ExpectedException.none();
+    @Rule
+    public ExpectedException expected = ExpectedException.none();
 
-	protected AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    protected AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@After
-	public void close() {
-		this.context.close();
-	}
+    @After
+    public void close() {
+        this.context.close();
+    }
 
-	protected abstract Class<?> getAutoConfigureClass();
+    protected abstract Class<?> getAutoConfigureClass();
 
-	@Test
-	public void testNoDataSource() throws Exception {
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				getAutoConfigureClass());
-		this.expected.expect(BeanCreationException.class);
-		this.expected.expectMessage("No qualifying bean");
-		this.expected.expectMessage("DataSource");
-		this.context.refresh();
-	}
+    @Test
+    public void testNoDataSource() throws Exception {
+        this.context.register(PropertyPlaceholderAutoConfiguration.class,
+                getAutoConfigureClass());
+        this.expected.expect(BeanCreationException.class);
+        this.expected.expectMessage("No qualifying bean");
+        this.expected.expectMessage("DataSource");
+        this.context.refresh();
+    }
 
-	@Test
-	public void testEntityManagerCreated() throws Exception {
-		setupTestConfiguration();
-		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-		assertNotNull(this.context.getBean(JpaTransactionManager.class));
-	}
+    @Test
+    public void testEntityManagerCreated() throws Exception {
+        setupTestConfiguration();
+        this.context.refresh();
+        assertNotNull(this.context.getBean(DataSource.class));
+        assertNotNull(this.context.getBean(JpaTransactionManager.class));
+    }
 
-	@Test
-	public void testDataSourceTransactionManagerNotCreated() throws Exception {
-		this.context.register(DataSourceTransactionManagerAutoConfiguration.class);
-		setupTestConfiguration();
-		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-		assertTrue(this.context.getBean("transactionManager") instanceof JpaTransactionManager);
-	}
+    @Test
+    public void testDataSourceTransactionManagerNotCreated() throws Exception {
+        this.context.register(DataSourceTransactionManagerAutoConfiguration.class);
+        setupTestConfiguration();
+        this.context.refresh();
+        assertNotNull(this.context.getBean(DataSource.class));
+        assertTrue(this.context.getBean("transactionManager") instanceof JpaTransactionManager);
+    }
 
-	@Test
-	public void testOpenEntityManagerInViewInterceptorCreated() throws Exception {
-		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
-		context.refresh();
-		assertNotNull(context.getBean(OpenEntityManagerInViewInterceptor.class));
-		context.close();
-	}
+    @Test
+    public void testOpenEntityManagerInViewInterceptorCreated() throws Exception {
+        AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+        context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
+        context.refresh();
+        assertNotNull(context.getBean(OpenEntityManagerInViewInterceptor.class));
+        context.close();
+    }
 
-	@Test
-	public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenFilterPresent()
-			throws Exception {
-		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.register(TestFilterConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
-		context.refresh();
-		assertEquals(0, getInterceptorBeans(context).length);
-		context.close();
-	}
+    @Test
+    public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenFilterPresent()
+            throws Exception {
+        AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+        context.register(TestFilterConfiguration.class,
+                EmbeddedDataSourceConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
+        context.refresh();
+        assertEquals(0, getInterceptorBeans(context).length);
+        context.close();
+    }
 
-	@Test
-	public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenExplicitlyOff()
-			throws Exception {
-		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.jpa.open_in_view:false");
-		context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
-		context.refresh();
-		assertEquals(0, getInterceptorBeans(context).length);
-		context.close();
-	}
+    @Test
+    public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenExplicitlyOff()
+            throws Exception {
+        AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+        EnvironmentTestUtils.addEnvironment(context, "spring.jpa.open_in_view:false");
+        context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
+        context.refresh();
+        assertEquals(0, getInterceptorBeans(context).length);
+        context.close();
+    }
 
-	@Test
-	public void customJpaProperties() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.jpa.properties.a:b",
-				"spring.jpa.properties.c:d");
-		setupTestConfiguration();
-		this.context.refresh();
-		LocalContainerEntityManagerFactoryBean bean = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		Map<String, Object> map = bean.getJpaPropertyMap();
-		assertThat(map.get("a"), equalTo((Object) "b"));
-		assertThat(map.get("c"), equalTo((Object) "d"));
-	}
+    @Test
+    public void customJpaProperties() throws Exception {
+        EnvironmentTestUtils.addEnvironment(this.context, "spring.jpa.properties.a:b",
+                "spring.jpa.properties.c:d");
+        setupTestConfiguration();
+        this.context.refresh();
+        LocalContainerEntityManagerFactoryBean bean = this.context
+                .getBean(LocalContainerEntityManagerFactoryBean.class);
+        Map<String, Object> map = bean.getJpaPropertyMap();
+        assertThat(map.get("a"), equalTo((Object) "b"));
+        assertThat(map.get("c"), equalTo((Object) "d"));
+    }
 
-	@Test
-	public void usesManuallyDefinedEntityManagerFactoryBeanIfAvailable() {
-		setupTestConfiguration(TestConfigurationWithEntityManagerFactory.class);
-		this.context.refresh();
-		LocalContainerEntityManagerFactoryBean factoryBean = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		Map<String, Object> map = factoryBean.getJpaPropertyMap();
-		assertThat(map.get("configured"), equalTo((Object) "manually"));
-	}
+    @Test
+    public void usesManuallyDefinedEntityManagerFactoryBeanIfAvailable() {
+        setupTestConfiguration(TestConfigurationWithEntityManagerFactory.class);
+        this.context.refresh();
+        LocalContainerEntityManagerFactoryBean factoryBean = this.context
+                .getBean(LocalContainerEntityManagerFactoryBean.class);
+        Map<String, Object> map = factoryBean.getJpaPropertyMap();
+        assertThat(map.get("configured"), equalTo((Object) "manually"));
+    }
 
-	@Test
-	public void usesManuallyDefinedTransactionManagerBeanIfAvailable() {
-		setupTestConfiguration(TestConfigurationWithTransactionManager.class);
-		this.context.refresh();
-		PlatformTransactionManager txManager = this.context
-				.getBean(PlatformTransactionManager.class);
-		assertThat(txManager, instanceOf(CustomJpaTransactionManager.class));
-	}
+    @Test
+    public void usesManuallyDefinedTransactionManagerBeanIfAvailable() {
+        setupTestConfiguration(TestConfigurationWithTransactionManager.class);
+        this.context.refresh();
+        PlatformTransactionManager txManager = this.context
+                .getBean(PlatformTransactionManager.class);
+        assertThat(txManager, instanceOf(CustomJpaTransactionManager.class));
+    }
 
-	@Test
-	public void customPersistenceUnitManager() throws Exception {
-		setupTestConfiguration(TestConfigurationWithCustomPersistenceUnitManager.class);
-		this.context.refresh();
-		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		Field field = LocalContainerEntityManagerFactoryBean.class
-				.getDeclaredField("persistenceUnitManager");
-		field.setAccessible(true);
-		assertThat(field.get(entityManagerFactoryBean),
-				equalTo((Object) this.context.getBean(PersistenceUnitManager.class)));
-	}
+    @Test
+    public void customPersistenceUnitManager() throws Exception {
+        setupTestConfiguration(TestConfigurationWithCustomPersistenceUnitManager.class);
+        this.context.refresh();
+        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = this.context
+                .getBean(LocalContainerEntityManagerFactoryBean.class);
+        Field field = LocalContainerEntityManagerFactoryBean.class
+                .getDeclaredField("persistenceUnitManager");
+        field.setAccessible(true);
+        assertThat(field.get(entityManagerFactoryBean),
+                equalTo((Object) this.context.getBean(PersistenceUnitManager.class)));
+    }
 
-	protected void setupTestConfiguration() {
-		setupTestConfiguration(TestConfiguration.class);
-	}
+    protected void setupTestConfiguration() {
+        setupTestConfiguration(TestConfiguration.class);
+    }
 
-	protected void setupTestConfiguration(Class<?> configClass) {
-		this.context.register(configClass, EmbeddedDataSourceConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
-	}
+    protected void setupTestConfiguration(Class<?> configClass) {
+        this.context.register(configClass, EmbeddedDataSourceConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
+    }
 
-	private String[] getInterceptorBeans(ApplicationContext context) {
-		return context.getBeanNamesForType(OpenEntityManagerInViewInterceptor.class);
-	}
+    private String[] getInterceptorBeans(ApplicationContext context) {
+        return context.getBeanNamesForType(OpenEntityManagerInViewInterceptor.class);
+    }
 
-	@Configuration
-	@TestAutoConfigurationPackage(City.class)
-	protected static class TestConfiguration {
+    @Configuration
+    @TestAutoConfigurationPackage(City.class)
+    protected static class TestConfiguration {
 
-	}
+    }
 
-	@Configuration
-	@TestAutoConfigurationPackage(City.class)
-	protected static class TestFilterConfiguration {
+    @Configuration
+    @TestAutoConfigurationPackage(City.class)
+    protected static class TestFilterConfiguration {
 
-		@Bean
-		public OpenEntityManagerInViewFilter openEntityManagerInViewFilter() {
-			return new OpenEntityManagerInViewFilter();
-		}
+        @Bean
+        public OpenEntityManagerInViewFilter openEntityManagerInViewFilter() {
+            return new OpenEntityManagerInViewFilter();
+        }
 
-	}
+    }
 
-	@Configuration
-	protected static class TestConfigurationWithEntityManagerFactory extends
-			TestConfiguration {
+    @Configuration
+    protected static class TestConfigurationWithEntityManagerFactory extends
+            TestConfiguration {
 
-		@Bean
-		public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-				DataSource dataSource, JpaVendorAdapter adapter) {
+        @Bean
+        public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+                DataSource dataSource, JpaVendorAdapter adapter) {
 
-			LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
-			factoryBean.setJpaVendorAdapter(adapter);
-			factoryBean.setDataSource(dataSource);
-			factoryBean.setPersistenceUnitName("manually-configured");
-			factoryBean.setJpaPropertyMap(Collections.singletonMap("configured",
-					"manually"));
-			return factoryBean;
-		}
-	}
+            LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
+            factoryBean.setJpaVendorAdapter(adapter);
+            factoryBean.setDataSource(dataSource);
+            factoryBean.setPersistenceUnitName("manually-configured");
+            factoryBean.setJpaPropertyMap(Collections.singletonMap("configured",
+                    "manually"));
+            return factoryBean;
+        }
+    }
 
-	@Configuration
-	@TestAutoConfigurationPackage(City.class)
-	protected static class TestConfigurationWithTransactionManager {
+    @Configuration
+    @TestAutoConfigurationPackage(City.class)
+    protected static class TestConfigurationWithTransactionManager {
 
-		@Bean
-		public PlatformTransactionManager transactionManager() {
-			return new CustomJpaTransactionManager();
-		}
+        @Bean
+        public PlatformTransactionManager transactionManager() {
+            return new CustomJpaTransactionManager();
+        }
 
-	}
+    }
 
-	@Configuration
-	@TestAutoConfigurationPackage(AbstractJpaAutoConfigurationTests.class)
-	public static class TestConfigurationWithCustomPersistenceUnitManager {
+    @Configuration
+    @TestAutoConfigurationPackage(AbstractJpaAutoConfigurationTests.class)
+    public static class TestConfigurationWithCustomPersistenceUnitManager {
 
-		@Autowired
-		private DataSource dataSource;
+        @Autowired
+        private DataSource dataSource;
 
-		@Bean
-		public PersistenceUnitManager persistenceUnitManager() {
-			DefaultPersistenceUnitManager persistenceUnitManager = new DefaultPersistenceUnitManager();
-			persistenceUnitManager.setDefaultDataSource(this.dataSource);
-			persistenceUnitManager.setPackagesToScan(City.class.getPackage().getName());
-			return persistenceUnitManager;
-		}
+        @Bean
+        public PersistenceUnitManager persistenceUnitManager() {
+            DefaultPersistenceUnitManager persistenceUnitManager = new DefaultPersistenceUnitManager();
+            persistenceUnitManager.setDefaultDataSource(this.dataSource);
+            persistenceUnitManager.setPackagesToScan(City.class.getPackage().getName());
+            return persistenceUnitManager;
+        }
 
-	}
+    }
 
-	static class CustomJpaTransactionManager extends JpaTransactionManager {
-	}
+    static class CustomJpaTransactionManager extends JpaTransactionManager {
+    }
 
 }

@@ -28,66 +28,66 @@ import static org.junit.Assert.assertEquals;
 /**
  * Tests for {@link SpringApplication} {@link SpringApplication#setSources(java.util.Set)
  * source overrides}.
- * 
+ *
  * @author Dave Syer
  */
 public class OverrideSourcesTests {
 
-	@Test
-	public void beanInjectedToMainConfiguration() {
-		ApplicationContext context = SpringApplication.run(
-				new Object[] { MainConfiguration.class },
-				new String[] { "--spring.main.web_environment=false" });
-		assertEquals("foo", context.getBean(Service.class).bean.name);
-	}
+    @Test
+    public void beanInjectedToMainConfiguration() {
+        ApplicationContext context = SpringApplication.run(
+                new Object[]{MainConfiguration.class},
+                new String[]{"--spring.main.web_environment=false"});
+        assertEquals("foo", context.getBean(Service.class).bean.name);
+    }
 
-	@Test
-	public void primaryBeanInjectedProvingSourcesNotOverridden() {
-		ApplicationContext context = SpringApplication
-				.run(new Object[] { MainConfiguration.class, TestConfiguration.class },
-						new String[] { "--spring.main.web_environment=false",
-								"--spring.main.sources=org.springframework.boot.OverrideSourcesTests.MainConfiguration" });
-		assertEquals("bar", context.getBean(Service.class).bean.name);
-	}
+    @Test
+    public void primaryBeanInjectedProvingSourcesNotOverridden() {
+        ApplicationContext context = SpringApplication
+                .run(new Object[]{MainConfiguration.class, TestConfiguration.class},
+                        new String[]{"--spring.main.web_environment=false",
+                                "--spring.main.sources=org.springframework.boot.OverrideSourcesTests.MainConfiguration"});
+        assertEquals("bar", context.getBean(Service.class).bean.name);
+    }
 
-	@Configuration
-	protected static class TestConfiguration {
+    @Configuration
+    protected static class TestConfiguration {
 
-		@Bean
-		@Primary
-		public TestBean another() {
-			return new TestBean("bar");
-		}
+        @Bean
+        @Primary
+        public TestBean another() {
+            return new TestBean("bar");
+        }
 
-	}
+    }
 
-	@Configuration
-	protected static class MainConfiguration {
+    @Configuration
+    protected static class MainConfiguration {
 
-		@Bean
-		public TestBean first() {
-			return new TestBean("foo");
-		}
+        @Bean
+        public TestBean first() {
+            return new TestBean("foo");
+        }
 
-		@Bean
-		public Service Service() {
-			return new Service();
-		}
+        @Bean
+        public Service Service() {
+            return new Service();
+        }
 
-	}
+    }
 
-	protected static class Service {
-		@Autowired
-		private TestBean bean;
-	}
+    protected static class Service {
+        @Autowired
+        private TestBean bean;
+    }
 
-	protected static class TestBean {
+    protected static class TestBean {
 
-		private final String name;
+        private final String name;
 
-		public TestBean(String name) {
-			this.name = name;
-		}
+        public TestBean(String name) {
+            this.name = name;
+        }
 
-	}
+    }
 }

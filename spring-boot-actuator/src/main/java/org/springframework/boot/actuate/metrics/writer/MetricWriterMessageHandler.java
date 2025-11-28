@@ -24,27 +24,26 @@ import org.springframework.messaging.MessagingException;
 /**
  * A {@link MessageHandler} that updates {@link Metric} values through a
  * {@link MetricWriter}.
- * 
+ *
  * @author Dave Syer
  */
 public final class MetricWriterMessageHandler implements MessageHandler {
 
-	private final MetricWriter observer;
+    private final MetricWriter observer;
 
-	public MetricWriterMessageHandler(MetricWriter observer) {
-		this.observer = observer;
-	}
+    public MetricWriterMessageHandler(MetricWriter observer) {
+        this.observer = observer;
+    }
 
-	@Override
-	public void handleMessage(Message<?> message) throws MessagingException {
-		Object payload = message.getPayload();
-		if (payload instanceof Delta) {
-			Delta<?> value = (Delta<?>) payload;
-			this.observer.increment(value);
-		}
-		else {
-			Metric<?> value = (Metric<?>) payload;
-			this.observer.set(value);
-		}
-	}
+    @Override
+    public void handleMessage(Message<?> message) throws MessagingException {
+        Object payload = message.getPayload();
+        if (payload instanceof Delta) {
+            Delta<?> value = (Delta<?>) payload;
+            this.observer.increment(value);
+        } else {
+            Metric<?> value = (Metric<?>) payload;
+            this.observer.set(value);
+        }
+    }
 }

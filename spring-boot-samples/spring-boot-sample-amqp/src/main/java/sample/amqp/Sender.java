@@ -26,20 +26,20 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 public class Sender {
 
-	@Autowired
-	private RabbitTemplate rabbitTemplate;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
-	@Autowired
-	private AmqpAdmin amqpAdmin;
+    @Autowired
+    private AmqpAdmin amqpAdmin;
 
-	@PostConstruct
-	public void setUpQueue() {
-		this.amqpAdmin.declareQueue(new Queue("foo"));
-	}
+    @PostConstruct
+    public void setUpQueue() {
+        this.amqpAdmin.declareQueue(new Queue("foo"));
+    }
 
-	@Scheduled(fixedDelay = 1000L)
-	public void send() {
-		this.rabbitTemplate.convertAndSend("foo", "hello");
-	}
+    @Scheduled(fixedDelay = 1000L)
+    public void send() {
+        this.rabbitTemplate.convertAndSend("foo", "hello");
+    }
 
 }

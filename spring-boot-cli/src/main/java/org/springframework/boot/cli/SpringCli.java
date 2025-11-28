@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli;
 
-import java.util.ServiceLoader;
-
 import org.springframework.boot.cli.command.CommandFactory;
 import org.springframework.boot.cli.command.CommandRunner;
 import org.springframework.boot.cli.command.core.HelpCommand;
@@ -25,39 +23,41 @@ import org.springframework.boot.cli.command.core.HintCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
 import org.springframework.boot.cli.command.shell.ShellCommand;
 
+import java.util.ServiceLoader;
+
 /**
  * Spring Command Line Interface. This is the main entry-point for the Spring command line
  * application.
- * 
+ *
  * @author Phillip Webb
  * @see #main(String...)
  * @see CommandRunner
  */
 public class SpringCli {
 
-	public static void main(String... args) {
-		System.setProperty("java.awt.headless", Boolean.toString(true));
+    public static void main(String... args) {
+        System.setProperty("java.awt.headless", Boolean.toString(true));
 
-		CommandRunner runner = new CommandRunner("spring");
-		runner.addCommand(new HelpCommand(runner));
-		addServiceLoaderCommands(runner);
-		runner.addCommand(new ShellCommand());
-		runner.addCommand(new HintCommand(runner));
-		runner.setOptionCommands(HelpCommand.class, VersionCommand.class);
-		runner.setHiddenCommands(HintCommand.class);
+        CommandRunner runner = new CommandRunner("spring");
+        runner.addCommand(new HelpCommand(runner));
+        addServiceLoaderCommands(runner);
+        runner.addCommand(new ShellCommand());
+        runner.addCommand(new HintCommand(runner));
+        runner.setOptionCommands(HelpCommand.class, VersionCommand.class);
+        runner.setHiddenCommands(HintCommand.class);
 
-		int exitCode = runner.runAndHandleErrors(args);
-		if (exitCode != 0) {
-			System.exit(exitCode);
-		}
-	}
+        int exitCode = runner.runAndHandleErrors(args);
+        if (exitCode != 0) {
+            System.exit(exitCode);
+        }
+    }
 
-	private static void addServiceLoaderCommands(CommandRunner runner) {
-		ServiceLoader<CommandFactory> factories = ServiceLoader.load(
-				CommandFactory.class, runner.getClass().getClassLoader());
-		for (CommandFactory factory : factories) {
-			runner.addCommands(factory.getCommands());
-		}
-	}
+    private static void addServiceLoaderCommands(CommandRunner runner) {
+        ServiceLoader<CommandFactory> factories = ServiceLoader.load(
+                CommandFactory.class, runner.getClass().getClassLoader());
+        for (CommandFactory factory : factories) {
+            runner.addCommands(factory.getCommands());
+        }
+    }
 
 }

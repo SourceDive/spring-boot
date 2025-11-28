@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for separate management and main service ports.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -48,36 +48,36 @@ import static org.junit.Assert.assertEquals;
 @ActiveProfiles("management-port")
 public class SampleActuatorUiApplicationPortTests {
 
-	@Autowired
-	private SecurityProperties security;
+    @Autowired
+    private SecurityProperties security;
 
-	@Value("${server.port}")
-	private int port = 9010;
+    @Value("${server.port}")
+    private int port = 9010;
 
-	@Value("${management.port}")
-	private int managementPort = 9011;
+    @Value("${management.port}")
+    private int managementPort = 9011;
 
-	@Test
-	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-	}
+    @Test
+    public void testHome() throws Exception {
+        ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:" + this.port, String.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+    }
 
-	@Test
-	public void testMetrics() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/metrics", Map.class);
-		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
-	}
+    @Test
+    public void testMetrics() throws Exception {
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:" + this.managementPort + "/metrics", Map.class);
+        assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+    }
 
-	@Test
-	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/health", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("ok", entity.getBody());
-	}
+    @Test
+    public void testHealth() throws Exception {
+        ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:" + this.managementPort + "/health", String.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        assertEquals("ok", entity.getBody());
+    }
 
 }

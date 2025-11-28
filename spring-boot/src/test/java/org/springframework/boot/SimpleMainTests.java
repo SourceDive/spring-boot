@@ -16,10 +16,6 @@
 
 package org.springframework.boot;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
@@ -27,65 +23,69 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SpringApplication} main method.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
 public class SimpleMainTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+    @Rule
+    public OutputCapture outputCapture = new OutputCapture();
 
-	private static final String SPRING_STARTUP = "root of context hierarchy";
+    private static final String SPRING_STARTUP = "root of context hierarchy";
 
-	@Test(expected = IllegalArgumentException.class)
-	public void emptyApplicationContext() throws Exception {
-		SpringApplication.main(getArgs());
-		assertTrue(getOutput().contains(SPRING_STARTUP));
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void emptyApplicationContext() throws Exception {
+        SpringApplication.main(getArgs());
+        assertTrue(getOutput().contains(SPRING_STARTUP));
+    }
 
-	@Test
-	public void basePackageScan() throws Exception {
-		SpringApplication.main(getArgs(ClassUtils.getPackageName(getClass())
-				+ ".sampleconfig"));
-		assertTrue(getOutput().contains(SPRING_STARTUP));
-	}
+    @Test
+    public void basePackageScan() throws Exception {
+        SpringApplication.main(getArgs(ClassUtils.getPackageName(getClass())
+                + ".sampleconfig"));
+        assertTrue(getOutput().contains(SPRING_STARTUP));
+    }
 
-	@Test
-	public void configClassContext() throws Exception {
-		SpringApplication.main(getArgs(getClass().getName()));
-		assertTrue(getOutput().contains(SPRING_STARTUP));
-	}
+    @Test
+    public void configClassContext() throws Exception {
+        SpringApplication.main(getArgs(getClass().getName()));
+        assertTrue(getOutput().contains(SPRING_STARTUP));
+    }
 
-	@Test
-	public void xmlContext() throws Exception {
-		SpringApplication.main(getArgs("org/springframework/boot/sample-beans.xml"));
-		assertTrue(getOutput().contains(SPRING_STARTUP));
-	}
+    @Test
+    public void xmlContext() throws Exception {
+        SpringApplication.main(getArgs("org/springframework/boot/sample-beans.xml"));
+        assertTrue(getOutput().contains(SPRING_STARTUP));
+    }
 
-	@Test
-	public void mixedContext() throws Exception {
-		SpringApplication.main(getArgs(getClass().getName(),
-				"org/springframework/boot/sample-beans.xml"));
-		assertTrue(getOutput().contains(SPRING_STARTUP));
-	}
+    @Test
+    public void mixedContext() throws Exception {
+        SpringApplication.main(getArgs(getClass().getName(),
+                "org/springframework/boot/sample-beans.xml"));
+        assertTrue(getOutput().contains(SPRING_STARTUP));
+    }
 
-	private String[] getArgs(String... args) {
-		List<String> list = new ArrayList<String>(Arrays.asList(
-				"--spring.main.webEnvironment=false", "--spring.main.showBanner=false"));
-		if (args.length > 0) {
-			list.add("--spring.main.sources="
-					+ StringUtils.arrayToCommaDelimitedString(args));
-		}
-		return list.toArray(new String[list.size()]);
-	}
+    private String[] getArgs(String... args) {
+        List<String> list = new ArrayList<String>(Arrays.asList(
+                "--spring.main.webEnvironment=false", "--spring.main.showBanner=false"));
+        if (args.length > 0) {
+            list.add("--spring.main.sources="
+                    + StringUtils.arrayToCommaDelimitedString(args));
+        }
+        return list.toArray(new String[list.size()]);
+    }
 
-	private String getOutput() {
-		return this.outputCapture.toString();
-	}
+    private String getOutput() {
+        return this.outputCapture.toString();
+    }
 
 }

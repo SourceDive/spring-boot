@@ -16,6 +16,8 @@
 
 package org.springframework.boot.loader.archive;
 
+import org.springframework.boot.loader.util.AsciiBytes;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,70 +27,68 @@ import java.util.Collections;
 import java.util.List;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.util.AsciiBytes;
-
 /**
  * Decorator to apply an {@link Archive.EntryFilter} to an existing {@link Archive}.
- * 
+ *
  * @author Dave Syer
  */
 public class FilteredArchive extends Archive {
 
-	private final Archive parent;
+    private final Archive parent;
 
-	private final EntryFilter filter;
+    private final EntryFilter filter;
 
-	public FilteredArchive(Archive parent, EntryFilter filter) {
-		this.parent = parent;
-		this.filter = filter;
-	}
+    public FilteredArchive(Archive parent, EntryFilter filter) {
+        this.parent = parent;
+        this.filter = filter;
+    }
 
-	@Override
-	public URL getUrl() throws MalformedURLException {
-		return this.parent.getUrl();
-	}
+    @Override
+    public URL getUrl() throws MalformedURLException {
+        return this.parent.getUrl();
+    }
 
-	@Override
-	public String getMainClass() throws Exception {
-		return this.parent.getMainClass();
-	}
+    @Override
+    public String getMainClass() throws Exception {
+        return this.parent.getMainClass();
+    }
 
-	@Override
-	public Manifest getManifest() throws IOException {
-		return this.parent.getManifest();
-	}
+    @Override
+    public Manifest getManifest() throws IOException {
+        return this.parent.getManifest();
+    }
 
-	@Override
-	public Collection<Entry> getEntries() {
-		List<Entry> nested = new ArrayList<Entry>();
-		for (Entry entry : this.parent.getEntries()) {
-			if (this.filter.matches(entry)) {
-				nested.add(entry);
-			}
-		}
-		return Collections.unmodifiableList(nested);
-	}
+    @Override
+    public Collection<Entry> getEntries() {
+        List<Entry> nested = new ArrayList<Entry>();
+        for (Entry entry : this.parent.getEntries()) {
+            if (this.filter.matches(entry)) {
+                nested.add(entry);
+            }
+        }
+        return Collections.unmodifiableList(nested);
+    }
 
-	@Override
-	public List<Archive> getNestedArchives(final EntryFilter filter) throws IOException {
-		return this.parent.getNestedArchives(new EntryFilter() {
-			@Override
-			public boolean matches(Entry entry) {
-				return FilteredArchive.this.filter.matches(entry)
-						&& filter.matches(entry);
-			}
-		});
-	}
+    @Override
+    public List<Archive> getNestedArchives(final EntryFilter filter) throws IOException {
+        return this.parent.getNestedArchives(new EntryFilter() {
+            @Override
+            public boolean matches(Entry entry) {
+                return FilteredArchive.this.filter.matches(entry)
+                        && filter.matches(entry);
+            }
+        });
+    }
 
-	@Override
-	public Archive getFilteredArchive(final EntryRenameFilter filter) throws IOException {
-		return this.parent.getFilteredArchive(new EntryRenameFilter() {
-			@Override
-			public AsciiBytes apply(AsciiBytes entryName, Entry entry) {
-				return FilteredArchive.this.filter.matches(entry) ? filter.apply(
-						entryName, entry) : null;
-			}
-		});
-	}
+    @Override
+    public Archive getFilteredArchive(final EntryRenameFilter filter) throws IOException {
+        return this.parent.getFilteredArchive(new EntryRenameFilter() {
+            @Override
+            public AsciiBytes apply(AsciiBytes entryName, Entry entry) {
+                return FilteredArchive.this.filter.matches(entry) ? filter.apply(
+                        entryName, entry) : null;
+            }
+        });
+    }
 
 }

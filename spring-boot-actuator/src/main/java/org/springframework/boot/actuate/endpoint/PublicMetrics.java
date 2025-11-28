@@ -16,21 +16,21 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Collection;
-
 import org.springframework.boot.actuate.metrics.Metric;
+
+import java.util.Collection;
 
 /**
  * Interface to expose specific {@link Metric}s via a {@link MetricsEndpoint}.
- * 
+ *
  * @author Dave Syer
  * @see VanillaPublicMetrics
  */
 public interface PublicMetrics {
 
-	/**
-	 * @return an indication of current state through metrics
-	 */
-	Collection<Metric<?>> metrics();
+    /**
+     * @return an indication of current state through metrics
+     */
+    Collection<Metric<?>> metrics();
 
 }

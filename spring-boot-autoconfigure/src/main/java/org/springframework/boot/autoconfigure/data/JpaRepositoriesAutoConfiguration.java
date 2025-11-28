@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data;
 
-import javax.sql.DataSource;
-
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -33,6 +31,8 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
+import javax.sql.DataSource;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's JPA Repositories.
  * <p>
@@ -47,7 +47,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
  * annotation.
  * <p>
  * This configuration class will activate <em>after</em> the Hibernate auto-configuration.
- * 
+ *
  * @author Phillip Webb
  * @author Josh Long
  * @see EnableJpaRepositories
@@ -60,12 +60,12 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 public class JpaRepositoriesAutoConfiguration {
 
-	@Configuration
-	@EnableSpringDataWebSupport
-	@ConditionalOnWebApplication
-	@ConditionalOnMissingBean(PageableHandlerMethodArgumentResolver.class)
-	protected static class JpaWebConfiguration {
+    @Configuration
+    @EnableSpringDataWebSupport
+    @ConditionalOnWebApplication
+    @ConditionalOnMissingBean(PageableHandlerMethodArgumentResolver.class)
+    protected static class JpaWebConfiguration {
 
-	}
+    }
 
 }

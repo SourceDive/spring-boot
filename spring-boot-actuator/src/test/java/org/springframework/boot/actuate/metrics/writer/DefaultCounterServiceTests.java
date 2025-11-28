@@ -28,27 +28,27 @@ import static org.mockito.Mockito.verify;
  */
 public class DefaultCounterServiceTests {
 
-	private final MetricWriter repository = mock(MetricWriter.class);
+    private final MetricWriter repository = mock(MetricWriter.class);
 
-	private final DefaultCounterService service = new DefaultCounterService(
-			this.repository);
+    private final DefaultCounterService service = new DefaultCounterService(
+            this.repository);
 
-	@Test
-	public void incrementPrependsCounter() {
-		this.service.increment("foo");
-		@SuppressWarnings("rawtypes")
-		ArgumentCaptor<Delta> captor = ArgumentCaptor.forClass(Delta.class);
-		verify(this.repository).increment(captor.capture());
-		assertEquals("counter.foo", captor.getValue().getName());
-	}
+    @Test
+    public void incrementPrependsCounter() {
+        this.service.increment("foo");
+        @SuppressWarnings("rawtypes")
+        ArgumentCaptor<Delta> captor = ArgumentCaptor.forClass(Delta.class);
+        verify(this.repository).increment(captor.capture());
+        assertEquals("counter.foo", captor.getValue().getName());
+    }
 
-	@Test
-	public void decrementPrependsCounter() {
-		this.service.decrement("foo");
-		@SuppressWarnings("rawtypes")
-		ArgumentCaptor<Delta> captor = ArgumentCaptor.forClass(Delta.class);
-		verify(this.repository).increment(captor.capture());
-		assertEquals("counter.foo", captor.getValue().getName());
-		assertEquals(-1L, captor.getValue().getValue());
-	}
+    @Test
+    public void decrementPrependsCounter() {
+        this.service.decrement("foo");
+        @SuppressWarnings("rawtypes")
+        ArgumentCaptor<Delta> captor = ArgumentCaptor.forClass(Delta.class);
+        verify(this.repository).increment(captor.capture());
+        assertEquals("counter.foo", captor.getValue().getName());
+        assertEquals(-1L, captor.getValue().getValue());
+    }
 }

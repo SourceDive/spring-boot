@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for demo application.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -49,50 +49,50 @@ import static org.junit.Assert.assertTrue;
 @DirtiesContext
 public class SampleActuatorUiApplicationTests {
 
-	@Test
-	public void testHome() throws Exception {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:8080", HttpMethod.GET, new HttpEntity<Void>(headers),
-				String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
-				.getBody().contains("<title>Hello"));
-	}
+    @Test
+    public void testHome() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+        ResponseEntity<String> entity = new TestRestTemplate().exchange(
+                "http://localhost:8080", HttpMethod.GET, new HttpEntity<Void>(headers),
+                String.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
+                .getBody().contains("<title>Hello"));
+    }
 
-	@Test
-	public void testCss() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/css/bootstrap.min.css", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
-	}
+    @Test
+    public void testCss() throws Exception {
+        ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:8080/css/bootstrap.min.css", String.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
+    }
 
-	@Test
-	public void testMetrics() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/metrics", Map.class);
-		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
-	}
+    @Test
+    public void testMetrics() throws Exception {
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:8080/metrics", Map.class);
+        assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+    }
 
-	@Test
-	public void testError() throws Exception {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:8080/error", HttpMethod.GET, new HttpEntity<Void>(
-						headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
-				.contains("<html>"));
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
-				.contains("<body>"));
-		assertTrue(
-				"Wrong body:\n" + entity.getBody(),
-				entity.getBody().contains(
-						"Please contact the operator with the above information"));
-	}
+    @Test
+    public void testError() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+        ResponseEntity<String> entity = new TestRestTemplate().exchange(
+                "http://localhost:8080/error", HttpMethod.GET, new HttpEntity<Void>(
+                        headers), String.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
+                .contains("<html>"));
+        assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
+                .contains("<body>"));
+        assertTrue(
+                "Wrong body:\n" + entity.getBody(),
+                entity.getBody().contains(
+                        "Please contact the operator with the above information"));
+    }
 
 }

@@ -28,68 +28,68 @@ import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * {@link SpringApplicationRunListener} to publish {@link SpringApplicationEvent}s.
- * 
+ *
  * @author Phillip Webb
  */
 public class EventPublishingRunListener implements SpringApplicationRunListener {
 
-	private final ApplicationEventMulticaster multicaster;
+    private final ApplicationEventMulticaster multicaster;
 
-	private SpringApplication application;
+    private SpringApplication application;
 
-	private String[] args;
+    private String[] args;
 
-	public EventPublishingRunListener(SpringApplication application, String[] args) {
-		this.application = application;
-		this.args = args;
-		this.multicaster = new SimpleApplicationEventMulticaster();
-		for (ApplicationListener<?> listener : application.getListeners()) {
-			this.multicaster.addApplicationListener(listener);
-		}
-	}
+    public EventPublishingRunListener(SpringApplication application, String[] args) {
+        this.application = application;
+        this.args = args;
+        this.multicaster = new SimpleApplicationEventMulticaster();
+        for (ApplicationListener<?> listener : application.getListeners()) {
+            this.multicaster.addApplicationListener(listener);
+        }
+    }
 
-	@Override
-	public void started() {
-		publishEvent(new ApplicationStartedEvent(this.application, this.args));
-	}
+    @Override
+    public void started() {
+        publishEvent(new ApplicationStartedEvent(this.application, this.args));
+    }
 
-	@Override
-	public void environmentPrepared(ConfigurableEnvironment environment) {
-		publishEvent(new ApplicationEnvironmentPreparedEvent(this.application, this.args,
-				environment));
-	}
+    @Override
+    public void environmentPrepared(ConfigurableEnvironment environment) {
+        publishEvent(new ApplicationEnvironmentPreparedEvent(this.application, this.args,
+                environment));
+    }
 
-	@Override
-	public void contextPrepared(ConfigurableApplicationContext context) {
-		registerApplicationEventMulticaster(context);
-	}
+    @Override
+    public void contextPrepared(ConfigurableApplicationContext context) {
+        registerApplicationEventMulticaster(context);
+    }
 
-	private void registerApplicationEventMulticaster(
-			ConfigurableApplicationContext context) {
-		context.getBeanFactory().registerSingleton(
-				AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME,
-				this.multicaster);
-		if (this.multicaster instanceof BeanFactoryAware) {
-			((BeanFactoryAware) this.multicaster)
-					.setBeanFactory(context.getBeanFactory());
-		}
-	}
+    private void registerApplicationEventMulticaster(
+            ConfigurableApplicationContext context) {
+        context.getBeanFactory().registerSingleton(
+                AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME,
+                this.multicaster);
+        if (this.multicaster instanceof BeanFactoryAware) {
+            ((BeanFactoryAware) this.multicaster)
+                    .setBeanFactory(context.getBeanFactory());
+        }
+    }
 
-	@Override
-	public void contextLoaded(ConfigurableApplicationContext context) {
-		publishEvent(new ApplicationPreparedEvent(this.application, this.args, context));
-	}
+    @Override
+    public void contextLoaded(ConfigurableApplicationContext context) {
+        publishEvent(new ApplicationPreparedEvent(this.application, this.args, context));
+    }
 
-	@Override
-	public void finished(ConfigurableApplicationContext context, Throwable exception) {
-		if (exception != null) {
-			publishEvent(new ApplicationFailedEvent(this.application, this.args, context,
-					exception));
-		}
-	}
+    @Override
+    public void finished(ConfigurableApplicationContext context, Throwable exception) {
+        if (exception != null) {
+            publishEvent(new ApplicationFailedEvent(this.application, this.args, context,
+                    exception));
+        }
+    }
 
-	private void publishEvent(SpringApplicationEvent event) {
-		this.multicaster.multicastEvent(event);
-	}
+    private void publishEvent(SpringApplicationEvent event) {
+        this.multicaster.multicastEvent(event);
+    }
 
 }

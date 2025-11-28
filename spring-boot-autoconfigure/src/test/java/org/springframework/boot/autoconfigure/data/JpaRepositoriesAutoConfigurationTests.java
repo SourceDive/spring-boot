@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -33,58 +31,60 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.persistence.EntityManagerFactory;
+
 import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link JpaRepositoriesAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  * @author Oliver Gierke
  */
 public class JpaRepositoriesAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
-	@Test
-	public void testDefaultRepositoryConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
-				JpaRepositoriesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(CityRepository.class));
-		assertNotNull(this.context.getBean(PlatformTransactionManager.class));
-		assertNotNull(this.context.getBean(EntityManagerFactory.class));
-	}
+    @Test
+    public void testDefaultRepositoryConfiguration() throws Exception {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(TestConfiguration.class,
+                EmbeddedDataSourceConfiguration.class,
+                HibernateJpaAutoConfiguration.class,
+                JpaRepositoriesAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context.getBean(CityRepository.class));
+        assertNotNull(this.context.getBean(PlatformTransactionManager.class));
+        assertNotNull(this.context.getBean(EntityManagerFactory.class));
+    }
 
-	@Test
-	public void testOverrideRepositoryConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(CustomConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
-				JpaRepositoriesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context
-				.getBean(org.springframework.boot.autoconfigure.data.alt.CityJpaRepository.class));
-		assertNotNull(this.context.getBean(PlatformTransactionManager.class));
-		assertNotNull(this.context.getBean(EntityManagerFactory.class));
-	}
+    @Test
+    public void testOverrideRepositoryConfiguration() throws Exception {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(CustomConfiguration.class,
+                EmbeddedDataSourceConfiguration.class,
+                HibernateJpaAutoConfiguration.class,
+                JpaRepositoriesAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context
+                .getBean(org.springframework.boot.autoconfigure.data.alt.CityJpaRepository.class));
+        assertNotNull(this.context.getBean(PlatformTransactionManager.class));
+        assertNotNull(this.context.getBean(EntityManagerFactory.class));
+    }
 
-	@Configuration
-	@TestAutoConfigurationPackage(City.class)
-	protected static class TestConfiguration {
+    @Configuration
+    @TestAutoConfigurationPackage(City.class)
+    protected static class TestConfiguration {
 
-	}
+    }
 
-	@Configuration
-	@EnableJpaRepositories(basePackageClasses = org.springframework.boot.autoconfigure.data.alt.CityJpaRepository.class, excludeFilters = { @Filter(type = FilterType.ASSIGNABLE_TYPE, value = CityMongoDbRepository.class) })
-	@TestAutoConfigurationPackage(City.class)
-	protected static class CustomConfiguration {
+    @Configuration
+    @EnableJpaRepositories(basePackageClasses = org.springframework.boot.autoconfigure.data.alt.CityJpaRepository.class, excludeFilters = {@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CityMongoDbRepository.class)})
+    @TestAutoConfigurationPackage(City.class)
+    protected static class CustomConfiguration {
 
-	}
+    }
 
 }

@@ -25,6 +25,6 @@ import sample.data.jpa.domain.Hotel;
 @RepositoryRestResource(collectionResourceRel = "hotels", path = "hotels")
 interface HotelRepository extends PagingAndSortingRepository<Hotel, Long> {
 
-	Hotel findByCityAndName(City city, String name);
+    Hotel findByCityAndName(City city, String name);
 
 }

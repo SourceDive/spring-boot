@@ -17,7 +17,6 @@
 package org.springframework.boot.cli.command.test;
 
 import joptsimple.OptionSet;
-
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.options.CompilerOptionHandler;
@@ -26,46 +25,46 @@ import org.springframework.boot.cli.command.options.SourceOptions;
 
 /**
  * {@link Command} to run a groovy test script or scripts.
- * 
+ *
  * @author Greg Turnquist
  * @author Phillip Webb
  */
 public class TestCommand extends OptionParsingCommand {
 
-	public TestCommand() {
-		super("test", "Run a spring groovy script test", new TestOptionHandler());
-	}
+    public TestCommand() {
+        super("test", "Run a spring groovy script test", new TestOptionHandler());
+    }
 
-	@Override
-	public String getUsageHelp() {
-		return "[options] <files> [--] [args]";
-	}
+    @Override
+    public String getUsageHelp() {
+        return "[options] <files> [--] [args]";
+    }
 
-	private static class TestOptionHandler extends CompilerOptionHandler {
+    private static class TestOptionHandler extends CompilerOptionHandler {
 
-		private TestRunner runner;
+        private TestRunner runner;
 
-		@Override
-		protected void run(OptionSet options) throws Exception {
-			SourceOptions sourceOptions = new SourceOptions(options);
-			TestRunnerConfiguration configuration = new TestRunnerConfigurationAdapter(
-					options, this);
-			this.runner = new TestRunner(configuration, sourceOptions.getSourcesArray(),
-					sourceOptions.getArgsArray());
-			this.runner.compileAndRunTests();
-		}
+        @Override
+        protected void run(OptionSet options) throws Exception {
+            SourceOptions sourceOptions = new SourceOptions(options);
+            TestRunnerConfiguration configuration = new TestRunnerConfigurationAdapter(
+                    options, this);
+            this.runner = new TestRunner(configuration, sourceOptions.getSourcesArray(),
+                    sourceOptions.getArgsArray());
+            this.runner.compileAndRunTests();
+        }
 
-		/**
-		 * Simple adapter class to present the {@link OptionSet} as a
-		 * {@link TestRunnerConfiguration}.
-		 */
-		private class TestRunnerConfigurationAdapter extends
-				OptionSetGroovyCompilerConfiguration implements TestRunnerConfiguration {
+        /**
+         * Simple adapter class to present the {@link OptionSet} as a
+         * {@link TestRunnerConfiguration}.
+         */
+        private class TestRunnerConfigurationAdapter extends
+                OptionSetGroovyCompilerConfiguration implements TestRunnerConfiguration {
 
-			public TestRunnerConfigurationAdapter(OptionSet options,
-					CompilerOptionHandler optionHandler) {
-				super(options, optionHandler);
-			}
-		}
-	}
+            public TestRunnerConfigurationAdapter(OptionSet options,
+                                                  CompilerOptionHandler optionHandler) {
+                super(options, optionHandler);
+            }
+        }
+    }
 }

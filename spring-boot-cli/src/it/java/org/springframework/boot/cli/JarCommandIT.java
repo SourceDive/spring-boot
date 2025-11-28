@@ -16,69 +16,67 @@
 
 package org.springframework.boot.cli;
 
-import java.io.File;
-
 import org.junit.Test;
 import org.springframework.boot.cli.command.jar.JarCommand;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker.Invocation;
 import org.springframework.boot.cli.util.JavaExecutable;
 
+import java.io.File;
+
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Integration test for {@link JarCommand}.
- * 
+ *
  * @author Andy Wilkinson
  */
 public class JarCommandIT {
 
-	private final CommandLineInvoker cli = new CommandLineInvoker(new File(
-			"src/it/resources/jar-command"));
+    private final CommandLineInvoker cli = new CommandLineInvoker(new File(
+            "src/it/resources/jar-command"));
 
-	@Test
-	public void noArguments() throws Exception {
-		Invocation invocation = this.cli.invoke("jar");
-		invocation.await();
-		assertThat(invocation.getStandardOutput(), equalTo(""));
-		assertThat(invocation.getErrorOutput(), containsString("The name of the "
-				+ "resulting jar and at least one source file must be specified"));
-	}
+    @Test
+    public void noArguments() throws Exception {
+        Invocation invocation = this.cli.invoke("jar");
+        invocation.await();
+        assertThat(invocation.getStandardOutput(), equalTo(""));
+        assertThat(invocation.getErrorOutput(), containsString("The name of the "
+                + "resulting jar and at least one source file must be specified"));
+    }
 
-	@Test
-	public void noSources() throws Exception {
-		Invocation invocation = this.cli.invoke("jar", "test-app.jar");
-		invocation.await();
-		assertThat(invocation.getStandardOutput(), equalTo(""));
-		assertThat(invocation.getErrorOutput(), containsString("The name of the "
-				+ "resulting jar and at least one source file must be specified"));
-	}
+    @Test
+    public void noSources() throws Exception {
+        Invocation invocation = this.cli.invoke("jar", "test-app.jar");
+        invocation.await();
+        assertThat(invocation.getStandardOutput(), equalTo(""));
+        assertThat(invocation.getErrorOutput(), containsString("The name of the "
+                + "resulting jar and at least one source file must be specified"));
+    }
 
-	@Test
-	public void jarCreation() throws Exception {
-		File jar = new File("target/test-app.jar");
-		Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(),
-				"jar.groovy");
-		invocation.await();
-		assertEquals(invocation.getErrorOutput(), 0, invocation.getErrorOutput().length());
-		assertTrue(jar.exists());
+    @Test
+    public void jarCreation() throws Exception {
+        File jar = new File("target/test-app.jar");
+        Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(),
+                "jar.groovy");
+        invocation.await();
+        assertEquals(invocation.getErrorOutput(), 0, invocation.getErrorOutput().length());
+        assertTrue(jar.exists());
 
-		Process process = new JavaExecutable().processBuilder("-jar",
-				jar.getAbsolutePath()).start();
-		invocation = new Invocation(process);
-		invocation.await();
+        Process process = new JavaExecutable().processBuilder("-jar",
+                jar.getAbsolutePath()).start();
+        invocation = new Invocation(process);
+        invocation.await();
 
-		assertThat(invocation.getErrorOutput(), equalTo(""));
-		assertThat(invocation.getStandardOutput(), containsString("Hello World!"));
-		assertThat(invocation.getStandardOutput(), containsString("/public/public.txt"));
-		assertThat(invocation.getStandardOutput(),
-				containsString("/resources/resource.txt"));
-		assertThat(invocation.getStandardOutput(), containsString("/static/static.txt"));
-		assertThat(invocation.getStandardOutput(),
-				containsString("/templates/template.txt"));
-	}
+        assertThat(invocation.getErrorOutput(), equalTo(""));
+        assertThat(invocation.getStandardOutput(), containsString("Hello World!"));
+        assertThat(invocation.getStandardOutput(), containsString("/public/public.txt"));
+        assertThat(invocation.getStandardOutput(),
+                containsString("/resources/resource.txt"));
+        assertThat(invocation.getStandardOutput(), containsString("/static/static.txt"));
+        assertThat(invocation.getStandardOutput(),
+                containsString("/templates/template.txt"));
+    }
 }

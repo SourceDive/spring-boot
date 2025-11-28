@@ -16,32 +16,32 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 /**
  * {@link Endpoint} to expose thread info.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.dump", ignoreUnknownFields = false)
 public class DumpEndpoint extends AbstractEndpoint<List<ThreadInfo>> {
 
-	/**
-	 * Create a new {@link DumpEndpoint} instance.
-	 */
-	public DumpEndpoint() {
-		super("dump");
-	}
+    /**
+     * Create a new {@link DumpEndpoint} instance.
+     */
+    public DumpEndpoint() {
+        super("dump");
+    }
 
-	@Override
-	public List<ThreadInfo> invoke() {
-		return Arrays.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true,
-				true));
-	}
+    @Override
+    public List<ThreadInfo> invoke() {
+        return Arrays.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true,
+                true));
+    }
 
 }

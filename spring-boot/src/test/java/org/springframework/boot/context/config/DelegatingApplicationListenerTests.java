@@ -35,71 +35,71 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link DelegatingApplicationListener}.
- * 
+ *
  * @author Dave Syer
  */
 public class DelegatingApplicationListenerTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	private final DelegatingApplicationListener listener = new DelegatingApplicationListener();
+    private final DelegatingApplicationListener listener = new DelegatingApplicationListener();
 
-	private final StaticApplicationContext context = new StaticApplicationContext();
+    private final StaticApplicationContext context = new StaticApplicationContext();
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+    @After
+    public void close() {
+        if (this.context != null) {
+            this.context.close();
+        }
+    }
 
-	@Test
-	public void orderedInitialize() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "context.listener.classes:"
-				+ MockInitB.class.getName() + "," + MockInitA.class.getName());
-		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
-				new SpringApplication(), new String[0], this.context.getEnvironment()));
-		this.context.getBeanFactory().registerSingleton("testListener", this.listener);
-		this.context.refresh();
-		assertThat(this.context.getBeanFactory().getSingleton("a"), equalTo((Object) "a"));
-		assertThat(this.context.getBeanFactory().getSingleton("b"), equalTo((Object) "b"));
-	}
+    @Test
+    public void orderedInitialize() throws Exception {
+        EnvironmentTestUtils.addEnvironment(this.context, "context.listener.classes:"
+                + MockInitB.class.getName() + "," + MockInitA.class.getName());
+        this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
+                new SpringApplication(), new String[0], this.context.getEnvironment()));
+        this.context.getBeanFactory().registerSingleton("testListener", this.listener);
+        this.context.refresh();
+        assertThat(this.context.getBeanFactory().getSingleton("a"), equalTo((Object) "a"));
+        assertThat(this.context.getBeanFactory().getSingleton("b"), equalTo((Object) "b"));
+    }
 
-	@Test
-	public void noInitializers() throws Exception {
-		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
-				new SpringApplication(), new String[0], this.context.getEnvironment()));
-	}
+    @Test
+    public void noInitializers() throws Exception {
+        this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
+                new SpringApplication(), new String[0], this.context.getEnvironment()));
+    }
 
-	@Test
-	public void emptyInitializers() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "context.listener.classes:");
-		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
-				new SpringApplication(), new String[0], this.context.getEnvironment()));
-	}
+    @Test
+    public void emptyInitializers() throws Exception {
+        EnvironmentTestUtils.addEnvironment(this.context, "context.listener.classes:");
+        this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
+                new SpringApplication(), new String[0], this.context.getEnvironment()));
+    }
 
-	@Order(Ordered.HIGHEST_PRECEDENCE)
-	private static class MockInitA implements ApplicationListener<ContextRefreshedEvent> {
-		@Override
-		public void onApplicationEvent(ContextRefreshedEvent event) {
-			ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) event
-					.getApplicationContext();
-			applicationContext.getBeanFactory().registerSingleton("a", "a");
-		}
-	}
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    private static class MockInitA implements ApplicationListener<ContextRefreshedEvent> {
+        @Override
+        public void onApplicationEvent(ContextRefreshedEvent event) {
+            ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) event
+                    .getApplicationContext();
+            applicationContext.getBeanFactory().registerSingleton("a", "a");
+        }
+    }
 
-	@Order(Ordered.LOWEST_PRECEDENCE)
-	private static class MockInitB implements ApplicationListener<ContextRefreshedEvent> {
+    @Order(Ordered.LOWEST_PRECEDENCE)
+    private static class MockInitB implements ApplicationListener<ContextRefreshedEvent> {
 
-		@Override
-		public void onApplicationEvent(ContextRefreshedEvent event) {
-			ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) event
-					.getApplicationContext();
-			assertThat(applicationContext.getBeanFactory().getSingleton("a"),
-					equalTo((Object) "a"));
-			applicationContext.getBeanFactory().registerSingleton("b", "b");
-		}
-	}
+        @Override
+        public void onApplicationEvent(ContextRefreshedEvent event) {
+            ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) event
+                    .getApplicationContext();
+            assertThat(applicationContext.getBeanFactory().getSingleton("a"),
+                    equalTo((Object) "a"));
+            applicationContext.getBeanFactory().registerSingleton("b", "b");
+        }
+    }
 
 }

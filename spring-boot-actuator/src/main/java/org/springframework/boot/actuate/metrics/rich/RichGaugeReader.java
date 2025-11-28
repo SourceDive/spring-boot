@@ -18,27 +18,29 @@ package org.springframework.boot.actuate.metrics.rich;
 
 /**
  * A basic set of read operations for {@link RichGauge} instances.
- * 
+ *
  * @author Dave Syer
  */
 public interface RichGaugeReader {
 
-	/**
-	 * Find a single instance of a rich gauge by name.
-	 * @param name the name of the gauge
-	 * @return a rich gauge value
-	 */
-	RichGauge findOne(String name);
+    /**
+     * Find a single instance of a rich gauge by name.
+     *
+     * @param name the name of the gauge
+     * @return a rich gauge value
+     */
+    RichGauge findOne(String name);
 
-	/**
-	 * Find all instances of rich gauge known to this reader.
-	 * @return all instances known to this reader
-	 */
-	Iterable<RichGauge> findAll();
+    /**
+     * Find all instances of rich gauge known to this reader.
+     *
+     * @return all instances known to this reader
+     */
+    Iterable<RichGauge> findAll();
 
-	/**
-	 * @return the number of gauge values available
-	 */
-	long count();
+    /**
+     * @return the number of gauge values available
+     */
+    long count();
 
 }

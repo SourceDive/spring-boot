@@ -19,19 +19,19 @@ package org.springframework.boot.context.properties;
 /**
  * Properties holder registered by {@link EnableConfigurationPropertiesImportSelector} to
  * be picked up by {@link ConfigurationPropertiesBindingPostProcessor}.
- * 
+ *
  * @author Dave Syer
  */
 class ConfigurationPropertiesHolder {
 
-	private final Object target;
+    private final Object target;
 
-	public ConfigurationPropertiesHolder(Object target) {
-		this.target = target;
-	}
+    public ConfigurationPropertiesHolder(Object target) {
+        this.target = target;
+    }
 
-	public Object getTarget() {
-		return this.target;
-	}
+    public Object getTarget() {
+        return this.target;
+    }
 
 }

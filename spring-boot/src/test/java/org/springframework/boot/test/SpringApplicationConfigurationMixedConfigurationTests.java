@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link SpringApplicationContextLoader}.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,21 +36,21 @@ import static org.junit.Assert.assertNotNull;
 @Ignore("classes and locations together are not supported in Spring Test (for legacy reasons)")
 public class SpringApplicationConfigurationMixedConfigurationTests {
 
-	@Autowired
-	private String foo;
+    @Autowired
+    private String foo;
 
-	@Autowired
-	private Config config;
+    @Autowired
+    private Config config;
 
-	@Test
-	public void mixedConfigClasses() {
-		assertNotNull(this.foo);
-		assertNotNull(this.config);
-	}
+    @Test
+    public void mixedConfigClasses() {
+        assertNotNull(this.foo);
+        assertNotNull(this.config);
+    }
 
-	@Configuration
-	protected static class Config {
+    @Configuration
+    protected static class Config {
 
-	}
+    }
 
 }

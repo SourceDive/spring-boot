@@ -19,34 +19,35 @@ package org.springframework.boot.actuate.endpoint;
 /**
  * An endpoint that can be used to expose useful information to operations. Usually
  * exposed via Spring MVC but could also be exposed using some other technique.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Christian Dupuis
  */
 public interface Endpoint<T> {
 
-	/**
-	 * The logical ID of the endpoint. Must only contain simple letters, numbers and '_'
-	 * characters (ie a {@literal "\w"} regex).
-	 */
-	String getId();
+    /**
+     * The logical ID of the endpoint. Must only contain simple letters, numbers and '_'
+     * characters (ie a {@literal "\w"} regex).
+     */
+    String getId();
 
-	/**
-	 * Return if the endpoint is enabled.
-	 */
-	boolean isEnabled();
+    /**
+     * Return if the endpoint is enabled.
+     */
+    boolean isEnabled();
 
-	/**
-	 * Return if the endpoint is sensitive, i.e. may return data that the average user
-	 * should not see. Mappings can use this as a security hint.
-	 */
-	boolean isSensitive();
+    /**
+     * Return if the endpoint is sensitive, i.e. may return data that the average user
+     * should not see. Mappings can use this as a security hint.
+     */
+    boolean isSensitive();
 
-	/**
-	 * Called to invoke the endpoint.
-	 * @return the results of the invocation
-	 */
-	T invoke();
+    /**
+     * Called to invoke the endpoint.
+     *
+     * @return the results of the invocation
+     */
+    T invoke();
 
 }

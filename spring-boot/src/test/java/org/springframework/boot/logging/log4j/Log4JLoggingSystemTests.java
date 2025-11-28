@@ -31,62 +31,62 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link Log4JLoggingSystem}.
- * 
+ *
  * @author Phillip Webb
  */
 public class Log4JLoggingSystemTests {
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
+    @Rule
+    public OutputCapture output = new OutputCapture();
 
-	private final Log4JLoggingSystem loggingSystem = new Log4JLoggingSystem(getClass()
-			.getClassLoader());
+    private final Log4JLoggingSystem loggingSystem = new Log4JLoggingSystem(getClass()
+            .getClassLoader());
 
-	private Log4JLogger logger;
+    private Log4JLogger logger;
 
-	@Before
-	public void setup() {
-		this.logger = new Log4JLogger(getClass().getName());
-	}
+    @Before
+    public void setup() {
+        this.logger = new Log4JLogger(getClass().getName());
+    }
 
-	@After
-	public void clear() {
-		System.clearProperty("LOG_FILE");
-		System.clearProperty("LOG_PATH");
-		System.clearProperty("PID");
-	}
+    @After
+    public void clear() {
+        System.clearProperty("LOG_FILE");
+        System.clearProperty("LOG_PATH");
+        System.clearProperty("PID");
+    }
 
-	@Test
-	public void testNonDefaultConfigLocation() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize("classpath:log4j-nondefault.properties");
-		this.logger.info("Hello world");
-		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertTrue("Wrong output:\n" + output, output.contains("/tmp/spring.log"));
-	}
+    @Test
+    public void testNonDefaultConfigLocation() throws Exception {
+        this.loggingSystem.beforeInitialize();
+        this.loggingSystem.initialize("classpath:log4j-nondefault.properties");
+        this.logger.info("Hello world");
+        String output = this.output.toString().trim();
+        assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
+        assertTrue("Wrong output:\n" + output, output.contains("/tmp/spring.log"));
+    }
 
-	@Test(expected = IllegalStateException.class)
-	public void testNonexistentConfigLocation() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize("classpath:log4j-nonexistent.xml");
-	}
+    @Test(expected = IllegalStateException.class)
+    public void testNonexistentConfigLocation() throws Exception {
+        this.loggingSystem.beforeInitialize();
+        this.loggingSystem.initialize("classpath:log4j-nonexistent.xml");
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testNullConfigLocation() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null);
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullConfigLocation() throws Exception {
+        this.loggingSystem.beforeInitialize();
+        this.loggingSystem.initialize(null);
+    }
 
-	@Test
-	public void setLevel() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize();
-		this.logger.debug("Hello");
-		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
-		this.logger.debug("Hello");
-		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"),
-				equalTo(1));
-	}
+    @Test
+    public void setLevel() throws Exception {
+        this.loggingSystem.beforeInitialize();
+        this.loggingSystem.initialize();
+        this.logger.debug("Hello");
+        this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
+        this.logger.debug("Hello");
+        assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"),
+                equalTo(1));
+    }
 
 }

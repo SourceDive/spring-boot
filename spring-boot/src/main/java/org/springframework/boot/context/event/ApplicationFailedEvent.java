@@ -21,40 +21,40 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Event published by a {@link SpringApplication} when it fails to start.
- * 
+ *
  * @author Dave Syer
  */
 public class ApplicationFailedEvent extends SpringApplicationEvent {
 
-	private final ConfigurableApplicationContext context;
+    private final ConfigurableApplicationContext context;
 
-	private final Throwable exception;
+    private final Throwable exception;
 
-	/**
-	 * @param application the current application
-	 * @param context the context that was being created (maybe null)
-	 * @param args the arguments the application was running with
-	 * @param exception the exception that caused the error
-	 */
-	public ApplicationFailedEvent(SpringApplication application, String[] args,
-			ConfigurableApplicationContext context, Throwable exception) {
-		super(application, args);
-		this.context = context;
-		this.exception = exception;
-	}
+    /**
+     * @param application the current application
+     * @param context     the context that was being created (maybe null)
+     * @param args        the arguments the application was running with
+     * @param exception   the exception that caused the error
+     */
+    public ApplicationFailedEvent(SpringApplication application, String[] args,
+                                  ConfigurableApplicationContext context, Throwable exception) {
+        super(application, args);
+        this.context = context;
+        this.exception = exception;
+    }
 
-	/**
-	 * @return the context
-	 */
-	public ConfigurableApplicationContext getApplicationContext() {
-		return this.context;
-	}
+    /**
+     * @return the context
+     */
+    public ConfigurableApplicationContext getApplicationContext() {
+        return this.context;
+    }
 
-	/**
-	 * @return the exception
-	 */
-	public Throwable getException() {
-		return this.exception;
-	}
+    /**
+     * @return the exception
+     */
+    public Throwable getException() {
+        return this.exception;
+    }
 
 }

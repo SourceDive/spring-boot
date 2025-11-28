@@ -18,30 +18,32 @@ package org.springframework.boot.loader.tools;
 
 /**
  * Strategy interface used to determine the layout for a particular type of archive.
- * 
+ *
  * @author Phillip Webb
  * @see Layouts
  */
 public interface Layout {
 
-	/**
-	 * Returns the launcher class name for this layout.
-	 * @return the launcher class name
-	 */
-	String getLauncherClassName();
+    /**
+     * Returns the launcher class name for this layout.
+     *
+     * @return the launcher class name
+     */
+    String getLauncherClassName();
 
-	/**
-	 * Returns the destination path for a given library.
-	 * @param libraryName the name of the library (excluding any path)
-	 * @param scope the scope of the library
-	 * @return the destination relative to the root of the archive (should end with '/')
-	 * or {@code null} if the library should not be included.
-	 */
-	String getLibraryDestination(String libraryName, LibraryScope scope);
+    /**
+     * Returns the destination path for a given library.
+     *
+     * @param libraryName the name of the library (excluding any path)
+     * @param scope       the scope of the library
+     * @return the destination relative to the root of the archive (should end with '/')
+     * or {@code null} if the library should not be included.
+     */
+    String getLibraryDestination(String libraryName, LibraryScope scope);
 
-	/**
-	 * Returns the location of classes within the archive.
-	 */
-	String getClassesLocation();
+    /**
+     * Returns the location of classes within the archive.
+     */
+    String getClassesLocation();
 
 }

@@ -21,23 +21,25 @@ import java.util.List;
 
 /**
  * Repository for {@link AuditEvent}s.
- * 
+ *
  * @author Dave Syer
  */
 public interface AuditEventRepository {
 
-	/**
-	 * Find audit events relating to the specified principal since the time provided.
-	 * @param principal the principal name to search for
-	 * @param after timestamp of earliest result required
-	 * @return audit events relating to the principal
-	 */
-	List<AuditEvent> find(String principal, Date after);
+    /**
+     * Find audit events relating to the specified principal since the time provided.
+     *
+     * @param principal the principal name to search for
+     * @param after     timestamp of earliest result required
+     * @return audit events relating to the principal
+     */
+    List<AuditEvent> find(String principal, Date after);
 
-	/**
-	 * Log an event.
-	 * @param event the audit event to log
-	 */
-	void add(AuditEvent event);
+    /**
+     * Log an event.
+     *
+     * @param event the audit event to log
+     */
+    void add(AuditEvent event);
 
 }

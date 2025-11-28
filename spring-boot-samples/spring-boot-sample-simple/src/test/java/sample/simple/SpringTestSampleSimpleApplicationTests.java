@@ -23,15 +23,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Tests for {@link SampleSimpleApplication}.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleSimpleApplication.class)
 public class SpringTestSampleSimpleApplicationTests {
 
-	@Test
-	public void testContextLoads() throws Exception {
-	}
+    @Test
+    public void testContextLoads() throws Exception {
+    }
 
 }

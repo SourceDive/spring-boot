@@ -21,19 +21,19 @@ import org.springframework.boot.cli.command.Command;
 
 /**
  * {@link Command} to start a nested REPL shell.
- * 
+ *
  * @author Phillip Webb
  * @see Shell
  */
 public class ShellCommand extends AbstractCommand {
 
-	public ShellCommand() {
-		super("shell", "Start a nested shell");
-	}
+    public ShellCommand() {
+        super("shell", "Start a nested shell");
+    }
 
-	@Override
-	public void run(String... args) throws Exception {
-		new Shell().run();
-	}
+    @Override
+    public void run(String... args) throws Exception {
+        new Shell().run();
+    }
 
 }

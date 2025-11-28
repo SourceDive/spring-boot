@@ -36,20 +36,20 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * provide a <code>@Configuration</code> with <code>@EnableWebSecurity</code>. To just add
  * your own layer of application security in front of the defaults, add a
  * <code>@Configuration</code> of type {@link WebSecurityConfigurerAdapter}.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
 @ConditionalOnClass(AuthenticationManager.class)
 @EnableConfigurationProperties
-@Import({ SpringBootWebSecurityConfiguration.class,
-		AuthenticationManagerConfiguration.class })
+@Import({SpringBootWebSecurityConfiguration.class,
+        AuthenticationManagerConfiguration.class})
 public class SecurityAutoConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	public SecurityProperties securityProperties() {
-		return new SecurityProperties();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public SecurityProperties securityProperties() {
+        return new SecurityProperties();
+    }
 
 }

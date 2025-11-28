@@ -16,32 +16,32 @@
 
 package org.springframework.boot.loader;
 
-import java.util.List;
-
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.util.AsciiBytes;
+
+import java.util.List;
 
 /**
  * {@link Launcher} for JAR based archives. This launcher assumes that dependency jars are
  * included inside a {@code /lib} directory.
- * 
+ *
  * @author Phillip Webb
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
 
-	private static final AsciiBytes LIB = new AsciiBytes("lib/");
+    private static final AsciiBytes LIB = new AsciiBytes("lib/");
 
-	@Override
-	protected boolean isNestedArchive(Archive.Entry entry) {
-		return !entry.isDirectory() && entry.getName().startsWith(LIB);
-	}
+    @Override
+    protected boolean isNestedArchive(Archive.Entry entry) {
+        return !entry.isDirectory() && entry.getName().startsWith(LIB);
+    }
 
-	@Override
-	protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {
-		archives.add(0, getArchive());
-	}
+    @Override
+    protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {
+        archives.add(0, getArchive());
+    }
 
-	public static void main(String[] args) {
-		new JarLauncher().launch(args);
-	}
+    public static void main(String[] args) {
+        new JarLauncher().launch(args);
+    }
 }

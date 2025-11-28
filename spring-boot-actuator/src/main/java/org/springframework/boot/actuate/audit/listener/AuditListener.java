@@ -25,23 +25,23 @@ import org.springframework.context.ApplicationListener;
 /**
  * {@link ApplicationListener} that listens for {@link AuditEvent}s and stores them in a
  * {@link AuditEventRepository}.
- * 
+ *
  * @author Dave Syer
  */
 public class AuditListener implements ApplicationListener<AuditApplicationEvent> {
 
-	private static Log logger = LogFactory.getLog(AuditListener.class);
+    private static Log logger = LogFactory.getLog(AuditListener.class);
 
-	private final AuditEventRepository auditEventRepository;
+    private final AuditEventRepository auditEventRepository;
 
-	public AuditListener(AuditEventRepository auditEventRepository) {
-		this.auditEventRepository = auditEventRepository;
-	}
+    public AuditListener(AuditEventRepository auditEventRepository) {
+        this.auditEventRepository = auditEventRepository;
+    }
 
-	@Override
-	public void onApplicationEvent(AuditApplicationEvent event) {
-		logger.info(event.getAuditEvent());
-		this.auditEventRepository.add(event.getAuditEvent());
-	}
+    @Override
+    public void onApplicationEvent(AuditApplicationEvent event) {
+        logger.info(event.getAuditEvent());
+        this.auditEventRepository.add(event.getAuditEvent());
+    }
 
 }

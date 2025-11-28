@@ -27,48 +27,48 @@ import static org.junit.Assert.assertEquals;
  */
 public class MvcEndpointsTests {
 
-	private MvcEndpoints endpoints = new MvcEndpoints();
-	private StaticApplicationContext context = new StaticApplicationContext();
+    private MvcEndpoints endpoints = new MvcEndpoints();
+    private StaticApplicationContext context = new StaticApplicationContext();
 
-	@Test
-	public void picksUpEndpointDelegates() throws Exception {
-		this.context.getDefaultListableBeanFactory().registerSingleton("endpoint",
-				new TestEndpoint());
-		this.endpoints.setApplicationContext(this.context);
-		this.endpoints.afterPropertiesSet();
-		assertEquals(1, this.endpoints.getEndpoints().size());
-	}
+    @Test
+    public void picksUpEndpointDelegates() throws Exception {
+        this.context.getDefaultListableBeanFactory().registerSingleton("endpoint",
+                new TestEndpoint());
+        this.endpoints.setApplicationContext(this.context);
+        this.endpoints.afterPropertiesSet();
+        assertEquals(1, this.endpoints.getEndpoints().size());
+    }
 
-	@Test
-	public void picksUpEndpointDelegatesFromParent() throws Exception {
-		StaticApplicationContext parent = new StaticApplicationContext();
-		this.context.setParent(parent);
-		parent.getDefaultListableBeanFactory().registerSingleton("endpoint",
-				new TestEndpoint());
-		this.endpoints.setApplicationContext(this.context);
-		this.endpoints.afterPropertiesSet();
-		assertEquals(1, this.endpoints.getEndpoints().size());
-	}
+    @Test
+    public void picksUpEndpointDelegatesFromParent() throws Exception {
+        StaticApplicationContext parent = new StaticApplicationContext();
+        this.context.setParent(parent);
+        parent.getDefaultListableBeanFactory().registerSingleton("endpoint",
+                new TestEndpoint());
+        this.endpoints.setApplicationContext(this.context);
+        this.endpoints.afterPropertiesSet();
+        assertEquals(1, this.endpoints.getEndpoints().size());
+    }
 
-	@Test
-	public void picksUpMvcEndpoints() throws Exception {
-		this.context.getDefaultListableBeanFactory().registerSingleton("endpoint",
-				new EndpointMvcAdapter(new TestEndpoint()));
-		this.endpoints.setApplicationContext(this.context);
-		this.endpoints.afterPropertiesSet();
-		assertEquals(1, this.endpoints.getEndpoints().size());
-	}
+    @Test
+    public void picksUpMvcEndpoints() throws Exception {
+        this.context.getDefaultListableBeanFactory().registerSingleton("endpoint",
+                new EndpointMvcAdapter(new TestEndpoint()));
+        this.endpoints.setApplicationContext(this.context);
+        this.endpoints.afterPropertiesSet();
+        assertEquals(1, this.endpoints.getEndpoints().size());
+    }
 
-	protected static class TestEndpoint extends AbstractEndpoint<String> {
+    protected static class TestEndpoint extends AbstractEndpoint<String> {
 
-		public TestEndpoint() {
-			super("test");
-		}
+        public TestEndpoint() {
+            super("test");
+        }
 
-		@Override
-		public String invoke() {
-			return "foo";
-		}
-	}
+        @Override
+        public String invoke() {
+            return "foo";
+        }
+    }
 
 }

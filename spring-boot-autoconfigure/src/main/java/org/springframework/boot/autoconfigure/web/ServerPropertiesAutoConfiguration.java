@@ -34,39 +34,39 @@ import org.springframework.util.StringUtils;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that configures the
  * {@link ConfigurableEmbeddedServletContainer} from a {@link ServerProperties} bean.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
 @EnableConfigurationProperties
 @ConditionalOnWebApplication
 public class ServerPropertiesAutoConfiguration implements ApplicationContextAware,
-		EmbeddedServletContainerCustomizer {
+        EmbeddedServletContainerCustomizer {
 
-	private ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
-	@Bean
-	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
-	public ServerProperties serverProperties() {
-		return new ServerProperties();
-	}
+    @Bean
+    @ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
+    public ServerProperties serverProperties() {
+        return new ServerProperties();
+    }
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.applicationContext = applicationContext;
-	}
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext)
+            throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 
-	@Override
-	public void customize(ConfigurableEmbeddedServletContainer container) {
-		// ServerProperties handles customization, this just checks we only have
-		// a single bean
-		String[] serverPropertiesBeans = this.applicationContext
-				.getBeanNamesForType(ServerProperties.class);
-		Assert.state(
-				serverPropertiesBeans.length == 1,
-				"Multiple ServerProperties beans registered "
-						+ StringUtils.arrayToCommaDelimitedString(serverPropertiesBeans));
-	}
+    @Override
+    public void customize(ConfigurableEmbeddedServletContainer container) {
+        // ServerProperties handles customization, this just checks we only have
+        // a single bean
+        String[] serverPropertiesBeans = this.applicationContext
+                .getBeanNamesForType(ServerProperties.class);
+        Assert.state(
+                serverPropertiesBeans.length == 1,
+                "Multiple ServerProperties beans registered "
+                        + StringUtils.arrayToCommaDelimitedString(serverPropertiesBeans));
+    }
 
 }

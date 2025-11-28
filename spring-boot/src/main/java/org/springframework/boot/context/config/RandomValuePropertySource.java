@@ -16,46 +16,46 @@
 
 package org.springframework.boot.context.config;
 
-import java.util.Random;
-
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.DigestUtils;
 
+import java.util.Random;
+
 /**
  * {@link PropertySource} that returns a random value for any property that starts with
  * {@literal "random."}. Return a {@code byte[]} unless the property name ends with
  * {@literal ".int} or {@literal ".long"}.
- * 
+ *
  * @author Dave Syer
  */
 public class RandomValuePropertySource extends PropertySource<Random> {
 
-	public RandomValuePropertySource(String name) {
-		super(name, new Random());
-	}
+    public RandomValuePropertySource(String name) {
+        super(name, new Random());
+    }
 
-	@Override
-	public Object getProperty(String name) {
-		if (!name.startsWith("random.")) {
-			return null;
-		}
-		if (name.endsWith("int")) {
-			return getSource().nextInt();
-		}
-		if (name.endsWith("long")) {
-			return getSource().nextLong();
-		}
-		byte[] bytes = new byte[32];
-		getSource().nextBytes(bytes);
-		return DigestUtils.md5DigestAsHex(bytes);
-	}
+    @Override
+    public Object getProperty(String name) {
+        if (!name.startsWith("random.")) {
+            return null;
+        }
+        if (name.endsWith("int")) {
+            return getSource().nextInt();
+        }
+        if (name.endsWith("long")) {
+            return getSource().nextLong();
+        }
+        byte[] bytes = new byte[32];
+        getSource().nextBytes(bytes);
+        return DigestUtils.md5DigestAsHex(bytes);
+    }
 
-	public static void addToEnvironment(ConfigurableEnvironment environment) {
-		environment.getPropertySources().addAfter(
-				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-				new RandomValuePropertySource("random"));
-	}
+    public static void addToEnvironment(ConfigurableEnvironment environment) {
+        environment.getPropertySources().addAfter(
+                StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+                new RandomValuePropertySource("random"));
+    }
 
 }

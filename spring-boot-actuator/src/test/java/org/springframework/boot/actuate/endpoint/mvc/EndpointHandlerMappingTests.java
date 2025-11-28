@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
@@ -30,142 +27,143 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link EndpointHandlerMapping}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
 public class EndpointHandlerMappingTests {
 
-	private final StaticApplicationContext context = new StaticApplicationContext();
-	private Method method;
+    private final StaticApplicationContext context = new StaticApplicationContext();
+    private Method method;
 
-	@Before
-	public void init() throws Exception {
-		this.method = ReflectionUtils.findMethod(TestMvcEndpoint.class, "invoke");
-	}
+    @Before
+    public void init() throws Exception {
+        this.method = ReflectionUtils.findMethod(TestMvcEndpoint.class, "invoke");
+    }
 
-	@Test
-	public void withoutPrefix() throws Exception {
-		TestMvcEndpoint endpointA = new TestMvcEndpoint(new TestEndpoint("/a"));
-		TestMvcEndpoint endpointB = new TestMvcEndpoint(new TestEndpoint("/b"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(
-				endpointA, endpointB));
-		mapping.setApplicationContext(this.context);
-		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a"))
-				.getHandler(),
-				equalTo((Object) new HandlerMethod(endpointA, this.method)));
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/b"))
-				.getHandler(),
-				equalTo((Object) new HandlerMethod(endpointB, this.method)));
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/c")),
-				nullValue());
-	}
+    @Test
+    public void withoutPrefix() throws Exception {
+        TestMvcEndpoint endpointA = new TestMvcEndpoint(new TestEndpoint("/a"));
+        TestMvcEndpoint endpointB = new TestMvcEndpoint(new TestEndpoint("/b"));
+        EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(
+                endpointA, endpointB));
+        mapping.setApplicationContext(this.context);
+        mapping.afterPropertiesSet();
+        assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a"))
+                        .getHandler(),
+                equalTo((Object) new HandlerMethod(endpointA, this.method)));
+        assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/b"))
+                        .getHandler(),
+                equalTo((Object) new HandlerMethod(endpointB, this.method)));
+        assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/c")),
+                nullValue());
+    }
 
-	@Test
-	public void withPrefix() throws Exception {
-		TestMvcEndpoint endpointA = new TestMvcEndpoint(new TestEndpoint("/a"));
-		TestMvcEndpoint endpointB = new TestMvcEndpoint(new TestEndpoint("/b"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(
-				endpointA, endpointB));
-		mapping.setApplicationContext(this.context);
-		mapping.setPrefix("/a");
-		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a/a"))
-				.getHandler(),
-				equalTo((Object) new HandlerMethod(endpointA, this.method)));
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a/b"))
-				.getHandler(),
-				equalTo((Object) new HandlerMethod(endpointB, this.method)));
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a")),
-				nullValue());
-	}
+    @Test
+    public void withPrefix() throws Exception {
+        TestMvcEndpoint endpointA = new TestMvcEndpoint(new TestEndpoint("/a"));
+        TestMvcEndpoint endpointB = new TestMvcEndpoint(new TestEndpoint("/b"));
+        EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(
+                endpointA, endpointB));
+        mapping.setApplicationContext(this.context);
+        mapping.setPrefix("/a");
+        mapping.afterPropertiesSet();
+        assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a/a"))
+                        .getHandler(),
+                equalTo((Object) new HandlerMethod(endpointA, this.method)));
+        assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a/b"))
+                        .getHandler(),
+                equalTo((Object) new HandlerMethod(endpointB, this.method)));
+        assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a")),
+                nullValue());
+    }
 
-	@Test(expected = HttpRequestMethodNotSupportedException.class)
-	public void onlyGetHttpMethodForNonActionEndpoints() throws Exception {
-		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("/a"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(endpoint));
-		mapping.setApplicationContext(this.context);
-		mapping.afterPropertiesSet();
-		assertNotNull(mapping.getHandler(new MockHttpServletRequest("GET", "/a")));
-		assertNull(mapping.getHandler(new MockHttpServletRequest("POST", "/a")));
-	}
+    @Test(expected = HttpRequestMethodNotSupportedException.class)
+    public void onlyGetHttpMethodForNonActionEndpoints() throws Exception {
+        TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("/a"));
+        EndpointHandlerMapping mapping = new EndpointHandlerMapping(
+                Arrays.asList(endpoint));
+        mapping.setApplicationContext(this.context);
+        mapping.afterPropertiesSet();
+        assertNotNull(mapping.getHandler(new MockHttpServletRequest("GET", "/a")));
+        assertNull(mapping.getHandler(new MockHttpServletRequest("POST", "/a")));
+    }
 
-	@Test
-	public void postHttpMethodForActionEndpoints() throws Exception {
-		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("/a"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(endpoint));
-		mapping.setApplicationContext(this.context);
-		mapping.afterPropertiesSet();
-		assertNotNull(mapping.getHandler(new MockHttpServletRequest("POST", "/a")));
-	}
+    @Test
+    public void postHttpMethodForActionEndpoints() throws Exception {
+        TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("/a"));
+        EndpointHandlerMapping mapping = new EndpointHandlerMapping(
+                Arrays.asList(endpoint));
+        mapping.setApplicationContext(this.context);
+        mapping.afterPropertiesSet();
+        assertNotNull(mapping.getHandler(new MockHttpServletRequest("POST", "/a")));
+    }
 
-	@Test(expected = HttpRequestMethodNotSupportedException.class)
-	public void onlyPostHttpMethodForActionEndpoints() throws Exception {
-		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("/a"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(endpoint));
-		mapping.setApplicationContext(this.context);
-		mapping.afterPropertiesSet();
-		assertNotNull(mapping.getHandler(new MockHttpServletRequest("POST", "/a")));
-		assertNull(mapping.getHandler(new MockHttpServletRequest("GET", "/a")));
-	}
+    @Test(expected = HttpRequestMethodNotSupportedException.class)
+    public void onlyPostHttpMethodForActionEndpoints() throws Exception {
+        TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("/a"));
+        EndpointHandlerMapping mapping = new EndpointHandlerMapping(
+                Arrays.asList(endpoint));
+        mapping.setApplicationContext(this.context);
+        mapping.afterPropertiesSet();
+        assertNotNull(mapping.getHandler(new MockHttpServletRequest("POST", "/a")));
+        assertNull(mapping.getHandler(new MockHttpServletRequest("GET", "/a")));
+    }
 
-	@Test
-	public void disabled() throws Exception {
-		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("/a"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(endpoint));
-		mapping.setDisabled(true);
-		mapping.setApplicationContext(this.context);
-		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a")),
-				nullValue());
-	}
+    @Test
+    public void disabled() throws Exception {
+        TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("/a"));
+        EndpointHandlerMapping mapping = new EndpointHandlerMapping(
+                Arrays.asList(endpoint));
+        mapping.setDisabled(true);
+        mapping.setApplicationContext(this.context);
+        mapping.afterPropertiesSet();
+        assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a")),
+                nullValue());
+    }
 
-	private static class TestEndpoint extends AbstractEndpoint<Object> {
+    private static class TestEndpoint extends AbstractEndpoint<Object> {
 
-		public TestEndpoint(String path) {
-			super(path);
-		}
+        public TestEndpoint(String path) {
+            super(path);
+        }
 
-		@Override
-		public Object invoke() {
-			return null;
-		}
+        @Override
+        public Object invoke() {
+            return null;
+        }
 
-	}
+    }
 
-	private static class TestMvcEndpoint extends EndpointMvcAdapter {
+    private static class TestMvcEndpoint extends EndpointMvcAdapter {
 
-		public TestMvcEndpoint(TestEndpoint delegate) {
-			super(delegate);
-		}
+        public TestMvcEndpoint(TestEndpoint delegate) {
+            super(delegate);
+        }
 
-	}
+    }
 
-	private static class TestActionEndpoint extends EndpointMvcAdapter {
+    private static class TestActionEndpoint extends EndpointMvcAdapter {
 
-		public TestActionEndpoint(TestEndpoint delegate) {
-			super(delegate);
-		}
+        public TestActionEndpoint(TestEndpoint delegate) {
+            super(delegate);
+        }
 
-		@Override
-		@RequestMapping(method = RequestMethod.POST)
-		public Object invoke() {
-			return null;
-		}
+        @Override
+        @RequestMapping(method = RequestMethod.POST)
+        public Object invoke() {
+            return null;
+        }
 
-	}
+    }
 
 }

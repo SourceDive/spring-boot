@@ -16,11 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.io.File;
-import java.net.InetAddress;
-
-import javax.validation.constraints.NotNull;
-
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
@@ -37,232 +32,235 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
+import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.net.InetAddress;
+
 /**
  * {@link ConfigurationProperties properties} for a web server (e.g. port and path
  * settings). Will be used to customize an {@link EmbeddedServletContainerFactory} when an
  * {@link EmbeddedServletContainerCustomizerBeanPostProcessor} is active.
- * 
+ *
  * @author Dave Syer
  * @author Stephane Nicoll
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
-	private Integer port;
+    private Integer port;
 
-	private InetAddress address;
+    private InetAddress address;
 
-	private Integer sessionTimeout;
+    private Integer sessionTimeout;
 
-	private String contextPath;
+    private String contextPath;
 
-	@NotNull
-	private String servletPath = "/";
+    @NotNull
+    private String servletPath = "/";
 
-	private final Tomcat tomcat = new Tomcat();
+    private final Tomcat tomcat = new Tomcat();
 
-	public Tomcat getTomcat() {
-		return this.tomcat;
-	}
+    public Tomcat getTomcat() {
+        return this.tomcat;
+    }
 
-	public String getContextPath() {
-		return this.contextPath;
-	}
+    public String getContextPath() {
+        return this.contextPath;
+    }
 
-	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
-	}
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
+    }
 
-	public String getServletPath() {
-		return this.servletPath;
-	}
+    public String getServletPath() {
+        return this.servletPath;
+    }
 
-	public void setServletPath(String servletPath) {
-		this.servletPath = servletPath;
-	}
+    public void setServletPath(String servletPath) {
+        this.servletPath = servletPath;
+    }
 
-	public Integer getPort() {
-		return this.port;
-	}
+    public Integer getPort() {
+        return this.port;
+    }
 
-	public void setPort(Integer port) {
-		this.port = port;
-	}
+    public void setPort(Integer port) {
+        this.port = port;
+    }
 
-	public InetAddress getAddress() {
-		return this.address;
-	}
+    public InetAddress getAddress() {
+        return this.address;
+    }
 
-	public void setAddress(InetAddress address) {
-		this.address = address;
-	}
+    public void setAddress(InetAddress address) {
+        this.address = address;
+    }
 
-	public Integer getSessionTimeout() {
-		return this.sessionTimeout;
-	}
+    public Integer getSessionTimeout() {
+        return this.sessionTimeout;
+    }
 
-	public void setSessionTimeout(Integer sessionTimeout) {
-		this.sessionTimeout = sessionTimeout;
-	}
+    public void setSessionTimeout(Integer sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
+    }
 
-	public void setLoader(String value) {
-		// no op to support Tomcat running as a traditional container (not embedded)
-	}
+    public void setLoader(String value) {
+        // no op to support Tomcat running as a traditional container (not embedded)
+    }
 
-	@Override
-	public void customize(ConfigurableEmbeddedServletContainer container) {
-		if (getPort() != null) {
-			container.setPort(getPort());
-		}
-		if (getAddress() != null) {
-			container.setAddress(getAddress());
-		}
-		if (getContextPath() != null) {
-			container.setContextPath(getContextPath());
-		}
-		if (getSessionTimeout() != null) {
-			container.setSessionTimeout(getSessionTimeout());
-		}
-		if (container instanceof TomcatEmbeddedServletContainerFactory) {
-			getTomcat()
-					.customizeTomcat((TomcatEmbeddedServletContainerFactory) container);
-		}
-	}
+    @Override
+    public void customize(ConfigurableEmbeddedServletContainer container) {
+        if (getPort() != null) {
+            container.setPort(getPort());
+        }
+        if (getAddress() != null) {
+            container.setAddress(getAddress());
+        }
+        if (getContextPath() != null) {
+            container.setContextPath(getContextPath());
+        }
+        if (getSessionTimeout() != null) {
+            container.setSessionTimeout(getSessionTimeout());
+        }
+        if (container instanceof TomcatEmbeddedServletContainerFactory) {
+            getTomcat()
+                    .customizeTomcat((TomcatEmbeddedServletContainerFactory) container);
+        }
+    }
 
-	public static class Tomcat {
+    public static class Tomcat {
 
-		private String accessLogPattern;
+        private String accessLogPattern;
 
-		private boolean accessLogEnabled = false;
+        private boolean accessLogEnabled = false;
 
-		private String protocolHeader = "x-forwarded-proto";
+        private String protocolHeader = "x-forwarded-proto";
 
-		private String remoteIpHeader = "x-forwarded-for";
+        private String remoteIpHeader = "x-forwarded-for";
 
-		private File basedir;
+        private File basedir;
 
-		private int backgroundProcessorDelay = 30; // seconds
+        private int backgroundProcessorDelay = 30; // seconds
 
-		private int maxThreads = 0; // Number of threads in protocol handler
+        private int maxThreads = 0; // Number of threads in protocol handler
 
-		private String uriEncoding;
+        private String uriEncoding;
 
-		public int getMaxThreads() {
-			return this.maxThreads;
-		}
+        public int getMaxThreads() {
+            return this.maxThreads;
+        }
 
-		public void setMaxThreads(int maxThreads) {
-			this.maxThreads = maxThreads;
-		}
+        public void setMaxThreads(int maxThreads) {
+            this.maxThreads = maxThreads;
+        }
 
-		public boolean getAccessLogEnabled() {
-			return this.accessLogEnabled;
-		}
+        public boolean getAccessLogEnabled() {
+            return this.accessLogEnabled;
+        }
 
-		public void setAccessLogEnabled(boolean accessLogEnabled) {
-			this.accessLogEnabled = accessLogEnabled;
-		}
+        public void setAccessLogEnabled(boolean accessLogEnabled) {
+            this.accessLogEnabled = accessLogEnabled;
+        }
 
-		public int getBackgroundProcessorDelay() {
-			return this.backgroundProcessorDelay;
-		}
+        public int getBackgroundProcessorDelay() {
+            return this.backgroundProcessorDelay;
+        }
 
-		public void setBackgroundProcessorDelay(int backgroundProcessorDelay) {
-			this.backgroundProcessorDelay = backgroundProcessorDelay;
-		}
+        public void setBackgroundProcessorDelay(int backgroundProcessorDelay) {
+            this.backgroundProcessorDelay = backgroundProcessorDelay;
+        }
 
-		public File getBasedir() {
-			return this.basedir;
-		}
+        public File getBasedir() {
+            return this.basedir;
+        }
 
-		public void setBasedir(File basedir) {
-			this.basedir = basedir;
-		}
+        public void setBasedir(File basedir) {
+            this.basedir = basedir;
+        }
 
-		public String getAccessLogPattern() {
-			return this.accessLogPattern;
-		}
+        public String getAccessLogPattern() {
+            return this.accessLogPattern;
+        }
 
-		public void setAccessLogPattern(String accessLogPattern) {
-			this.accessLogPattern = accessLogPattern;
-		}
+        public void setAccessLogPattern(String accessLogPattern) {
+            this.accessLogPattern = accessLogPattern;
+        }
 
-		public String getProtocolHeader() {
-			return this.protocolHeader;
-		}
+        public String getProtocolHeader() {
+            return this.protocolHeader;
+        }
 
-		public void setProtocolHeader(String protocolHeader) {
-			this.protocolHeader = protocolHeader;
-		}
+        public void setProtocolHeader(String protocolHeader) {
+            this.protocolHeader = protocolHeader;
+        }
 
-		public String getRemoteIpHeader() {
-			return this.remoteIpHeader;
-		}
+        public String getRemoteIpHeader() {
+            return this.remoteIpHeader;
+        }
 
-		public void setRemoteIpHeader(String remoteIpHeader) {
-			this.remoteIpHeader = remoteIpHeader;
-		}
+        public void setRemoteIpHeader(String remoteIpHeader) {
+            this.remoteIpHeader = remoteIpHeader;
+        }
 
-		public String getUriEncoding() {
-			return this.uriEncoding;
-		}
+        public String getUriEncoding() {
+            return this.uriEncoding;
+        }
 
-		public void setUriEncoding(String uriEncoding) {
-			this.uriEncoding = uriEncoding;
-		}
+        public void setUriEncoding(String uriEncoding) {
+            this.uriEncoding = uriEncoding;
+        }
 
-		void customizeTomcat(TomcatEmbeddedServletContainerFactory factory) {
-			if (getBasedir() != null) {
-				factory.setBaseDirectory(getBasedir());
-			}
+        void customizeTomcat(TomcatEmbeddedServletContainerFactory factory) {
+            if (getBasedir() != null) {
+                factory.setBaseDirectory(getBasedir());
+            }
 
-			factory.addContextCustomizers(new TomcatContextCustomizer() {
-				@Override
-				public void customize(Context context) {
-					context.setBackgroundProcessorDelay(Tomcat.this.backgroundProcessorDelay);
-				}
-			});
+            factory.addContextCustomizers(new TomcatContextCustomizer() {
+                @Override
+                public void customize(Context context) {
+                    context.setBackgroundProcessorDelay(Tomcat.this.backgroundProcessorDelay);
+                }
+            });
 
-			String remoteIpHeader = getRemoteIpHeader();
-			String protocolHeader = getProtocolHeader();
-			if (StringUtils.hasText(remoteIpHeader)
-					|| StringUtils.hasText(protocolHeader)) {
-				RemoteIpValve valve = new RemoteIpValve();
-				valve.setRemoteIpHeader(remoteIpHeader);
-				valve.setProtocolHeader(protocolHeader);
-				factory.addContextValves(valve);
-			}
+            String remoteIpHeader = getRemoteIpHeader();
+            String protocolHeader = getProtocolHeader();
+            if (StringUtils.hasText(remoteIpHeader)
+                    || StringUtils.hasText(protocolHeader)) {
+                RemoteIpValve valve = new RemoteIpValve();
+                valve.setRemoteIpHeader(remoteIpHeader);
+                valve.setProtocolHeader(protocolHeader);
+                factory.addContextValves(valve);
+            }
 
-			if (this.maxThreads > 0) {
-				factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-					@Override
-					public void customize(Connector connector) {
-						ProtocolHandler handler = connector.getProtocolHandler();
-						if (handler instanceof AbstractProtocol) {
-							AbstractProtocol protocol = (AbstractProtocol) handler;
-							protocol.setMaxThreads(Tomcat.this.maxThreads);
-						}
-					}
-				});
-			}
+            if (this.maxThreads > 0) {
+                factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+                    @Override
+                    public void customize(Connector connector) {
+                        ProtocolHandler handler = connector.getProtocolHandler();
+                        if (handler instanceof AbstractProtocol) {
+                            AbstractProtocol protocol = (AbstractProtocol) handler;
+                            protocol.setMaxThreads(Tomcat.this.maxThreads);
+                        }
+                    }
+                });
+            }
 
-			if (this.accessLogEnabled) {
-				AccessLogValve valve = new AccessLogValve();
-				String accessLogPattern = getAccessLogPattern();
-				if (accessLogPattern != null) {
-					valve.setPattern(accessLogPattern);
-				}
-				else {
-					valve.setPattern("common");
-				}
-				valve.setSuffix(".log");
-				factory.addContextValves(valve);
-			}
-			if (getUriEncoding() != null) {
-				factory.setUriEncoding(getUriEncoding());
-			}
-		}
+            if (this.accessLogEnabled) {
+                AccessLogValve valve = new AccessLogValve();
+                String accessLogPattern = getAccessLogPattern();
+                if (accessLogPattern != null) {
+                    valve.setPattern(accessLogPattern);
+                } else {
+                    valve.setPattern("common");
+                }
+                valve.setSuffix(".log");
+                factory.addContextValves(valve);
+            }
+            if (getUriEncoding() != null) {
+                factory.setUriEncoding(getUriEncoding());
+            }
+        }
 
-	}
+    }
 
 }

@@ -16,31 +16,31 @@
 
 package org.springframework.boot.actuate.trace;
 
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.List;
-
-import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link InMemoryTraceRepository}.
- * 
+ *
  * @author Dave Syer
  */
 public class InMemoryTraceRepositoryTests {
 
-	private final InMemoryTraceRepository repository = new InMemoryTraceRepository();
+    private final InMemoryTraceRepository repository = new InMemoryTraceRepository();
 
-	@Test
-	public void capacityLimited() {
-		this.repository.setCapacity(2);
-		this.repository.add(Collections.<String, Object> singletonMap("foo", "bar"));
-		this.repository.add(Collections.<String, Object> singletonMap("bar", "foo"));
-		this.repository.add(Collections.<String, Object> singletonMap("bar", "bar"));
-		List<Trace> traces = this.repository.findAll();
-		assertEquals(2, traces.size());
-		assertEquals("bar", traces.get(1).getInfo().get("bar"));
-	}
+    @Test
+    public void capacityLimited() {
+        this.repository.setCapacity(2);
+        this.repository.add(Collections.<String, Object>singletonMap("foo", "bar"));
+        this.repository.add(Collections.<String, Object>singletonMap("bar", "foo"));
+        this.repository.add(Collections.<String, Object>singletonMap("bar", "bar"));
+        List<Trace> traces = this.repository.findAll();
+        assertEquals(2, traces.size());
+        assertEquals("bar", traces.get(1).getInfo().get("bar"));
+    }
 
 }

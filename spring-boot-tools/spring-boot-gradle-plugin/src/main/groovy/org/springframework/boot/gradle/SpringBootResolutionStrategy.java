@@ -10,41 +10,41 @@ import org.springframework.boot.dependency.tools.ManagedDependencies;
 /**
  * A resolution strategy to resolve missing version numbers using the
  * 'spring-boot-dependencies' POM.
- * 
+ *
  * @author Phillip Webb
  */
 public class SpringBootResolutionStrategy {
 
-	private static final String SPRING_BOOT_GROUP = "org.springframework.boot";
+    private static final String SPRING_BOOT_GROUP = "org.springframework.boot";
 
-	public static void apply(ResolutionStrategy resolutionStrategy) {
-		resolutionStrategy.eachDependency(new Action<DependencyResolveDetails>() {
+    public static void apply(ResolutionStrategy resolutionStrategy) {
+        resolutionStrategy.eachDependency(new Action<DependencyResolveDetails>() {
 
-			@Override
-			public void execute(DependencyResolveDetails resolveDetails) {
-				String version = resolveDetails.getTarget().getVersion();
-				if (version == null || version.trim().length() == 0) {
-					resolve(resolveDetails);
-				}
-			}
+            @Override
+            public void execute(DependencyResolveDetails resolveDetails) {
+                String version = resolveDetails.getTarget().getVersion();
+                if (version == null || version.trim().length() == 0) {
+                    resolve(resolveDetails);
+                }
+            }
 
-		});
-	}
+        });
+    }
 
-	protected static void resolve(DependencyResolveDetails resolveDetails) {
+    protected static void resolve(DependencyResolveDetails resolveDetails) {
 
-		ManagedDependencies dependencies = ManagedDependencies.get();
-		ModuleVersionSelector target = resolveDetails.getTarget();
+        ManagedDependencies dependencies = ManagedDependencies.get();
+        ModuleVersionSelector target = resolveDetails.getTarget();
 
-		if (SPRING_BOOT_GROUP.equals(target.getGroup())) {
-			resolveDetails.useVersion(dependencies.getVersion());
-			return;
-		}
+        if (SPRING_BOOT_GROUP.equals(target.getGroup())) {
+            resolveDetails.useVersion(dependencies.getVersion());
+            return;
+        }
 
-		Dependency dependency = dependencies.find(target.getGroup(), target.getName());
-		if (dependency != null) {
-			resolveDetails.useVersion(dependency.getVersion());
-		}
-	}
+        Dependency dependency = dependencies.find(target.getGroup(), target.getName());
+        if (dependency != null) {
+            resolveDetails.useVersion(dependency.getVersion());
+        }
+    }
 
 }

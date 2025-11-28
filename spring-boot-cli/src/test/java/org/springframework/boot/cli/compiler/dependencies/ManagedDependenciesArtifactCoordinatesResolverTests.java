@@ -26,61 +26,59 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link ManagedDependenciesArtifactCoordinatesResolver}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ManagedDependenciesArtifactCoordinatesResolverTests {
 
-	private ManagedDependencies dependencies;
+    private ManagedDependencies dependencies;
 
-	private ManagedDependenciesArtifactCoordinatesResolver resolver;
+    private ManagedDependenciesArtifactCoordinatesResolver resolver;
 
-	@Before
-	public void setup() {
-		this.dependencies = mock(ManagedDependencies.class);
-		given(this.dependencies.find("a1")).willReturn(new Dependency("g1", "a1", "0"));
-		given(this.dependencies.getVersion()).willReturn("1");
-		this.resolver = new ManagedDependenciesArtifactCoordinatesResolver(
-				this.dependencies);
-	}
+    @Before
+    public void setup() {
+        this.dependencies = mock(ManagedDependencies.class);
+        given(this.dependencies.find("a1")).willReturn(new Dependency("g1", "a1", "0"));
+        given(this.dependencies.getVersion()).willReturn("1");
+        this.resolver = new ManagedDependenciesArtifactCoordinatesResolver(
+                this.dependencies);
+    }
 
-	@Test
-	public void getGroupIdForBootArtifact() throws Exception {
-		assertThat(this.resolver.getGroupId("spring-boot-something"),
-				equalTo("org.springframework.boot"));
-		verify(this.dependencies, never()).find(anyString());
-	}
+    @Test
+    public void getGroupIdForBootArtifact() throws Exception {
+        assertThat(this.resolver.getGroupId("spring-boot-something"),
+                equalTo("org.springframework.boot"));
+        verify(this.dependencies, never()).find(anyString());
+    }
 
-	@Test
-	public void getGroupIdFound() throws Exception {
-		assertThat(this.resolver.getGroupId("a1"), equalTo("g1"));
-	}
+    @Test
+    public void getGroupIdFound() throws Exception {
+        assertThat(this.resolver.getGroupId("a1"), equalTo("g1"));
+    }
 
-	@Test
-	public void getGroupIdNotFound() throws Exception {
-		assertThat(this.resolver.getGroupId("a2"), nullValue());
-	}
+    @Test
+    public void getGroupIdNotFound() throws Exception {
+        assertThat(this.resolver.getGroupId("a2"), nullValue());
+    }
 
-	@Test
-	public void getVersionForBootArtifact() throws Exception {
-		assertThat(this.resolver.getVersion("spring-boot-something"), equalTo("1"));
-		verify(this.dependencies, never()).find(anyString());
-	}
+    @Test
+    public void getVersionForBootArtifact() throws Exception {
+        assertThat(this.resolver.getVersion("spring-boot-something"), equalTo("1"));
+        verify(this.dependencies, never()).find(anyString());
+    }
 
-	@Test
-	public void getVersionFound() throws Exception {
-		assertThat(this.resolver.getVersion("a1"), equalTo("0"));
-	}
+    @Test
+    public void getVersionFound() throws Exception {
+        assertThat(this.resolver.getVersion("a1"), equalTo("0"));
+    }
 
-	@Test
-	public void getVersionNotFound() throws Exception {
-		assertThat(this.resolver.getVersion("a2"), nullValue());
-	}
+    @Test
+    public void getVersionNotFound() throws Exception {
+        assertThat(this.resolver.getVersion("a2"), nullValue());
+    }
 
 }

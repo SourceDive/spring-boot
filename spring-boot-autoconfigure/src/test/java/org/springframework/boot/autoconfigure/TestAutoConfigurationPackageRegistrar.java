@@ -26,21 +26,21 @@ import org.springframework.util.ClassUtils;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} to store the base package for tests.
- * 
+ *
  * @author Phillip Webb
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class TestAutoConfigurationPackageRegistrar implements
-		ImportBeanDefinitionRegistrar {
+        ImportBeanDefinitionRegistrar {
 
-	@Override
-	public void registerBeanDefinitions(AnnotationMetadata metadata,
-			BeanDefinitionRegistry registry) {
-		AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
-				.getAnnotationAttributes(TestAutoConfigurationPackage.class.getName(),
-						true));
-		AutoConfigurationPackages.set(registry,
-				ClassUtils.getPackageName(attributes.getString("value")));
-	}
+    @Override
+    public void registerBeanDefinitions(AnnotationMetadata metadata,
+                                        BeanDefinitionRegistry registry) {
+        AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
+                .getAnnotationAttributes(TestAutoConfigurationPackage.class.getName(),
+                        true));
+        AutoConfigurationPackages.set(registry,
+                ClassUtils.getPackageName(attributes.getString("value")));
+    }
 
 }

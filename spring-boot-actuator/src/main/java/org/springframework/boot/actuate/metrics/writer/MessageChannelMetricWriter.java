@@ -24,37 +24,37 @@ import org.springframework.messaging.support.MessageBuilder;
  * A {@link MetricWriter} that publishes the metric updates on a {@link MessageChannel}.
  * The messages have the writer input ({@link Delta} or {@link Metric}) as payload, and
  * carry an additional header "metricName" with the name of the metric in it.
- * 
+ *
  * @author Dave Syer
  */
 public class MessageChannelMetricWriter implements MetricWriter {
 
-	private static final String METRIC_NAME = "metricName";
+    private static final String METRIC_NAME = "metricName";
 
-	private final String DELETE = "delete";
+    private final String DELETE = "delete";
 
-	private final MessageChannel channel;
+    private final MessageChannel channel;
 
-	public MessageChannelMetricWriter(MessageChannel channel) {
-		this.channel = channel;
-	}
+    public MessageChannelMetricWriter(MessageChannel channel) {
+        this.channel = channel;
+    }
 
-	@Override
-	public void increment(Delta<?> delta) {
-		this.channel.send(MessageBuilder.withPayload(delta)
-				.setHeader(METRIC_NAME, delta.getName()).build());
-	}
+    @Override
+    public void increment(Delta<?> delta) {
+        this.channel.send(MessageBuilder.withPayload(delta)
+                .setHeader(METRIC_NAME, delta.getName()).build());
+    }
 
-	@Override
-	public void set(Metric<?> value) {
-		this.channel.send(MessageBuilder.withPayload(value)
-				.setHeader(METRIC_NAME, value.getName()).build());
-	}
+    @Override
+    public void set(Metric<?> value) {
+        this.channel.send(MessageBuilder.withPayload(value)
+                .setHeader(METRIC_NAME, value.getName()).build());
+    }
 
-	@Override
-	public void reset(String metricName) {
-		this.channel.send(MessageBuilder.withPayload(this.DELETE)
-				.setHeader(METRIC_NAME, metricName).build());
-	}
+    @Override
+    public void reset(String metricName) {
+        this.channel.send(MessageBuilder.withPayload(this.DELETE)
+                .setHeader(METRIC_NAME, metricName).build());
+    }
 
 }

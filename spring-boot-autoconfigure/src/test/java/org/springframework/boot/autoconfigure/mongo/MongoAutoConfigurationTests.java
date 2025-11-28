@@ -26,26 +26,26 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link MongoAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class MongoAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+    @After
+    public void close() {
+        if (this.context != null) {
+            this.context.close();
+        }
+    }
 
-	@Test
-	public void templateExists() {
-		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
-				MongoTemplateAutoConfiguration.class);
-		assertEquals(1, this.context.getBeanNamesForType(MongoTemplate.class).length);
-	}
+    @Test
+    public void templateExists() {
+        this.context = new AnnotationConfigApplicationContext(
+                PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
+                MongoTemplateAutoConfiguration.class);
+        assertEquals(1, this.context.getBeanNamesForType(MongoTemplate.class).length);
+    }
 
 }

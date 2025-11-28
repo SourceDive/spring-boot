@@ -16,8 +16,6 @@
 
 package org.springframework.boot.bind;
 
-import java.util.Collections;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.env.MapPropertySource;
@@ -25,112 +23,114 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.validation.DataBinder;
 
+import java.util.Collections;
+
 import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link PropertySourcesPropertyValues}.
- * 
+ *
  * @author Dave Syer
  */
 public class PropertySourcesPropertyValuesTests {
 
-	private final MutablePropertySources propertySources = new MutablePropertySources();
+    private final MutablePropertySources propertySources = new MutablePropertySources();
 
-	@Before
-	public void init() {
-		this.propertySources.addFirst(new PropertySource<String>("static", "foo") {
-			@Override
-			public Object getProperty(String name) {
-				if (name.equals(getSource())) {
-					return "bar";
-				}
-				return null;
-			}
+    @Before
+    public void init() {
+        this.propertySources.addFirst(new PropertySource<String>("static", "foo") {
+            @Override
+            public Object getProperty(String name) {
+                if (name.equals(getSource())) {
+                    return "bar";
+                }
+                return null;
+            }
 
-		});
-		this.propertySources.addFirst(new MapPropertySource("map", Collections
-				.<String, Object> singletonMap("name", "${foo}")));
-	}
+        });
+        this.propertySources.addFirst(new MapPropertySource("map", Collections
+                .<String, Object>singletonMap("name", "${foo}")));
+    }
 
-	@Test
-	public void testSize() {
-		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
-				this.propertySources);
-		assertEquals(1, propertyValues.getPropertyValues().length);
-	}
+    @Test
+    public void testSize() {
+        PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
+                this.propertySources);
+        assertEquals(1, propertyValues.getPropertyValues().length);
+    }
 
-	@Test
-	public void testNonEnumeratedValue() {
-		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
-				this.propertySources);
-		assertEquals("bar", propertyValues.getPropertyValue("foo").getValue());
-	}
+    @Test
+    public void testNonEnumeratedValue() {
+        PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
+                this.propertySources);
+        assertEquals("bar", propertyValues.getPropertyValue("foo").getValue());
+    }
 
-	@Test
-	public void testEnumeratedValue() {
-		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
-				this.propertySources);
-		assertEquals("bar", propertyValues.getPropertyValue("name").getValue());
-	}
+    @Test
+    public void testEnumeratedValue() {
+        PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
+                this.propertySources);
+        assertEquals("bar", propertyValues.getPropertyValue("name").getValue());
+    }
 
-	@Test
-	public void testOverriddenValue() {
-		this.propertySources.addFirst(new MapPropertySource("new", Collections
-				.<String, Object> singletonMap("name", "spam")));
-		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
-				this.propertySources);
-		assertEquals("spam", propertyValues.getPropertyValue("name").getValue());
-	}
+    @Test
+    public void testOverriddenValue() {
+        this.propertySources.addFirst(new MapPropertySource("new", Collections
+                .<String, Object>singletonMap("name", "spam")));
+        PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
+                this.propertySources);
+        assertEquals("spam", propertyValues.getPropertyValue("name").getValue());
+    }
 
-	@Test
-	public void testPlaceholdersBinding() {
-		TestBean target = new TestBean();
-		DataBinder binder = new DataBinder(target);
-		binder.bind(new PropertySourcesPropertyValues(this.propertySources));
-		assertEquals("bar", target.getName());
-	}
+    @Test
+    public void testPlaceholdersBinding() {
+        TestBean target = new TestBean();
+        DataBinder binder = new DataBinder(target);
+        binder.bind(new PropertySourcesPropertyValues(this.propertySources));
+        assertEquals("bar", target.getName());
+    }
 
-	@Test
-	public void testPlaceholdersBindingNonEnumerable() {
-		FooBean target = new FooBean();
-		DataBinder binder = new DataBinder(target);
-		binder.bind(new PropertySourcesPropertyValues(this.propertySources, null,
-				Collections.singleton("foo")));
-		assertEquals("bar", target.getFoo());
-	}
+    @Test
+    public void testPlaceholdersBindingNonEnumerable() {
+        FooBean target = new FooBean();
+        DataBinder binder = new DataBinder(target);
+        binder.bind(new PropertySourcesPropertyValues(this.propertySources, null,
+                Collections.singleton("foo")));
+        assertEquals("bar", target.getFoo());
+    }
 
-	@Test
-	public void testPlaceholdersBindingWithError() {
-		TestBean target = new TestBean();
-		DataBinder binder = new DataBinder(target);
-		this.propertySources.addFirst(new MapPropertySource("another", Collections
-				.<String, Object> singletonMap("something", "${nonexistent}")));
-		binder.bind(new PropertySourcesPropertyValues(this.propertySources));
-		assertEquals("bar", target.getName());
-	}
+    @Test
+    public void testPlaceholdersBindingWithError() {
+        TestBean target = new TestBean();
+        DataBinder binder = new DataBinder(target);
+        this.propertySources.addFirst(new MapPropertySource("another", Collections
+                .<String, Object>singletonMap("something", "${nonexistent}")));
+        binder.bind(new PropertySourcesPropertyValues(this.propertySources));
+        assertEquals("bar", target.getName());
+    }
 
-	public static class TestBean {
-		private String name;
+    public static class TestBean {
+        private String name;
 
-		public String getName() {
-			return this.name;
-		}
+        public String getName() {
+            return this.name;
+        }
 
-		public void setName(String name) {
-			this.name = name;
-		}
-	}
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
 
-	public static class FooBean {
-		private String foo;
+    public static class FooBean {
+        private String foo;
 
-		public String getFoo() {
-			return this.foo;
-		}
+        public String getFoo() {
+            return this.foo;
+        }
 
-		public void setFoo(String foo) {
-			this.foo = foo;
-		}
-	}
+        public void setFoo(String foo) {
+            this.foo = foo;
+        }
+    }
 
 }

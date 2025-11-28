@@ -20,11 +20,7 @@ import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.apache.maven.settings.building.SettingsBuildingException;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.repository.Authentication;
-import org.eclipse.aether.repository.AuthenticationContext;
-import org.eclipse.aether.repository.LocalRepositoryManager;
-import org.eclipse.aether.repository.Proxy;
-import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.repository.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -37,77 +33,77 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link SettingsXmlRepositorySystemSessionAutoConfiguration}.
- * 
+ *
  * @author Andy Wilkinson
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	@Mock
-	private RepositorySystem repositorySystem;
+    @Mock
+    private RepositorySystem repositorySystem;
 
-	@Mock
-	LocalRepositoryManager localRepositoryManager;
+    @Mock
+    LocalRepositoryManager localRepositoryManager;
 
-	@Test
-	public void basicSessionCustomization() throws SettingsBuildingException {
-		assertSessionCustomization("src/test/resources/maven-settings/basic");
-	}
+    @Test
+    public void basicSessionCustomization() throws SettingsBuildingException {
+        assertSessionCustomization("src/test/resources/maven-settings/basic");
+    }
 
-	@Test
-	public void encryptedSettingsSessionCustomization() throws SettingsBuildingException {
-		assertSessionCustomization("src/test/resources/maven-settings/encrypted");
-	}
+    @Test
+    public void encryptedSettingsSessionCustomization() throws SettingsBuildingException {
+        assertSessionCustomization("src/test/resources/maven-settings/encrypted");
+    }
 
-	private void assertSessionCustomization(String userHome) {
-		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
+    private void assertSessionCustomization(String userHome) {
+        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
-		new SettingsXmlRepositorySystemSessionAutoConfiguration(userHome).apply(session,
-				this.repositorySystem);
+        new SettingsXmlRepositorySystemSessionAutoConfiguration(userHome).apply(session,
+                this.repositorySystem);
 
-		RemoteRepository repository = new RemoteRepository.Builder("my-server",
-				"default", "http://maven.example.com").build();
+        RemoteRepository repository = new RemoteRepository.Builder("my-server",
+                "default", "http://maven.example.com").build();
 
-		assertMirrorSelectorConfiguration(session, repository);
-		assertProxySelectorConfiguration(session, repository);
-		assertAuthenticationSelectorConfiguration(session, repository);
-	}
+        assertMirrorSelectorConfiguration(session, repository);
+        assertProxySelectorConfiguration(session, repository);
+        assertAuthenticationSelectorConfiguration(session, repository);
+    }
 
-	private void assertProxySelectorConfiguration(DefaultRepositorySystemSession session,
-			RemoteRepository repository) {
-		Proxy proxy = session.getProxySelector().getProxy(repository);
-		repository = new RemoteRepository.Builder(repository).setProxy(proxy).build();
-		AuthenticationContext authenticationContext = AuthenticationContext.forProxy(
-				session, repository);
-		assertEquals("proxy.example.com", proxy.getHost());
-		assertEquals("proxyuser",
-				authenticationContext.get(AuthenticationContext.USERNAME));
-		assertEquals("somepassword",
-				authenticationContext.get(AuthenticationContext.PASSWORD));
-	}
+    private void assertProxySelectorConfiguration(DefaultRepositorySystemSession session,
+                                                  RemoteRepository repository) {
+        Proxy proxy = session.getProxySelector().getProxy(repository);
+        repository = new RemoteRepository.Builder(repository).setProxy(proxy).build();
+        AuthenticationContext authenticationContext = AuthenticationContext.forProxy(
+                session, repository);
+        assertEquals("proxy.example.com", proxy.getHost());
+        assertEquals("proxyuser",
+                authenticationContext.get(AuthenticationContext.USERNAME));
+        assertEquals("somepassword",
+                authenticationContext.get(AuthenticationContext.PASSWORD));
+    }
 
-	private void assertMirrorSelectorConfiguration(
-			DefaultRepositorySystemSession session, RemoteRepository repository) {
-		RemoteRepository mirror = session.getMirrorSelector().getMirror(repository);
-		assertNotNull("No mirror configured for repository " + repository.getId(), mirror);
-		assertEquals("maven.example.com", mirror.getHost());
-	}
+    private void assertMirrorSelectorConfiguration(
+            DefaultRepositorySystemSession session, RemoteRepository repository) {
+        RemoteRepository mirror = session.getMirrorSelector().getMirror(repository);
+        assertNotNull("No mirror configured for repository " + repository.getId(), mirror);
+        assertEquals("maven.example.com", mirror.getHost());
+    }
 
-	private void assertAuthenticationSelectorConfiguration(
-			DefaultRepositorySystemSession session, RemoteRepository repository) {
-		Authentication authentication = session.getAuthenticationSelector()
-				.getAuthentication(repository);
+    private void assertAuthenticationSelectorConfiguration(
+            DefaultRepositorySystemSession session, RemoteRepository repository) {
+        Authentication authentication = session.getAuthenticationSelector()
+                .getAuthentication(repository);
 
-		repository = new RemoteRepository.Builder(repository).setAuthentication(
-				authentication).build();
+        repository = new RemoteRepository.Builder(repository).setAuthentication(
+                authentication).build();
 
-		AuthenticationContext authenticationContext = AuthenticationContext
-				.forRepository(session, repository);
+        AuthenticationContext authenticationContext = AuthenticationContext
+                .forRepository(session, repository);
 
-		assertEquals("tester", authenticationContext.get(AuthenticationContext.USERNAME));
-		assertEquals("secret", authenticationContext.get(AuthenticationContext.PASSWORD));
-	}
+        assertEquals("tester", authenticationContext.get(AuthenticationContext.USERNAME));
+        assertEquals("secret", authenticationContext.get(AuthenticationContext.PASSWORD));
+    }
 }

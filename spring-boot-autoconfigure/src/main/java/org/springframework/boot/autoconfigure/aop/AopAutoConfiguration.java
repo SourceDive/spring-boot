@@ -32,26 +32,26 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * The configuration will not be activated if {@literal spring.aop.auto=false}. The
  * {@literal proxyTargetClass} attribute will be {@literal false}, by default, but can be
  * overridden by specifying {@literal spring.aop.proxyTargetClass=true}.
- * 
+ *
  * @author Dave Syer
  * @author Josh Long
  * @see EnableAspectJAutoProxy
  */
 @Configuration
-@ConditionalOnClass({ EnableAspectJAutoProxy.class, Aspect.class, Advice.class })
+@ConditionalOnClass({EnableAspectJAutoProxy.class, Aspect.class, Advice.class})
 @ConditionalOnExpression("${spring.aop.auto:true}")
 public class AopAutoConfiguration {
 
-	@Configuration
-	@EnableAspectJAutoProxy(proxyTargetClass = false)
-	@ConditionalOnExpression("!${spring.aop.proxyTargetClass:false}")
-	public static class JdkDynamicAutoProxyConfiguration {
-	}
+    @Configuration
+    @EnableAspectJAutoProxy(proxyTargetClass = false)
+    @ConditionalOnExpression("!${spring.aop.proxyTargetClass:false}")
+    public static class JdkDynamicAutoProxyConfiguration {
+    }
 
-	@Configuration
-	@EnableAspectJAutoProxy(proxyTargetClass = true)
-	@ConditionalOnExpression("${spring.aop.proxyTargetClass:false}")
-	public static class CglibAutoProxyConfiguration {
-	}
+    @Configuration
+    @EnableAspectJAutoProxy(proxyTargetClass = true)
+    @ConditionalOnExpression("${spring.aop.proxyTargetClass:false}")
+    public static class CglibAutoProxyConfiguration {
+    }
 
 }

@@ -16,13 +16,9 @@
 
 package org.springframework.boot.liquibase;
 
-import java.io.IOException;
-import java.util.Set;
-
 import liquibase.servicelocator.DefaultPackageScanClassResolver;
 import liquibase.servicelocator.PackageScanClassResolver;
 import liquibase.servicelocator.PackageScanFilter;
-
 import org.apache.commons.logging.Log;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -32,60 +28,61 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.ClassUtils;
 
+import java.io.IOException;
+import java.util.Set;
+
 /**
  * Liquibase {@link PackageScanClassResolver} implementation that uses Spring's resource
  * scanning to locate classes. This variant is safe to use with Spring Boot packaged
  * executable JARs.
- * 
+ *
  * @author Phillip Webb
  */
 public class SpringPackageScanClassResolver extends DefaultPackageScanClassResolver {
 
-	private final Log logger;
+    private final Log logger;
 
-	public SpringPackageScanClassResolver(Log logger) {
-		this.logger = logger;
-	}
+    public SpringPackageScanClassResolver(Log logger) {
+        this.logger = logger;
+    }
 
-	@Override
-	protected void find(PackageScanFilter test, String packageName, ClassLoader loader,
-			Set<Class<?>> classes) {
-		MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(
-				loader);
-		try {
-			Resource[] resources = scan(loader, packageName);
-			for (Resource resource : resources) {
-				Class<?> candidate = loadClass(loader, metadataReaderFactory, resource);
-				if (candidate != null && test.matches(candidate)) {
-					classes.add(candidate);
-				}
-			}
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException(ex);
-		}
-	}
+    @Override
+    protected void find(PackageScanFilter test, String packageName, ClassLoader loader,
+                        Set<Class<?>> classes) {
+        MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(
+                loader);
+        try {
+            Resource[] resources = scan(loader, packageName);
+            for (Resource resource : resources) {
+                Class<?> candidate = loadClass(loader, metadataReaderFactory, resource);
+                if (candidate != null && test.matches(candidate)) {
+                    classes.add(candidate);
+                }
+            }
+        } catch (IOException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
 
-	private Resource[] scan(ClassLoader loader, String packageName) throws IOException {
-		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(loader);
-		String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
-				+ ClassUtils.convertClassNameToResourcePath(packageName) + "/**/*.class";
-		Resource[] resources = resolver.getResources(pattern);
-		return resources;
-	}
+    private Resource[] scan(ClassLoader loader, String packageName) throws IOException {
+        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(loader);
+        String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
+                + ClassUtils.convertClassNameToResourcePath(packageName) + "/**/*.class";
+        Resource[] resources = resolver.getResources(pattern);
+        return resources;
+    }
 
-	private Class<?> loadClass(ClassLoader loader, MetadataReaderFactory readerFactory,
-			Resource resource) {
-		try {
-			MetadataReader reader = readerFactory.getMetadataReader(resource);
-			return ClassUtils.forName(reader.getClassMetadata().getClassName(), loader);
-		}
-		catch (Exception ex) {
-			if (this.logger.isWarnEnabled()) {
-				this.logger.warn("Ignoring cadidate class resource " + resource, ex);
-			}
-			return null;
-		}
-	}
+    private Class<?> loadClass(ClassLoader loader, MetadataReaderFactory readerFactory,
+                               Resource resource) {
+        try {
+            MetadataReader reader = readerFactory.getMetadataReader(resource);
+            return ClassUtils.forName(reader.getClassMetadata().getClassName(), loader);
+        } catch (Exception ex) {
+            if (this.logger.isWarnEnabled()) {
+                this.logger.warn("Ignoring cadidate class resource " + resource, ex);
+            }
+            return null;
+        }
+    }
 
 }

@@ -16,56 +16,56 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.util.Properties;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
+import java.util.Properties;
+
 /**
  * Configuration properties for JMX.
- * 
+ *
  * @author Christian Dupuis
  */
 @ConfigurationProperties(prefix = "endpoints.jmx")
 public class EndpointMBeanExportProperties {
 
-	private String domain;
+    private String domain;
 
-	private boolean uniqueNames = false;
+    private boolean uniqueNames = false;
 
-	private boolean enabled = true;
+    private boolean enabled = true;
 
-	private Properties staticNames = new Properties();
+    private Properties staticNames = new Properties();
 
-	public boolean isEnabled() {
-		return this.enabled;
-	}
+    public boolean isEnabled() {
+        return this.enabled;
+    }
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
-	public String getDomain() {
-		return this.domain;
-	}
+    public String getDomain() {
+        return this.domain;
+    }
 
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
 
-	public boolean isUniqueNames() {
-		return this.uniqueNames;
-	}
+    public boolean isUniqueNames() {
+        return this.uniqueNames;
+    }
 
-	public void setUniqueNames(boolean uniqueNames) {
-		this.uniqueNames = uniqueNames;
-	}
+    public void setUniqueNames(boolean uniqueNames) {
+        this.uniqueNames = uniqueNames;
+    }
 
-	public Properties getStaticNames() {
-		return this.staticNames;
-	}
+    public Properties getStaticNames() {
+        return this.staticNames;
+    }
 
-	public void setStaticNames(String[] staticNames) {
-		this.staticNames = StringUtils.splitArrayElementsIntoProperties(staticNames, "=");
-	}
+    public void setStaticNames(String[] staticNames) {
+        this.staticNames = StringUtils.splitArrayElementsIntoProperties(staticNames, "=");
+    }
 }

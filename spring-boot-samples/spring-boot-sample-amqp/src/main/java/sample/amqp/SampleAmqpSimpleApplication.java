@@ -31,39 +31,39 @@ import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProc
 @EnableAutoConfiguration
 public class SampleAmqpSimpleApplication {
 
-	@Autowired
-	private AmqpTemplate amqpTemplate;
+    @Autowired
+    private AmqpTemplate amqpTemplate;
 
-	@Autowired
-	private ConnectionFactory connectionFactory;
+    @Autowired
+    private ConnectionFactory connectionFactory;
 
-	@Bean
-	public ScheduledAnnotationBeanPostProcessor scheduledAnnotationBeanPostProcessor() {
-		return new ScheduledAnnotationBeanPostProcessor();
-	}
+    @Bean
+    public ScheduledAnnotationBeanPostProcessor scheduledAnnotationBeanPostProcessor() {
+        return new ScheduledAnnotationBeanPostProcessor();
+    }
 
-	@Bean
-	public Sender mySender() {
-		return new Sender();
-	}
+    @Bean
+    public Sender mySender() {
+        return new Sender();
+    }
 
-	@Bean
-	public SimpleMessageListenerContainer container() {
-		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(
-				this.connectionFactory);
-		Object listener = new Object() {
-			@SuppressWarnings("unused")
-			public void handleMessage(String foo) {
-				System.out.println(foo);
-			}
-		};
-		MessageListenerAdapter adapter = new MessageListenerAdapter(listener);
-		container.setMessageListener(adapter);
-		container.setQueueNames("foo");
-		return container;
-	}
+    @Bean
+    public SimpleMessageListenerContainer container() {
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(
+                this.connectionFactory);
+        Object listener = new Object() {
+            @SuppressWarnings("unused")
+            public void handleMessage(String foo) {
+                System.out.println(foo);
+            }
+        };
+        MessageListenerAdapter adapter = new MessageListenerAdapter(listener);
+        container.setMessageListener(adapter);
+        container.setQueueNames("foo");
+        return container;
+    }
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleAmqpSimpleApplication.class, args);
-	}
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(SampleAmqpSimpleApplication.class, args);
+    }
 }

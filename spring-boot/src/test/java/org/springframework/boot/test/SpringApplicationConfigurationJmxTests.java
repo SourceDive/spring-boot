@@ -29,29 +29,29 @@ import static org.junit.Assert.assertFalse;
 
 /**
  * Tests for disabling JMX by default
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Config.class)
 public class SpringApplicationConfigurationJmxTests {
 
-	@Value("${spring.jmx.enabled}")
-	private boolean jmx;
+    @Value("${spring.jmx.enabled}")
+    private boolean jmx;
 
-	@Test
-	public void disabledByDefault() {
-		assertFalse(this.jmx);
-	}
+    @Test
+    public void disabledByDefault() {
+        assertFalse(this.jmx);
+    }
 
-	@Configuration
-	protected static class Config {
+    @Configuration
+    protected static class Config {
 
-		@Bean
-		public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-			return new PropertySourcesPlaceholderConfigurer();
-		}
+        @Bean
+        public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+            return new PropertySourcesPlaceholderConfigurer();
+        }
 
-	}
+    }
 
 }

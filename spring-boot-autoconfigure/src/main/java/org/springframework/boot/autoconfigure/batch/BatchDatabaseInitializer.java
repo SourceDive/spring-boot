@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
-
 import org.springframework.batch.support.DatabaseType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,52 +27,55 @@ import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+
 /**
  * Initialize the Spring Batch schema (ignoring errors, so should be idempotent).
- * 
+ *
  * @author Dave Syer
  */
 @Component
 public class BatchDatabaseInitializer implements EnvironmentAware {
 
-	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
-			+ "batch/core/schema-@@platform@@.sql";
+    private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
+            + "batch/core/schema-@@platform@@.sql";
 
-	@Autowired
-	private DataSource dataSource;
+    @Autowired
+    private DataSource dataSource;
 
-	@Autowired
-	private ResourceLoader resourceLoader;
+    @Autowired
+    private ResourceLoader resourceLoader;
 
-	@Value("${spring.batch.initializer.enabled:true}")
-	private boolean enabled = true;
+    @Value("${spring.batch.initializer.enabled:true}")
+    private boolean enabled = true;
 
-	private RelaxedPropertyResolver environment;
+    private RelaxedPropertyResolver environment;
 
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = new RelaxedPropertyResolver(environment, "spring.batch.");
-	}
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = new RelaxedPropertyResolver(environment, "spring.batch.");
+    }
 
-	@PostConstruct
-	protected void initialize() throws Exception {
-		if (this.enabled) {
-			String platform = DatabaseType.fromMetaData(this.dataSource).toString()
-					.toLowerCase();
-			if ("hsql".equals(platform)) {
-				platform = "hsqldb";
-			}
-			if ("postgres".equals(platform)) {
-				platform = "postgresql";
-			}
-			ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-			String schemaLocation = this.environment.getProperty("schema",
-					DEFAULT_SCHEMA_LOCATION);
-			schemaLocation = schemaLocation.replace("@@platform@@", platform);
-			populator.addScript(this.resourceLoader.getResource(schemaLocation));
-			populator.setContinueOnError(true);
-			DatabasePopulatorUtils.execute(populator, this.dataSource);
-		}
-	}
+    @PostConstruct
+    protected void initialize() throws Exception {
+        if (this.enabled) {
+            String platform = DatabaseType.fromMetaData(this.dataSource).toString()
+                    .toLowerCase();
+            if ("hsql".equals(platform)) {
+                platform = "hsqldb";
+            }
+            if ("postgres".equals(platform)) {
+                platform = "postgresql";
+            }
+            ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+            String schemaLocation = this.environment.getProperty("schema",
+                    DEFAULT_SCHEMA_LOCATION);
+            schemaLocation = schemaLocation.replace("@@platform@@", platform);
+            populator.addScript(this.resourceLoader.getResource(schemaLocation));
+            populator.setContinueOnError(true);
+            DatabasePopulatorUtils.execute(populator, this.dataSource);
+        }
+    }
 
 }

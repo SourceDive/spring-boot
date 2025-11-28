@@ -16,52 +16,53 @@
 
 package org.springframework.boot.cli.command;
 
-import java.util.Collection;
-
 import org.springframework.boot.cli.command.options.OptionHelp;
+
+import java.util.Collection;
 
 /**
  * A single command that can be run from the CLI.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see #run(String...)
  */
 public interface Command {
 
-	/**
-	 * Returns the name of the command.
-	 */
-	String getName();
+    /**
+     * Returns the name of the command.
+     */
+    String getName();
 
-	/**
-	 * Returns a description of the command.
-	 */
-	String getDescription();
+    /**
+     * Returns a description of the command.
+     */
+    String getDescription();
 
-	/**
-	 * Returns usage help for the command. This should be a simple one-line string
-	 * describing basic usage. e.g. '[options] &lt;file&gt;'. Do not include the name of
-	 * the command in this string.
-	 */
-	String getUsageHelp();
+    /**
+     * Returns usage help for the command. This should be a simple one-line string
+     * describing basic usage. e.g. '[options] &lt;file&gt;'. Do not include the name of
+     * the command in this string.
+     */
+    String getUsageHelp();
 
-	/**
-	 * Gets full help text for the command, e.g. a longer description and one line per
-	 * option.
-	 */
-	String getHelp();
+    /**
+     * Gets full help text for the command, e.g. a longer description and one line per
+     * option.
+     */
+    String getHelp();
 
-	/**
-	 * Returns help for each supported option.
-	 */
-	Collection<OptionHelp> getOptionsHelp();
+    /**
+     * Returns help for each supported option.
+     */
+    Collection<OptionHelp> getOptionsHelp();
 
-	/**
-	 * Run the command.
-	 * @param args command arguments (this will not include the command itself)
-	 * @throws Exception
-	 */
-	void run(String... args) throws Exception;
+    /**
+     * Run the command.
+     *
+     * @param args command arguments (this will not include the command itself)
+     * @throws Exception
+     */
+    void run(String... args) throws Exception;
 
 }

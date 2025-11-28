@@ -29,7 +29,7 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
 @Import(RepositoryRestMvcConfiguration.class)
 public class SampleDataRestApplication {
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleDataRestApplication.class, args);
-	}
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(SampleDataRestApplication.class, args);
+    }
 }

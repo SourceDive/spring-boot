@@ -25,19 +25,19 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link TraceWebFilterAutoConfiguration}.
- * 
+ *
  * @author Phillip Webb
  */
 public class TraceWebFilterAutoConfigurationTest {
 
-	@Test
-	public void configureFilter() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class,
-				TraceRepositoryAutoConfiguration.class,
-				TraceWebFilterAutoConfiguration.class);
-		assertNotNull(context.getBean(WebRequestTraceFilter.class));
-		context.close();
-	}
+    @Test
+    public void configureFilter() {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                PropertyPlaceholderAutoConfiguration.class,
+                TraceRepositoryAutoConfiguration.class,
+                TraceWebFilterAutoConfiguration.class);
+        assertNotNull(context.getBean(WebRequestTraceFilter.class));
+        context.close();
+    }
 
 }

@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mobile;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -36,81 +33,84 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import java.lang.reflect.Field;
+import java.util.List;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link DeviceResolverAutoConfiguration}.
- * 
+ *
  * @author Roy Clarkson
  */
 public class DeviceResolverAutoConfigurationTests {
 
-	private static final MockEmbeddedServletContainerFactory containerFactory = new MockEmbeddedServletContainerFactory();
+    private static final MockEmbeddedServletContainerFactory containerFactory = new MockEmbeddedServletContainerFactory();
 
-	private AnnotationConfigWebApplicationContext context;
+    private AnnotationConfigWebApplicationContext context;
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+    @After
+    public void close() {
+        if (this.context != null) {
+            this.context.close();
+        }
+    }
 
-	@Test
-	public void deviceResolverHandlerInterceptorCreated() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(DeviceResolverAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(DeviceResolverHandlerInterceptor.class));
-	}
+    @Test
+    public void deviceResolverHandlerInterceptorCreated() throws Exception {
+        this.context = new AnnotationConfigWebApplicationContext();
+        this.context.register(DeviceResolverAutoConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context.getBean(DeviceResolverHandlerInterceptor.class));
+    }
 
-	@Test
-	public void deviceHandlerMethodArgumentResolverCreated() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(DeviceResolverAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(DeviceHandlerMethodArgumentResolver.class));
-	}
+    @Test
+    public void deviceHandlerMethodArgumentResolverCreated() throws Exception {
+        this.context = new AnnotationConfigWebApplicationContext();
+        this.context.register(DeviceResolverAutoConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context.getBean(DeviceHandlerMethodArgumentResolver.class));
+    }
 
-	@Test
-	@SuppressWarnings("unchecked")
-	public void deviceResolverHandlerInterceptorRegistered() throws Exception {
-		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
-		context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				DeviceResolverAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		context.refresh();
-		RequestMappingHandlerMapping mapping = (RequestMappingHandlerMapping) context
-				.getBean("requestMappingHandlerMapping");
-		Field interceptorsField = ReflectionUtils.findField(
-				RequestMappingHandlerMapping.class, "interceptors");
-		interceptorsField.setAccessible(true);
-		List<Object> interceptors = (List<Object>) ReflectionUtils.getField(
-				interceptorsField, mapping);
-		context.close();
-		for (Object o : interceptors) {
-			if (o instanceof DeviceResolverHandlerInterceptor) {
-				return;
-			}
-		}
-		fail("DeviceResolverHandlerInterceptor was not registered.");
-	}
+    @Test
+    @SuppressWarnings("unchecked")
+    public void deviceResolverHandlerInterceptorRegistered() throws Exception {
+        AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+        context.register(Config.class, WebMvcAutoConfiguration.class,
+                HttpMessageConvertersAutoConfiguration.class,
+                DeviceResolverAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        context.refresh();
+        RequestMappingHandlerMapping mapping = (RequestMappingHandlerMapping) context
+                .getBean("requestMappingHandlerMapping");
+        Field interceptorsField = ReflectionUtils.findField(
+                RequestMappingHandlerMapping.class, "interceptors");
+        interceptorsField.setAccessible(true);
+        List<Object> interceptors = (List<Object>) ReflectionUtils.getField(
+                interceptorsField, mapping);
+        context.close();
+        for (Object o : interceptors) {
+            if (o instanceof DeviceResolverHandlerInterceptor) {
+                return;
+            }
+        }
+        fail("DeviceResolverHandlerInterceptor was not registered.");
+    }
 
-	@Configuration
-	protected static class Config {
+    @Configuration
+    protected static class Config {
 
-		@Bean
-		public EmbeddedServletContainerFactory containerFactory() {
-			return containerFactory;
-		}
+        @Bean
+        public EmbeddedServletContainerFactory containerFactory() {
+            return containerFactory;
+        }
 
-		@Bean
-		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
-			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
-		}
+        @Bean
+        public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
+            return new EmbeddedServletContainerCustomizerBeanPostProcessor();
+        }
 
-	}
+    }
 
 }

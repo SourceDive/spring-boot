@@ -16,35 +16,36 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.List;
-
 import org.springframework.boot.actuate.trace.Trace;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
+import java.util.List;
+
 /**
  * {@link Endpoint} to expose {@link Trace} information.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.trace", ignoreUnknownFields = false)
 public class TraceEndpoint extends AbstractEndpoint<List<Trace>> {
 
-	private final TraceRepository repository;
+    private final TraceRepository repository;
 
-	/**
-	 * Create a new {@link TraceEndpoint} instance.
-	 * @param repository the trace repository
-	 */
-	public TraceEndpoint(TraceRepository repository) {
-		super("trace");
-		Assert.notNull(repository, "Repository must not be null");
-		this.repository = repository;
-	}
+    /**
+     * Create a new {@link TraceEndpoint} instance.
+     *
+     * @param repository the trace repository
+     */
+    public TraceEndpoint(TraceRepository repository) {
+        super("trace");
+        Assert.notNull(repository, "Repository must not be null");
+        this.repository = repository;
+    }
 
-	@Override
-	public List<Trace> invoke() {
-		return this.repository.findAll();
-	}
+    @Override
+    public List<Trace> invoke() {
+        return this.repository.findAll();
+    }
 }

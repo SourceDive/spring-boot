@@ -25,44 +25,44 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Test for application hierarchies created using {@link SpringApplicationBuilder}.
- * 
+ *
  * @author Dave Syer
  */
 public class SpringApplicationHierarchyTests {
 
-	private ConfigurableApplicationContext context;
+    private ConfigurableApplicationContext context;
 
-	@After
-	public void after() {
-		if (this.context != null) {
-			ApplicationContext parentContext = this.context.getParent();
-			if (parentContext instanceof ConfigurableApplicationContext) {
-				((ConfigurableApplicationContext) parentContext).close();
-			}
-			this.context.close();
-		}
-	}
+    @After
+    public void after() {
+        if (this.context != null) {
+            ApplicationContext parentContext = this.context.getParent();
+            if (parentContext instanceof ConfigurableApplicationContext) {
+                ((ConfigurableApplicationContext) parentContext).close();
+            }
+            this.context.close();
+        }
+    }
 
-	@Test
-	public void testParent() {
-		SpringApplicationBuilder builder = new SpringApplicationBuilder(Child.class);
-		builder.parent(Parent.class);
-		this.context = builder.run();
-	}
+    @Test
+    public void testParent() {
+        SpringApplicationBuilder builder = new SpringApplicationBuilder(Child.class);
+        builder.parent(Parent.class);
+        this.context = builder.run();
+    }
 
-	@Test
-	public void testChild() {
-		this.context = new SpringApplicationBuilder(Parent.class).child(Child.class)
-				.run();
-	}
+    @Test
+    public void testChild() {
+        this.context = new SpringApplicationBuilder(Parent.class).child(Child.class)
+                .run();
+    }
 
-	@EnableAutoConfiguration
-	public static class Child {
-	}
+    @EnableAutoConfiguration
+    public static class Child {
+    }
 
-	@EnableAutoConfiguration(exclude = { JolokiaAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class })
-	public static class Parent {
-	}
+    @EnableAutoConfiguration(exclude = {JolokiaAutoConfiguration.class,
+            EndpointMBeanExportAutoConfiguration.class})
+    public static class Parent {
+    }
 
 }

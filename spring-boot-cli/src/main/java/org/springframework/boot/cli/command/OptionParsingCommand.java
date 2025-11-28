@@ -16,44 +16,44 @@
 
 package org.springframework.boot.cli.command;
 
-import java.util.Collection;
-
 import org.springframework.boot.cli.command.options.OptionHandler;
 import org.springframework.boot.cli.command.options.OptionHelp;
 
+import java.util.Collection;
+
 /**
  * Base class for a {@link Command} that parse options using an {@link OptionHandler}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see OptionHandler
  */
 public abstract class OptionParsingCommand extends AbstractCommand {
 
-	private final OptionHandler handler;
+    private final OptionHandler handler;
 
-	protected OptionParsingCommand(String name, String description, OptionHandler handler) {
-		super(name, description);
-		this.handler = handler;
-	}
+    protected OptionParsingCommand(String name, String description, OptionHandler handler) {
+        super(name, description);
+        this.handler = handler;
+    }
 
-	@Override
-	public String getHelp() {
-		return this.handler.getHelp();
-	}
+    @Override
+    public String getHelp() {
+        return this.handler.getHelp();
+    }
 
-	@Override
-	public Collection<OptionHelp> getOptionsHelp() {
-		return this.handler.getOptionsHelp();
-	}
+    @Override
+    public Collection<OptionHelp> getOptionsHelp() {
+        return this.handler.getOptionsHelp();
+    }
 
-	@Override
-	public final void run(String... args) throws Exception {
-		this.handler.run(args);
-	}
+    @Override
+    public final void run(String... args) throws Exception {
+        this.handler.run(args);
+    }
 
-	protected OptionHandler getHandler() {
-		return this.handler;
-	}
+    protected OptionHandler getHandler() {
+        return this.handler;
+    }
 
 }

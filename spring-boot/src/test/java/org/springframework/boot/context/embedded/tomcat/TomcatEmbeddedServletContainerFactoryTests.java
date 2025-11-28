@@ -16,9 +16,6 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
@@ -29,192 +26,193 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link TomcatEmbeddedServletContainerFactory} and
  * {@link TomcatEmbeddedServletContainer}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
  */
 public class TomcatEmbeddedServletContainerFactoryTests extends
-		AbstractEmbeddedServletContainerFactoryTests {
+        AbstractEmbeddedServletContainerFactoryTests {
 
-	@Override
-	protected TomcatEmbeddedServletContainerFactory getFactory() {
-		return new TomcatEmbeddedServletContainerFactory();
-	}
+    @Override
+    protected TomcatEmbeddedServletContainerFactory getFactory() {
+        return new TomcatEmbeddedServletContainerFactory();
+    }
 
-	// JMX MBean names clash if you get more than one Engine with the same name...
-	@Test
-	public void tomcatEngineNames() throws Exception {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		this.container = factory.getEmbeddedServletContainer();
-		factory.setPort(8081);
-		TomcatEmbeddedServletContainer container2 = (TomcatEmbeddedServletContainer) factory
-				.getEmbeddedServletContainer();
-		assertEquals("Tomcat", ((TomcatEmbeddedServletContainer) this.container)
-				.getTomcat().getEngine().getName());
-		assertEquals("Tomcat-1", container2.getTomcat().getEngine().getName());
-		container2.stop();
-	}
+    // JMX MBean names clash if you get more than one Engine with the same name...
+    @Test
+    public void tomcatEngineNames() throws Exception {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        this.container = factory.getEmbeddedServletContainer();
+        factory.setPort(8081);
+        TomcatEmbeddedServletContainer container2 = (TomcatEmbeddedServletContainer) factory
+                .getEmbeddedServletContainer();
+        assertEquals("Tomcat", ((TomcatEmbeddedServletContainer) this.container)
+                .getTomcat().getEngine().getName());
+        assertEquals("Tomcat-1", container2.getTomcat().getEngine().getName());
+        container2.stop();
+    }
 
-	@Test
-	public void tomcatListeners() throws Exception {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		LifecycleListener[] listeners = new LifecycleListener[4];
-		for (int i = 0; i < listeners.length; i++) {
-			listeners[i] = mock(LifecycleListener.class);
-		}
-		factory.setContextLifecycleListeners(Arrays.asList(listeners[0], listeners[1]));
-		factory.addContextLifecycleListeners(listeners[2], listeners[3]);
-		this.container = factory.getEmbeddedServletContainer();
-		InOrder ordered = inOrder((Object[]) listeners);
-		for (LifecycleListener listener : listeners) {
-			ordered.verify(listener).lifecycleEvent((LifecycleEvent) anyObject());
-		}
-	}
+    @Test
+    public void tomcatListeners() throws Exception {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        LifecycleListener[] listeners = new LifecycleListener[4];
+        for (int i = 0; i < listeners.length; i++) {
+            listeners[i] = mock(LifecycleListener.class);
+        }
+        factory.setContextLifecycleListeners(Arrays.asList(listeners[0], listeners[1]));
+        factory.addContextLifecycleListeners(listeners[2], listeners[3]);
+        this.container = factory.getEmbeddedServletContainer();
+        InOrder ordered = inOrder((Object[]) listeners);
+        for (LifecycleListener listener : listeners) {
+            ordered.verify(listener).lifecycleEvent((LifecycleEvent) anyObject());
+        }
+    }
 
-	@Test
-	public void tomcatCustomizers() throws Exception {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		TomcatContextCustomizer[] listeners = new TomcatContextCustomizer[4];
-		for (int i = 0; i < listeners.length; i++) {
-			listeners[i] = mock(TomcatContextCustomizer.class);
-		}
-		factory.setTomcatContextCustomizers(Arrays.asList(listeners[0], listeners[1]));
-		factory.addContextCustomizers(listeners[2], listeners[3]);
-		this.container = factory.getEmbeddedServletContainer();
-		InOrder ordered = inOrder((Object[]) listeners);
-		for (TomcatContextCustomizer listener : listeners) {
-			ordered.verify(listener).customize((Context) anyObject());
-		}
-	}
+    @Test
+    public void tomcatCustomizers() throws Exception {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        TomcatContextCustomizer[] listeners = new TomcatContextCustomizer[4];
+        for (int i = 0; i < listeners.length; i++) {
+            listeners[i] = mock(TomcatContextCustomizer.class);
+        }
+        factory.setTomcatContextCustomizers(Arrays.asList(listeners[0], listeners[1]));
+        factory.addContextCustomizers(listeners[2], listeners[3]);
+        this.container = factory.getEmbeddedServletContainer();
+        InOrder ordered = inOrder((Object[]) listeners);
+        for (TomcatContextCustomizer listener : listeners) {
+            ordered.verify(listener).customize((Context) anyObject());
+        }
+    }
 
-	@Test
-	public void tomcatConnectorCustomizers() throws Exception {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		TomcatConnectorCustomizer[] listeners = new TomcatConnectorCustomizer[4];
-		for (int i = 0; i < listeners.length; i++) {
-			listeners[i] = mock(TomcatConnectorCustomizer.class);
-		}
-		factory.setTomcatConnectorCustomizers(Arrays.asList(listeners[0], listeners[1]));
-		factory.addConnectorCustomizers(listeners[2], listeners[3]);
-		this.container = factory.getEmbeddedServletContainer();
-		InOrder ordered = inOrder((Object[]) listeners);
-		for (TomcatConnectorCustomizer listener : listeners) {
-			ordered.verify(listener).customize((Connector) anyObject());
-		}
-	}
+    @Test
+    public void tomcatConnectorCustomizers() throws Exception {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        TomcatConnectorCustomizer[] listeners = new TomcatConnectorCustomizer[4];
+        for (int i = 0; i < listeners.length; i++) {
+            listeners[i] = mock(TomcatConnectorCustomizer.class);
+        }
+        factory.setTomcatConnectorCustomizers(Arrays.asList(listeners[0], listeners[1]));
+        factory.addConnectorCustomizers(listeners[2], listeners[3]);
+        this.container = factory.getEmbeddedServletContainer();
+        InOrder ordered = inOrder((Object[]) listeners);
+        for (TomcatConnectorCustomizer listener : listeners) {
+            ordered.verify(listener).customize((Connector) anyObject());
+        }
+    }
 
-	@Test
-	public void tomcatAdditionalConnectors() throws Exception {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		Connector[] listeners = new Connector[4];
-		for (int i = 0; i < listeners.length; i++) {
-			listeners[i] = mock(Connector.class);
-		}
-		factory.addAdditionalTomcatConnectors(listeners);
-		this.container = factory.getEmbeddedServletContainer();
-		assertEquals(listeners.length, factory.getAdditionalTomcatConnectors().size());
-	}
+    @Test
+    public void tomcatAdditionalConnectors() throws Exception {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        Connector[] listeners = new Connector[4];
+        for (int i = 0; i < listeners.length; i++) {
+            listeners[i] = mock(Connector.class);
+        }
+        factory.addAdditionalTomcatConnectors(listeners);
+        this.container = factory.getEmbeddedServletContainer();
+        assertEquals(listeners.length, factory.getAdditionalTomcatConnectors().size());
+    }
 
-	@Test
-	public void addNullAdditionalConnectorThrows() {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Connectors must not be null");
-		factory.addAdditionalTomcatConnectors((Connector[]) null);
-	}
+    @Test
+    public void addNullAdditionalConnectorThrows() {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        this.thrown.expect(IllegalArgumentException.class);
+        this.thrown.expectMessage("Connectors must not be null");
+        factory.addAdditionalTomcatConnectors((Connector[]) null);
+    }
 
-	@Test
-	public void sessionTimeout() throws Exception {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		factory.setSessionTimeout(10);
-		assertTimeout(factory, 10);
-	}
+    @Test
+    public void sessionTimeout() throws Exception {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        factory.setSessionTimeout(10);
+        assertTimeout(factory, 10);
+    }
 
-	@Test
-	public void sessionTimeoutInMins() throws Exception {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		factory.setSessionTimeout(1, TimeUnit.MINUTES);
-		assertTimeout(factory, 60);
-	}
+    @Test
+    public void sessionTimeoutInMins() throws Exception {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        factory.setSessionTimeout(1, TimeUnit.MINUTES);
+        assertTimeout(factory, 60);
+    }
 
-	@Test
-	public void valve() throws Exception {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		Valve valve = mock(Valve.class);
-		factory.addContextValves(valve);
-		this.container = factory.getEmbeddedServletContainer();
-		verify(valve).setNext(any(Valve.class));
-	}
+    @Test
+    public void valve() throws Exception {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        Valve valve = mock(Valve.class);
+        factory.addContextValves(valve);
+        this.container = factory.getEmbeddedServletContainer();
+        verify(valve).setNext(any(Valve.class));
+    }
 
-	@Test
-	public void setNullTomcatContextCustomizersThrows() {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TomcatContextCustomizers must not be null");
-		factory.setTomcatContextCustomizers(null);
-	}
+    @Test
+    public void setNullTomcatContextCustomizersThrows() {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        this.thrown.expect(IllegalArgumentException.class);
+        this.thrown.expectMessage("TomcatContextCustomizers must not be null");
+        factory.setTomcatContextCustomizers(null);
+    }
 
-	@Test
-	public void addNullContextCustomizersThrows() {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TomcatContextCustomizers must not be null");
-		factory.addContextCustomizers((TomcatContextCustomizer[]) null);
-	}
+    @Test
+    public void addNullContextCustomizersThrows() {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        this.thrown.expect(IllegalArgumentException.class);
+        this.thrown.expectMessage("TomcatContextCustomizers must not be null");
+        factory.addContextCustomizers((TomcatContextCustomizer[]) null);
+    }
 
-	@Test
-	public void setNullTomcatConnectorCustomizersThrows() {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TomcatConnectorCustomizers must not be null");
-		factory.setTomcatConnectorCustomizers(null);
-	}
+    @Test
+    public void setNullTomcatConnectorCustomizersThrows() {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        this.thrown.expect(IllegalArgumentException.class);
+        this.thrown.expectMessage("TomcatConnectorCustomizers must not be null");
+        factory.setTomcatConnectorCustomizers(null);
+    }
 
-	@Test
-	public void addNullConnectorCustomizersThrows() {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TomcatConnectorCustomizers must not be null");
-		factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null);
-	}
+    @Test
+    public void addNullConnectorCustomizersThrows() {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        this.thrown.expect(IllegalArgumentException.class);
+        this.thrown.expectMessage("TomcatConnectorCustomizers must not be null");
+        factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null);
+    }
 
-	@Test
-	public void uriEncoding() throws Exception {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		factory.setUriEncoding("US-ASCII");
-		Tomcat tomcat = getTomcat(factory);
-		assertEquals("US-ASCII", tomcat.getConnector().getURIEncoding());
-	}
+    @Test
+    public void uriEncoding() throws Exception {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        factory.setUriEncoding("US-ASCII");
+        Tomcat tomcat = getTomcat(factory);
+        assertEquals("US-ASCII", tomcat.getConnector().getURIEncoding());
+    }
 
-	@Test
-	public void defaultUriEncoding() throws Exception {
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		Tomcat tomcat = getTomcat(factory);
-		assertEquals("UTF-8", tomcat.getConnector().getURIEncoding());
-	}
+    @Test
+    public void defaultUriEncoding() throws Exception {
+        TomcatEmbeddedServletContainerFactory factory = getFactory();
+        Tomcat tomcat = getTomcat(factory);
+        assertEquals("UTF-8", tomcat.getConnector().getURIEncoding());
+    }
 
-	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory, int expected) {
-		Tomcat tomcat = getTomcat(factory);
-		Context context = (Context) tomcat.getHost().findChildren()[0];
-		assertThat(context.getSessionTimeout(), equalTo(expected));
-	}
+    private void assertTimeout(TomcatEmbeddedServletContainerFactory factory, int expected) {
+        Tomcat tomcat = getTomcat(factory);
+        Context context = (Context) tomcat.getHost().findChildren()[0];
+        assertThat(context.getSessionTimeout(), equalTo(expected));
+    }
 
-	private Tomcat getTomcat(TomcatEmbeddedServletContainerFactory factory) {
-		this.container = factory.getEmbeddedServletContainer();
-		return ((TomcatEmbeddedServletContainer) this.container).getTomcat();
-	}
+    private Tomcat getTomcat(TomcatEmbeddedServletContainerFactory factory) {
+        this.container = factory.getEmbeddedServletContainer();
+        return ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+    }
 
 }

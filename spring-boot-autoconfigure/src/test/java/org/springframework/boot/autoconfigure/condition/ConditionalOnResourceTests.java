@@ -21,49 +21,47 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link ConditionalOnResource}.
- * 
+ *
  * @author Dave Syer
  */
 public class ConditionalOnResourceTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@Test
-	public void testResourceExists() {
-		this.context.register(BasicConfiguration.class);
-		this.context.refresh();
-		assertTrue(this.context.containsBean("foo"));
-		assertEquals("foo", this.context.getBean("foo"));
-	}
+    @Test
+    public void testResourceExists() {
+        this.context.register(BasicConfiguration.class);
+        this.context.refresh();
+        assertTrue(this.context.containsBean("foo"));
+        assertEquals("foo", this.context.getBean("foo"));
+    }
 
-	@Test
-	public void testResourceNotExists() {
-		this.context.register(MissingConfiguration.class);
-		this.context.refresh();
-		assertFalse(this.context.containsBean("foo"));
-	}
+    @Test
+    public void testResourceNotExists() {
+        this.context.register(MissingConfiguration.class);
+        this.context.refresh();
+        assertFalse(this.context.containsBean("foo"));
+    }
 
-	@Configuration
-	@ConditionalOnResource(resources = "foo")
-	protected static class MissingConfiguration {
-		@Bean
-		public String bar() {
-			return "bar";
-		}
-	}
+    @Configuration
+    @ConditionalOnResource(resources = "foo")
+    protected static class MissingConfiguration {
+        @Bean
+        public String bar() {
+            return "bar";
+        }
+    }
 
-	@Configuration
-	@ConditionalOnResource(resources = "schema.sql")
-	protected static class BasicConfiguration {
-		@Bean
-		public String foo() {
-			return "foo";
-		}
-	}
+    @Configuration
+    @ConditionalOnResource(resources = "schema.sql")
+    protected static class BasicConfiguration {
+        @Bean
+        public String foo() {
+            return "foo";
+        }
+    }
 }

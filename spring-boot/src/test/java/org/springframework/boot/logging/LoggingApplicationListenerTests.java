@@ -16,10 +16,6 @@
 
 package org.springframework.boot.logging;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.LogManager;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SLF4JLogFactory;
@@ -35,171 +31,173 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.support.GenericApplicationContext;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.LogManager;
+
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link LoggingApplicationListener}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
 public class LoggingApplicationListenerTests {
 
-	private static final String[] NO_ARGS = {};
+    private static final String[] NO_ARGS = {};
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+    @Rule
+    public OutputCapture outputCapture = new OutputCapture();
 
-	private final LoggingApplicationListener initializer = new LoggingApplicationListener();
+    private final LoggingApplicationListener initializer = new LoggingApplicationListener();
 
-	private final Log logger = new SLF4JLogFactory().getInstance(getClass());
+    private final Log logger = new SLF4JLogFactory().getInstance(getClass());
 
-	private final SpringApplication springApplication = new SpringApplication();
+    private final SpringApplication springApplication = new SpringApplication();
 
-	private final GenericApplicationContext context = new GenericApplicationContext();
+    private final GenericApplicationContext context = new GenericApplicationContext();
 
-	@Before
-	public void init() throws SecurityException, IOException {
-		LogManager.getLogManager().readConfiguration(
-				JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
-		this.initializer.onApplicationEvent(new ApplicationStartedEvent(
-				new SpringApplication(), NO_ARGS));
-		new File("target/foo.log").delete();
-		new File(tmpDir() + "/spring.log").delete();
-	}
+    @Before
+    public void init() throws SecurityException, IOException {
+        LogManager.getLogManager().readConfiguration(
+                JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
+        this.initializer.onApplicationEvent(new ApplicationStartedEvent(
+                new SpringApplication(), NO_ARGS));
+        new File("target/foo.log").delete();
+        new File(tmpDir() + "/spring.log").delete();
+    }
 
-	@After
-	public void clear() {
-		System.clearProperty("LOG_FILE");
-		System.clearProperty("LOG_PATH");
-		System.clearProperty("PID");
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+    @After
+    public void clear() {
+        System.clearProperty("LOG_FILE");
+        System.clearProperty("LOG_PATH");
+        System.clearProperty("PID");
+        if (this.context != null) {
+            this.context.close();
+        }
+    }
 
-	private String tmpDir() {
-		return this.context.getEnvironment().resolvePlaceholders("${java.io.tmpdir}");
-	}
+    private String tmpDir() {
+        return this.context.getEnvironment().resolvePlaceholders("${java.io.tmpdir}");
+    }
 
-	@Test
-	public void baseConfigLocation() {
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
-		this.logger.info("Hello world");
-		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Wrong output:\n" + output, output.contains("???"));
-		assertTrue(new File(tmpDir() + "/spring.log").exists());
-	}
+    @Test
+    public void baseConfigLocation() {
+        this.initializer.initialize(this.context.getEnvironment(),
+                this.context.getClassLoader());
+        this.logger.info("Hello world");
+        String output = this.outputCapture.toString().trim();
+        assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
+        assertFalse("Wrong output:\n" + output, output.contains("???"));
+        assertTrue(new File(tmpDir() + "/spring.log").exists());
+    }
 
-	@Test
-	public void overrideConfigLocation() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"logging.config: classpath:logback-nondefault.xml");
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
-		this.logger.info("Hello world");
-		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Wrong output:\n" + output, output.contains("???"));
-		assertTrue("Wrong output:\n" + output, output.startsWith(tmpDir() + "/tmp.log"));
-	}
+    @Test
+    public void overrideConfigLocation() {
+        EnvironmentTestUtils.addEnvironment(this.context,
+                "logging.config: classpath:logback-nondefault.xml");
+        this.initializer.initialize(this.context.getEnvironment(),
+                this.context.getClassLoader());
+        this.logger.info("Hello world");
+        String output = this.outputCapture.toString().trim();
+        assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
+        assertFalse("Wrong output:\n" + output, output.contains("???"));
+        assertTrue("Wrong output:\n" + output, output.startsWith(tmpDir() + "/tmp.log"));
+    }
 
-	@Test
-	public void overrideConfigDoesNotExist() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"logging.config: doesnotexist.xml");
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
-		// Should not throw
-	}
+    @Test
+    public void overrideConfigDoesNotExist() throws Exception {
+        EnvironmentTestUtils.addEnvironment(this.context,
+                "logging.config: doesnotexist.xml");
+        this.initializer.initialize(this.context.getEnvironment(),
+                this.context.getClassLoader());
+        // Should not throw
+    }
 
-	@Test
-	public void addLogFileProperty() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"logging.config: classpath:logback-nondefault.xml",
-				"logging.file: target/foo.log");
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
-		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
-		logger.info("Hello world");
-		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.startsWith("target/foo.log"));
-	}
+    @Test
+    public void addLogFileProperty() {
+        EnvironmentTestUtils.addEnvironment(this.context,
+                "logging.config: classpath:logback-nondefault.xml",
+                "logging.file: target/foo.log");
+        this.initializer.initialize(this.context.getEnvironment(),
+                this.context.getClassLoader());
+        Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
+        logger.info("Hello world");
+        String output = this.outputCapture.toString().trim();
+        assertTrue("Wrong output:\n" + output, output.startsWith("target/foo.log"));
+    }
 
-	@Test
-	public void addLogFilePropertyWithDefault() {
-		assertFalse(new File("target/foo.log").exists());
-		EnvironmentTestUtils.addEnvironment(this.context, "logging.file: target/foo.log");
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
-		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
-		logger.info("Hello world");
-		assertTrue(new File("target/foo.log").exists());
-	}
+    @Test
+    public void addLogFilePropertyWithDefault() {
+        assertFalse(new File("target/foo.log").exists());
+        EnvironmentTestUtils.addEnvironment(this.context, "logging.file: target/foo.log");
+        this.initializer.initialize(this.context.getEnvironment(),
+                this.context.getClassLoader());
+        Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
+        logger.info("Hello world");
+        assertTrue(new File("target/foo.log").exists());
+    }
 
-	@Test
-	public void addLogPathProperty() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"logging.config: classpath:logback-nondefault.xml",
-				"logging.path: target/foo/");
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
-		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
-		logger.info("Hello world");
-		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.startsWith("target/foo/tmp.log"));
-	}
+    @Test
+    public void addLogPathProperty() {
+        EnvironmentTestUtils.addEnvironment(this.context,
+                "logging.config: classpath:logback-nondefault.xml",
+                "logging.path: target/foo/");
+        this.initializer.initialize(this.context.getEnvironment(),
+                this.context.getClassLoader());
+        Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
+        logger.info("Hello world");
+        String output = this.outputCapture.toString().trim();
+        assertTrue("Wrong output:\n" + output, output.startsWith("target/foo/tmp.log"));
+    }
 
-	@Test
-	public void parseDebugArg() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "debug");
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
-		this.logger.debug("testatdebug");
-		this.logger.trace("testattrace");
-		assertThat(this.outputCapture.toString(), containsString("testatdebug"));
-		assertThat(this.outputCapture.toString(), not(containsString("testattrace")));
-	}
+    @Test
+    public void parseDebugArg() throws Exception {
+        EnvironmentTestUtils.addEnvironment(this.context, "debug");
+        this.initializer.initialize(this.context.getEnvironment(),
+                this.context.getClassLoader());
+        this.logger.debug("testatdebug");
+        this.logger.trace("testattrace");
+        assertThat(this.outputCapture.toString(), containsString("testatdebug"));
+        assertThat(this.outputCapture.toString(), not(containsString("testattrace")));
+    }
 
-	@Test
-	public void parseTraceArg() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "trace");
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
-		this.logger.debug("testatdebug");
-		this.logger.trace("testattrace");
-		assertThat(this.outputCapture.toString(), containsString("testatdebug"));
-		assertThat(this.outputCapture.toString(), containsString("testattrace"));
-	}
+    @Test
+    public void parseTraceArg() throws Exception {
+        EnvironmentTestUtils.addEnvironment(this.context, "trace");
+        this.initializer.initialize(this.context.getEnvironment(),
+                this.context.getClassLoader());
+        this.logger.debug("testatdebug");
+        this.logger.trace("testattrace");
+        assertThat(this.outputCapture.toString(), containsString("testatdebug"));
+        assertThat(this.outputCapture.toString(), containsString("testattrace"));
+    }
 
-	@Test
-	public void parseArgsDisabled() throws Exception {
-		this.initializer.setParseArgs(false);
-		EnvironmentTestUtils.addEnvironment(this.context, "debug");
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
-		this.logger.debug("testatdebug");
-		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
-	}
+    @Test
+    public void parseArgsDisabled() throws Exception {
+        this.initializer.setParseArgs(false);
+        EnvironmentTestUtils.addEnvironment(this.context, "debug");
+        this.initializer.initialize(this.context.getEnvironment(),
+                this.context.getClassLoader());
+        this.logger.debug("testatdebug");
+        assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
+    }
 
-	@Test
-	public void parseArgsDoesntReplace() throws Exception {
-		this.initializer.setSpringBootLogging(LogLevel.ERROR);
-		this.initializer.setParseArgs(false);
-		this.initializer.onApplicationEvent(new ApplicationStartedEvent(
-				this.springApplication, new String[] { "--debug" }));
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
-		this.logger.debug("testatdebug");
-		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
-	}
+    @Test
+    public void parseArgsDoesntReplace() throws Exception {
+        this.initializer.setSpringBootLogging(LogLevel.ERROR);
+        this.initializer.setParseArgs(false);
+        this.initializer.onApplicationEvent(new ApplicationStartedEvent(
+                this.springApplication, new String[]{"--debug"}));
+        this.initializer.initialize(this.context.getEnvironment(),
+                this.context.getClassLoader());
+        this.logger.debug("testatdebug");
+        assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
+    }
 }

@@ -32,27 +32,27 @@ import static org.junit.Assert.assertNotNull;
  */
 public class RedisAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
-	@Test
-	public void testDefaultRedisConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(RedisAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean("redisTemplate", RedisOperations.class));
-		assertNotNull(this.context.getBean(StringRedisTemplate.class));
-	}
+    @Test
+    public void testDefaultRedisConfiguration() throws Exception {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(RedisAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context.getBean("redisTemplate", RedisOperations.class));
+        assertNotNull(this.context.getBean(StringRedisTemplate.class));
+    }
 
-	@Test
-	public void testOverrideRedisConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.redis.host:foo");
-		this.context.register(RedisAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertEquals("foo", this.context.getBean(LettuceConnectionFactory.class)
-				.getHostName());
-	}
+    @Test
+    public void testOverrideRedisConfiguration() throws Exception {
+        this.context = new AnnotationConfigApplicationContext();
+        EnvironmentTestUtils.addEnvironment(this.context, "spring.redis.host:foo");
+        this.context.register(RedisAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        this.context.refresh();
+        assertEquals("foo", this.context.getBean(LettuceConnectionFactory.class)
+                .getHostName());
+    }
 
 }

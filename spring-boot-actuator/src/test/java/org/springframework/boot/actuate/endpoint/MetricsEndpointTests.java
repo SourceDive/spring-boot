@@ -16,49 +16,49 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link MetricsEndpoint}.
- * 
+ *
  * @author Phillip Webb
  */
 public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint> {
 
-	public MetricsEndpointTests() {
-		super(Config.class, MetricsEndpoint.class, "metrics", true, "endpoints.metrics");
-	}
+    public MetricsEndpointTests() {
+        super(Config.class, MetricsEndpoint.class, "metrics", true, "endpoints.metrics");
+    }
 
-	@Test
-	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke().get("a"), equalTo((Object) 0.5f));
-	}
+    @Test
+    public void invoke() throws Exception {
+        assertThat(getEndpointBean().invoke().get("a"), equalTo((Object) 0.5f));
+    }
 
-	@Configuration
-	@EnableConfigurationProperties
-	public static class Config {
+    @Configuration
+    @EnableConfigurationProperties
+    public static class Config {
 
-		@Bean
-		public MetricsEndpoint endpoint() {
-			final Metric<Float> metric = new Metric<Float>("a", 0.5f);
-			PublicMetrics metrics = new PublicMetrics() {
-				@Override
-				public Collection<Metric<?>> metrics() {
-					return Collections.<Metric<?>> singleton(metric);
-				}
-			};
-			return new MetricsEndpoint(metrics);
-		}
+        @Bean
+        public MetricsEndpoint endpoint() {
+            final Metric<Float> metric = new Metric<Float>("a", 0.5f);
+            PublicMetrics metrics = new PublicMetrics() {
+                @Override
+                public Collection<Metric<?>> metrics() {
+                    return Collections.<Metric<?>>singleton(metric);
+                }
+            };
+            return new MetricsEndpoint(metrics);
+        }
 
-	}
+    }
 }

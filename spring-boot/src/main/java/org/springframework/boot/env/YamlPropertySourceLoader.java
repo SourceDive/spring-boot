@@ -16,9 +16,6 @@
 
 package org.springframework.boot.env;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import org.springframework.boot.yaml.SpringProfileDocumentMatcher;
 import org.springframework.boot.yaml.YamlPropertiesFactoryBean;
 import org.springframework.core.env.PropertiesPropertySource;
@@ -26,39 +23,41 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
 
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  * Strategy to load '.yml' files into a {@link PropertySource}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
 public class YamlPropertySourceLoader implements PropertySourceLoader {
 
-	@Override
-	public String[] getFileExtensions() {
-		return new String[] { "yml" };
-	}
+    @Override
+    public String[] getFileExtensions() {
+        return new String[]{"yml"};
+    }
 
-	@Override
-	public PropertySource<?> load(String name, Resource resource, String profile)
-			throws IOException {
-		if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
-			YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
-			if (profile == null) {
-				factory.setMatchDefault(true);
-				factory.setDocumentMatchers(new SpringProfileDocumentMatcher());
-			}
-			else {
-				factory.setMatchDefault(false);
-				factory.setDocumentMatchers(new SpringProfileDocumentMatcher(profile));
-			}
-			factory.setResources(new Resource[] { resource });
-			Properties properties = factory.getObject();
-			if (!properties.isEmpty()) {
-				return new PropertiesPropertySource(name, properties);
-			}
-		}
-		return null;
-	}
+    @Override
+    public PropertySource<?> load(String name, Resource resource, String profile)
+            throws IOException {
+        if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
+            YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
+            if (profile == null) {
+                factory.setMatchDefault(true);
+                factory.setDocumentMatchers(new SpringProfileDocumentMatcher());
+            } else {
+                factory.setMatchDefault(false);
+                factory.setDocumentMatchers(new SpringProfileDocumentMatcher(profile));
+            }
+            factory.setResources(new Resource[]{resource});
+            Properties properties = factory.getObject();
+            if (!properties.isEmpty()) {
+                return new PropertiesPropertySource(name, properties);
+            }
+        }
+        return null;
+    }
 
 }

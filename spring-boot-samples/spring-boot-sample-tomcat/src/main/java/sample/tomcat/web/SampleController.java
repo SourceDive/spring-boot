@@ -26,12 +26,12 @@ import sample.tomcat.service.HelloWorldService;
 @Controller
 public class SampleController {
 
-	@Autowired
-	private HelloWorldService helloWorldService;
+    @Autowired
+    private HelloWorldService helloWorldService;
 
-	@RequestMapping("/")
-	@ResponseBody
-	public String helloWorld() {
-		return this.helloWorldService.getHelloMessage();
-	}
+    @RequestMapping("/")
+    @ResponseBody
+    public String helloWorld() {
+        return this.helloWorldService.getHelloMessage();
+    }
 }

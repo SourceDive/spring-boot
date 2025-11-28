@@ -16,23 +16,17 @@
 
 package org.springframework.boot.actuate.metrics.writer;
 
+import com.codahale.metrics.*;
+import org.springframework.boot.actuate.metrics.Metric;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.boot.actuate.metrics.Metric;
-
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-
 /**
  * A {@link MetricWriter} that send data to a Codahale {@link MetricRegistry} based on a
  * naming convention:
- * 
+ *
  * <ul>
  * <li>Updates to {@link #increment(Delta)} with names in "meter.*" are treated as
  * {@link Meter} events</li>
@@ -44,91 +38,88 @@ import com.codahale.metrics.Timer;
  * <li>Other metrics are treated as simple {@link Gauge} values (single valued
  * measurements of type double)</li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  */
 public class CodahaleMetricWriter implements MetricWriter {
 
-	private final MetricRegistry registry;
+    private final MetricRegistry registry;
 
-	private final ConcurrentMap<String, Object> gaugeLocks = new ConcurrentHashMap<String, Object>();
+    private final ConcurrentMap<String, Object> gaugeLocks = new ConcurrentHashMap<String, Object>();
 
-	/**
-	 * Create a new {@link CodahaleMetricWriter} instance.
-	 * @param registry the underlying metric registry
-	 */
-	public CodahaleMetricWriter(MetricRegistry registry) {
-		this.registry = registry;
-	}
+    /**
+     * Create a new {@link CodahaleMetricWriter} instance.
+     *
+     * @param registry the underlying metric registry
+     */
+    public CodahaleMetricWriter(MetricRegistry registry) {
+        this.registry = registry;
+    }
 
-	@Override
-	public void increment(Delta<?> delta) {
-		String name = delta.getName();
-		long value = delta.getValue().longValue();
-		if (name.startsWith("meter")) {
-			Meter meter = this.registry.meter(name);
-			meter.mark(value);
-		}
-		else {
-			Counter counter = this.registry.counter(name);
-			counter.inc(value);
-		}
-	}
+    @Override
+    public void increment(Delta<?> delta) {
+        String name = delta.getName();
+        long value = delta.getValue().longValue();
+        if (name.startsWith("meter")) {
+            Meter meter = this.registry.meter(name);
+            meter.mark(value);
+        } else {
+            Counter counter = this.registry.counter(name);
+            counter.inc(value);
+        }
+    }
 
-	@Override
-	public void set(Metric<?> value) {
-		String name = value.getName();
-		if (name.startsWith("histogram")) {
-			long longValue = value.getValue().longValue();
-			Histogram metric = this.registry.histogram(name);
-			metric.update(longValue);
-		}
-		else if (name.startsWith("timer")) {
-			long longValue = value.getValue().longValue();
-			Timer metric = this.registry.timer(name);
-			metric.update(longValue, TimeUnit.MILLISECONDS);
-		}
-		else {
-			final double gauge = value.getValue().doubleValue();
-			Object lock = null;
-			if (this.gaugeLocks.containsKey(name)) {
-				lock = this.gaugeLocks.get(name);
-			}
-			else {
-				this.gaugeLocks.putIfAbsent(name, new Object());
-				lock = this.gaugeLocks.get(name);
-			}
+    @Override
+    public void set(Metric<?> value) {
+        String name = value.getName();
+        if (name.startsWith("histogram")) {
+            long longValue = value.getValue().longValue();
+            Histogram metric = this.registry.histogram(name);
+            metric.update(longValue);
+        } else if (name.startsWith("timer")) {
+            long longValue = value.getValue().longValue();
+            Timer metric = this.registry.timer(name);
+            metric.update(longValue, TimeUnit.MILLISECONDS);
+        } else {
+            final double gauge = value.getValue().doubleValue();
+            Object lock = null;
+            if (this.gaugeLocks.containsKey(name)) {
+                lock = this.gaugeLocks.get(name);
+            } else {
+                this.gaugeLocks.putIfAbsent(name, new Object());
+                lock = this.gaugeLocks.get(name);
+            }
 
-			// Ensure we synchronize to avoid another thread pre-empting this thread after
-			// remove causing an error in CodaHale metrics
-			// NOTE: CodaHale provides no way to do this atomically
-			synchronized (lock) {
-				this.registry.remove(name);
-				this.registry.register(name, new SimpleGauge(gauge));
-			}
-		}
-	}
+            // Ensure we synchronize to avoid another thread pre-empting this thread after
+            // remove causing an error in CodaHale metrics
+            // NOTE: CodaHale provides no way to do this atomically
+            synchronized (lock) {
+                this.registry.remove(name);
+                this.registry.register(name, new SimpleGauge(gauge));
+            }
+        }
+    }
 
-	@Override
-	public void reset(String metricName) {
-		this.registry.remove(metricName);
-	}
+    @Override
+    public void reset(String metricName) {
+        this.registry.remove(metricName);
+    }
 
-	/**
-	 * Simple {@link Gauge} implementation to {@literal double} value.
-	 */
-	private static class SimpleGauge implements Gauge<Double> {
+    /**
+     * Simple {@link Gauge} implementation to {@literal double} value.
+     */
+    private static class SimpleGauge implements Gauge<Double> {
 
-		private final double value;
+        private final double value;
 
-		private SimpleGauge(double value) {
-			this.value = value;
-		}
+        private SimpleGauge(double value) {
+            this.value = value;
+        }
 
-		@Override
-		public Double getValue() {
-			return this.value;
-		}
-	}
+        @Override
+        public Double getValue() {
+            return this.value;
+        }
+    }
 
 }

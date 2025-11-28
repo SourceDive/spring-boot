@@ -22,24 +22,24 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author Dave Syer
- * 
+ *
  */
 @Service
 public class SampleService {
 
-	@Secured("ROLE_USER")
-	public String secure() {
-		return "Hello Security";
-	}
+    @Secured("ROLE_USER")
+    public String secure() {
+        return "Hello Security";
+    }
 
-	@PreAuthorize("true")
-	public String authorized() {
-		return "Hello World";
-	}
+    @PreAuthorize("true")
+    public String authorized() {
+        return "Hello World";
+    }
 
-	@PreAuthorize("false")
-	public String denied() {
-		return "Goodbye World";
-	}
+    @PreAuthorize("false")
+    public String denied() {
+        return "Goodbye World";
+    }
 
 }

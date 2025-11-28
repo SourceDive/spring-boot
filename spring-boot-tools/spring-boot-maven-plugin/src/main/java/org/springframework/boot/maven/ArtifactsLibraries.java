@@ -16,47 +16,48 @@
 
 package org.springframework.boot.maven;
 
+import org.apache.maven.artifact.Artifact;
+import org.springframework.boot.loader.tools.Libraries;
+import org.springframework.boot.loader.tools.LibraryCallback;
+import org.springframework.boot.loader.tools.LibraryScope;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
-import org.springframework.boot.loader.tools.Libraries;
-import org.springframework.boot.loader.tools.LibraryCallback;
-import org.springframework.boot.loader.tools.LibraryScope;
-
 /**
  * {@link Libraries} backed by Maven {@link Artifact}s
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
 public class ArtifactsLibraries implements Libraries {
 
-	private static final Map<String, LibraryScope> SCOPES;
-	static {
-		Map<String, LibraryScope> scopes = new HashMap<String, LibraryScope>();
-		scopes.put(Artifact.SCOPE_COMPILE, LibraryScope.COMPILE);
-		scopes.put(Artifact.SCOPE_RUNTIME, LibraryScope.RUNTIME);
-		scopes.put(Artifact.SCOPE_PROVIDED, LibraryScope.PROVIDED);
-		SCOPES = Collections.unmodifiableMap(scopes);
-	}
+    private static final Map<String, LibraryScope> SCOPES;
 
-	private final Set<Artifact> artifacts;
+    static {
+        Map<String, LibraryScope> scopes = new HashMap<String, LibraryScope>();
+        scopes.put(Artifact.SCOPE_COMPILE, LibraryScope.COMPILE);
+        scopes.put(Artifact.SCOPE_RUNTIME, LibraryScope.RUNTIME);
+        scopes.put(Artifact.SCOPE_PROVIDED, LibraryScope.PROVIDED);
+        SCOPES = Collections.unmodifiableMap(scopes);
+    }
 
-	public ArtifactsLibraries(Set<Artifact> artifacts) {
-		this.artifacts = artifacts;
-	}
+    private final Set<Artifact> artifacts;
 
-	@Override
-	public void doWithLibraries(LibraryCallback callback) throws IOException {
-		for (Artifact artifact : this.artifacts) {
-			LibraryScope scope = SCOPES.get(artifact.getScope());
-			if (scope != null && artifact.getFile() != null) {
-				callback.library(artifact.getFile(), scope);
-			}
-		}
-	}
+    public ArtifactsLibraries(Set<Artifact> artifacts) {
+        this.artifacts = artifacts;
+    }
+
+    @Override
+    public void doWithLibraries(LibraryCallback callback) throws IOException {
+        for (Artifact artifact : this.artifacts) {
+            LibraryScope scope = SCOPES.get(artifact.getScope());
+            if (scope != null && artifact.getFile() != null) {
+                callback.library(artifact.getFile(), scope);
+            }
+        }
+    }
 }

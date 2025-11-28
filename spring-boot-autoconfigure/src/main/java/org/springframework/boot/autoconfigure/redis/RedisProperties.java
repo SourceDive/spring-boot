@@ -20,96 +20,96 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for Redis.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
 
-	private String host = "localhost";
+    private String host = "localhost";
 
-	private String password;
+    private String password;
 
-	private int port = 6379;
+    private int port = 6379;
 
-	private RedisProperties.Pool pool;
+    private RedisProperties.Pool pool;
 
-	public String getHost() {
-		return this.host;
-	}
+    public String getHost() {
+        return this.host;
+    }
 
-	public void setHost(String host) {
-		this.host = host;
-	}
+    public void setHost(String host) {
+        this.host = host;
+    }
 
-	public int getPort() {
-		return this.port;
-	}
+    public int getPort() {
+        return this.port;
+    }
 
-	public void setPort(int port) {
-		this.port = port;
-	}
+    public void setPort(int port) {
+        this.port = port;
+    }
 
-	public String getPassword() {
-		return this.password;
-	}
+    public String getPassword() {
+        return this.password;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public RedisProperties.Pool getPool() {
-		return this.pool;
-	}
+    public RedisProperties.Pool getPool() {
+        return this.pool;
+    }
 
-	public void setPool(RedisProperties.Pool pool) {
-		this.pool = pool;
-	}
+    public void setPool(RedisProperties.Pool pool) {
+        this.pool = pool;
+    }
 
-	/**
-	 * Pool properties.
-	 */
-	public static class Pool {
+    /**
+     * Pool properties.
+     */
+    public static class Pool {
 
-		private int maxIdle = 8;
+        private int maxIdle = 8;
 
-		private int minIdle = 0;
+        private int minIdle = 0;
 
-		private int maxActive = 8;
+        private int maxActive = 8;
 
-		private int maxWait = -1;
+        private int maxWait = -1;
 
-		public int getMaxIdle() {
-			return this.maxIdle;
-		}
+        public int getMaxIdle() {
+            return this.maxIdle;
+        }
 
-		public void setMaxIdle(int maxIdle) {
-			this.maxIdle = maxIdle;
-		}
+        public void setMaxIdle(int maxIdle) {
+            this.maxIdle = maxIdle;
+        }
 
-		public int getMinIdle() {
-			return this.minIdle;
-		}
+        public int getMinIdle() {
+            return this.minIdle;
+        }
 
-		public void setMinIdle(int minIdle) {
-			this.minIdle = minIdle;
-		}
+        public void setMinIdle(int minIdle) {
+            this.minIdle = minIdle;
+        }
 
-		public int getMaxActive() {
-			return this.maxActive;
-		}
+        public int getMaxActive() {
+            return this.maxActive;
+        }
 
-		public void setMaxActive(int maxActive) {
-			this.maxActive = maxActive;
-		}
+        public void setMaxActive(int maxActive) {
+            this.maxActive = maxActive;
+        }
 
-		public int getMaxWait() {
-			return this.maxWait;
-		}
+        public int getMaxWait() {
+            return this.maxWait;
+        }
 
-		public void setMaxWait(int maxWait) {
-			this.maxWait = maxWait;
-		}
-	}
+        public void setMaxWait(int maxWait) {
+            this.maxWait = maxWait;
+        }
+    }
 
 }

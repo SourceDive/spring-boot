@@ -23,29 +23,29 @@ import org.springframework.core.env.Environment;
 /**
  * Event published when a {@link SpringApplication} is starting up and the
  * {@link Environment} is first available for inspection and modification.
- * 
+ *
  * @author Dave Syer
  */
 public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent {
 
-	private final ConfigurableEnvironment environment;
+    private final ConfigurableEnvironment environment;
 
-	/**
-	 * @param application the current application
-	 * @param args the argumemts the application is running with
-	 * @param environment the environment that was just created
-	 */
-	public ApplicationEnvironmentPreparedEvent(SpringApplication application,
-			String[] args, ConfigurableEnvironment environment) {
-		super(application, args);
-		this.environment = environment;
-	}
+    /**
+     * @param application the current application
+     * @param args        the argumemts the application is running with
+     * @param environment the environment that was just created
+     */
+    public ApplicationEnvironmentPreparedEvent(SpringApplication application,
+                                               String[] args, ConfigurableEnvironment environment) {
+        super(application, args);
+        this.environment = environment;
+    }
 
-	/**
-	 * @return the environment
-	 */
-	public ConfigurableEnvironment getEnvironment() {
-		return this.environment;
-	}
+    /**
+     * @return the environment
+     */
+    public ConfigurableEnvironment getEnvironment() {
+        return this.environment;
+    }
 
 }

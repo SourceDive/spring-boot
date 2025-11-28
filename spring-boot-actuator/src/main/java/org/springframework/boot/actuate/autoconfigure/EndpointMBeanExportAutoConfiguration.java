@@ -30,31 +30,31 @@ import org.springframework.util.StringUtils;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to enable JMX export for
  * {@link Endpoint}s.
- * 
+ *
  * @author Christian Dupuis
  */
 @Configuration
 @ConditionalOnExpression("${endpoints.jmx.enabled:true} && ${spring.jmx.enabled:true}")
-@AutoConfigureAfter({ EndpointAutoConfiguration.class })
+@AutoConfigureAfter({EndpointAutoConfiguration.class})
 @EnableConfigurationProperties(EndpointMBeanExportProperties.class)
 public class EndpointMBeanExportAutoConfiguration {
 
-	@Autowired
-	EndpointMBeanExportProperties properties = new EndpointMBeanExportProperties();
+    @Autowired
+    EndpointMBeanExportProperties properties = new EndpointMBeanExportProperties();
 
-	@Bean
-	public EndpointMBeanExporter endpointMBeanExporter() {
-		EndpointMBeanExporter mbeanExporter = new EndpointMBeanExporter();
+    @Bean
+    public EndpointMBeanExporter endpointMBeanExporter() {
+        EndpointMBeanExporter mbeanExporter = new EndpointMBeanExporter();
 
-		String domain = this.properties.getDomain();
-		if (StringUtils.hasText(domain)) {
-			mbeanExporter.setDomain(domain);
-		}
+        String domain = this.properties.getDomain();
+        if (StringUtils.hasText(domain)) {
+            mbeanExporter.setDomain(domain);
+        }
 
-		mbeanExporter.setEnsureUniqueRuntimeObjectNames(this.properties.isUniqueNames());
-		mbeanExporter.setObjectNameStaticProperties(this.properties.getStaticNames());
+        mbeanExporter.setEnsureUniqueRuntimeObjectNames(this.properties.isUniqueNames());
+        mbeanExporter.setObjectNameStaticProperties(this.properties.getStaticNames());
 
-		return mbeanExporter;
-	}
+        return mbeanExporter;
+    }
 
 }

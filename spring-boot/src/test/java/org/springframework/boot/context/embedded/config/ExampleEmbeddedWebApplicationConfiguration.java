@@ -16,8 +16,6 @@
 
 package org.springframework.boot.context.embedded.config;
 
-import javax.servlet.Servlet;
-
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContextTests;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
@@ -25,23 +23,25 @@ import org.springframework.boot.context.embedded.MockServlet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.servlet.Servlet;
+
 /**
  * Example {@code @Configuration} for use with
  * {@link AnnotationConfigEmbeddedWebApplicationContextTests}.
- * 
+ *
  * @author Phillip Webb
  */
 @Configuration
 public class ExampleEmbeddedWebApplicationConfiguration {
 
-	@Bean
-	public EmbeddedServletContainerFactory containerFactory() {
-		return new MockEmbeddedServletContainerFactory();
-	}
+    @Bean
+    public EmbeddedServletContainerFactory containerFactory() {
+        return new MockEmbeddedServletContainerFactory();
+    }
 
-	@Bean
-	public Servlet servlet() {
-		return new MockServlet();
-	}
+    @Bean
+    public Servlet servlet() {
+        return new MockServlet();
+    }
 
 }

@@ -16,77 +16,80 @@
 
 package org.springframework.boot.logging;
 
+import org.springframework.util.ClassUtils;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.util.ClassUtils;
-
 /**
  * Common abstraction over logging systems.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
 public abstract class LoggingSystem {
 
-	private static final Map<String, String> SYSTEMS;
-	static {
-		Map<String, String> systems = new LinkedHashMap<String, String>();
-		String pkg = LoggingSystem.class.getPackage().getName();
-		systems.put("ch.qos.logback.core.Appender", pkg + ".logback.LogbackLoggingSystem");
-		systems.put("org.apache.log4j.PropertyConfigurator", pkg
-				+ ".log4j.Log4JLoggingSystem");
-		systems.put("java.util.logging.LogManager", pkg + ".java.JavaLoggingSystem");
-		SYSTEMS = Collections.unmodifiableMap(systems);
-	}
+    private static final Map<String, String> SYSTEMS;
 
-	/**
-	 * Reset the logging system to be limit output. This method may be called before
-	 * {@link #initialize()} to reduce logging noise until the systems has been full
-	 * Initialized.
-	 */
-	public abstract void beforeInitialize();
+    static {
+        Map<String, String> systems = new LinkedHashMap<String, String>();
+        String pkg = LoggingSystem.class.getPackage().getName();
+        systems.put("ch.qos.logback.core.Appender", pkg + ".logback.LogbackLoggingSystem");
+        systems.put("org.apache.log4j.PropertyConfigurator", pkg
+                + ".log4j.Log4JLoggingSystem");
+        systems.put("java.util.logging.LogManager", pkg + ".java.JavaLoggingSystem");
+        SYSTEMS = Collections.unmodifiableMap(systems);
+    }
 
-	/**
-	 * Initialize the logging system using sensible defaults. This method should generally
-	 * try to find system specific configuration on classpath before falling back to
-	 * sensible defaults.
-	 */
-	public abstract void initialize();
+    /**
+     * Reset the logging system to be limit output. This method may be called before
+     * {@link #initialize()} to reduce logging noise until the systems has been full
+     * Initialized.
+     */
+    public abstract void beforeInitialize();
 
-	/**
-	 * Initialize the logging system from a logging configuration location.
-	 * @param configLocation a log configuration location
-	 */
-	public abstract void initialize(String configLocation);
+    /**
+     * Initialize the logging system using sensible defaults. This method should generally
+     * try to find system specific configuration on classpath before falling back to
+     * sensible defaults.
+     */
+    public abstract void initialize();
 
-	/**
-	 * Sets the logging level for a given logger.
-	 * @param loggerName the name of the logger to set
-	 * @param level the log level
-	 */
-	public abstract void setLogLevel(String loggerName, LogLevel level);
+    /**
+     * Initialize the logging system from a logging configuration location.
+     *
+     * @param configLocation a log configuration location
+     */
+    public abstract void initialize(String configLocation);
 
-	/**
-	 * Detect and return the logging system in use.
-	 * @return The logging system
-	 */
-	public static LoggingSystem get(ClassLoader classLoader) {
-		for (Map.Entry<String, String> entry : SYSTEMS.entrySet()) {
-			if (ClassUtils.isPresent(entry.getKey(), classLoader)) {
-				try {
-					Class<?> systemClass = ClassUtils.forName(entry.getValue(),
-							classLoader);
-					return (LoggingSystem) systemClass.getConstructor(ClassLoader.class)
-							.newInstance(classLoader);
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException(ex);
-				}
-			}
-		}
-		throw new IllegalStateException("No suitable logging system located");
-	}
+    /**
+     * Sets the logging level for a given logger.
+     *
+     * @param loggerName the name of the logger to set
+     * @param level      the log level
+     */
+    public abstract void setLogLevel(String loggerName, LogLevel level);
+
+    /**
+     * Detect and return the logging system in use.
+     *
+     * @return The logging system
+     */
+    public static LoggingSystem get(ClassLoader classLoader) {
+        for (Map.Entry<String, String> entry : SYSTEMS.entrySet()) {
+            if (ClassUtils.isPresent(entry.getKey(), classLoader)) {
+                try {
+                    Class<?> systemClass = ClassUtils.forName(entry.getValue(),
+                            classLoader);
+                    return (LoggingSystem) systemClass.getConstructor(ClassLoader.class)
+                            .newInstance(classLoader);
+                } catch (Exception ex) {
+                    throw new IllegalStateException(ex);
+                }
+            }
+        }
+        throw new IllegalStateException("No suitable logging system located");
+    }
 
 }

@@ -16,78 +16,78 @@
 
 package org.springframework.boot.actuate.trace;
 
-import java.util.Map;
-
 import org.junit.Test;
 import org.springframework.boot.actuate.web.BasicErrorController;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link WebRequestTraceFilter}.
- * 
+ *
  * @author Dave Syer
  */
 public class WebRequestTraceFilterTests {
 
-	private final WebRequestTraceFilter filter = new WebRequestTraceFilter(
-			new InMemoryTraceRepository());
+    private final WebRequestTraceFilter filter = new WebRequestTraceFilter(
+            new InMemoryTraceRepository());
 
-	@Test
-	public void filterDumpsRequest() {
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
-		request.addHeader("Accept", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request);
-		assertEquals("GET", trace.get("method"));
-		assertEquals("/foo", trace.get("path"));
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
-		assertEquals("{Accept=application/json}", map.get("request").toString());
-	}
+    @Test
+    public void filterDumpsRequest() {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+        request.addHeader("Accept", "application/json");
+        Map<String, Object> trace = this.filter.getTrace(request);
+        assertEquals("GET", trace.get("method"));
+        assertEquals("/foo", trace.get("path"));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) trace.get("headers");
+        assertEquals("{Accept=application/json}", map.get("request").toString());
+    }
 
-	@Test
-	public void filterDumpsResponse() {
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
-		MockHttpServletResponse response = new MockHttpServletResponse();
-		response.addHeader("Content-Type", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request);
-		this.filter.enhanceTrace(trace, response);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
-		assertEquals("{Content-Type=application/json, status=200}", map.get("response")
-				.toString());
-	}
+    @Test
+    public void filterDumpsResponse() {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        response.addHeader("Content-Type", "application/json");
+        Map<String, Object> trace = this.filter.getTrace(request);
+        this.filter.enhanceTrace(trace, response);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) trace.get("headers");
+        assertEquals("{Content-Type=application/json, status=200}", map.get("response")
+                .toString());
+    }
 
-	@Test
-	public void filterHasResponseStatus() {
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
-		MockHttpServletResponse response = new MockHttpServletResponse();
-		response.setStatus(404);
-		response.addHeader("Content-Type", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request);
-		this.filter.enhanceTrace(trace, response);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) trace
-				.get("headers")).get("response");
-		assertEquals("404", map.get("status").toString());
-	}
+    @Test
+    public void filterHasResponseStatus() {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        response.setStatus(404);
+        response.addHeader("Content-Type", "application/json");
+        Map<String, Object> trace = this.filter.getTrace(request);
+        this.filter.enhanceTrace(trace, response);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) trace
+                .get("headers")).get("response");
+        assertEquals("404", map.get("status").toString());
+    }
 
-	@Test
-	public void filterHasError() {
-		this.filter.setErrorController(new BasicErrorController());
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
-		MockHttpServletResponse response = new MockHttpServletResponse();
-		response.setStatus(500);
-		request.setAttribute("javax.servlet.error.exception", new IllegalStateException(
-				"Foo"));
-		response.addHeader("Content-Type", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request);
-		this.filter.enhanceTrace(trace, response);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = (Map<String, Object>) trace.get("error");
-		System.err.println(map);
-		assertEquals("Foo", map.get("message").toString());
-	}
+    @Test
+    public void filterHasError() {
+        this.filter.setErrorController(new BasicErrorController());
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        response.setStatus(500);
+        request.setAttribute("javax.servlet.error.exception", new IllegalStateException(
+                "Foo"));
+        response.addHeader("Content-Type", "application/json");
+        Map<String, Object> trace = this.filter.getTrace(request);
+        this.filter.enhanceTrace(trace, response);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) trace.get("error");
+        System.err.println(map);
+        assertEquals("Foo", map.get("message").toString());
+    }
 }

@@ -16,18 +16,14 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.context.annotation.Import;
+
+import java.lang.annotation.*;
 
 /**
  * Test annotation to configure the {@link AutoConfigurationPackages} to an arbitrary
  * value.
- * 
+ *
  * @author Phillip Webb
  */
 @Target(ElementType.TYPE)
@@ -36,6 +32,6 @@ import org.springframework.context.annotation.Import;
 @Import(TestAutoConfigurationPackageRegistrar.class)
 public @interface TestAutoConfigurationPackage {
 
-	Class<?> value();
+    Class<?> value();
 
 }

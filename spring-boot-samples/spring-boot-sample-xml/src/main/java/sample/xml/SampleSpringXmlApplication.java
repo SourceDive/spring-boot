@@ -24,15 +24,15 @@ import sample.xml.service.HelloWorldService;
 
 public class SampleSpringXmlApplication implements CommandLineRunner {
 
-	@Autowired
-	private HelloWorldService helloWorldService;
+    @Autowired
+    private HelloWorldService helloWorldService;
 
-	@Override
-	public void run(String... args) {
-		System.out.println(this.helloWorldService.getHelloMessage());
-	}
+    @Override
+    public void run(String... args) {
+        System.out.println(this.helloWorldService.getHelloMessage());
+    }
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run("classpath:/META-INF/application-context.xml", args);
-	}
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run("classpath:/META-INF/application-context.xml", args);
+    }
 }

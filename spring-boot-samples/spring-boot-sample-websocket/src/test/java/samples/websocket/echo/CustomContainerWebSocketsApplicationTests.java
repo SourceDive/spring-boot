@@ -47,71 +47,71 @@ import samples.websocket.echo.CustomContainerWebSocketsApplicationTests.CustomCo
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { SampleWebSocketsApplication.class,
-		CustomContainerConfiguration.class })
+@SpringApplicationConfiguration(classes = {SampleWebSocketsApplication.class,
+        CustomContainerConfiguration.class})
 @WebAppConfiguration
 @IntegrationTest
 @DirtiesContext
 public class CustomContainerWebSocketsApplicationTests {
 
-	private static Log logger = LogFactory
-			.getLog(CustomContainerWebSocketsApplicationTests.class);
+    private static Log logger = LogFactory
+            .getLog(CustomContainerWebSocketsApplicationTests.class);
 
-	private static final String WS_URI = "ws://localhost:9010/ws/echo/websocket";
+    private static final String WS_URI = "ws://localhost:9010/ws/echo/websocket";
 
-	@Configuration
-	protected static class CustomContainerConfiguration {
-		@Bean
-		public EmbeddedServletContainerFactory embeddedServletContainerFactory() {
-			return new TomcatEmbeddedServletContainerFactory("/ws", 9010);
-		}
-	}
+    @Configuration
+    protected static class CustomContainerConfiguration {
+        @Bean
+        public EmbeddedServletContainerFactory embeddedServletContainerFactory() {
+            return new TomcatEmbeddedServletContainerFactory("/ws", 9010);
+        }
+    }
 
-	@Test
-	public void runAndWait() throws Exception {
-		ConfigurableApplicationContext context = SpringApplication.run(
-				ClientConfiguration.class, "--spring.main.web_environment=false");
-		long count = context.getBean(ClientConfiguration.class).latch.getCount();
-		context.close();
-		assertEquals(0, count);
-	}
+    @Test
+    public void runAndWait() throws Exception {
+        ConfigurableApplicationContext context = SpringApplication.run(
+                ClientConfiguration.class, "--spring.main.web_environment=false");
+        long count = context.getBean(ClientConfiguration.class).latch.getCount();
+        context.close();
+        assertEquals(0, count);
+    }
 
-	@Configuration
-	static class ClientConfiguration implements CommandLineRunner {
+    @Configuration
+    static class ClientConfiguration implements CommandLineRunner {
 
-		private final CountDownLatch latch = new CountDownLatch(1);
+        private final CountDownLatch latch = new CountDownLatch(1);
 
-		@Override
-		public void run(String... args) throws Exception {
-			logger.info("Waiting for response: latch=" + this.latch.getCount());
-			this.latch.await(10, TimeUnit.SECONDS);
-			logger.info("Got response: latch=" + this.latch.getCount());
-		}
+        @Override
+        public void run(String... args) throws Exception {
+            logger.info("Waiting for response: latch=" + this.latch.getCount());
+            this.latch.await(10, TimeUnit.SECONDS);
+            logger.info("Got response: latch=" + this.latch.getCount());
+        }
 
-		@Bean
-		public WebSocketConnectionManager wsConnectionManager() {
+        @Bean
+        public WebSocketConnectionManager wsConnectionManager() {
 
-			WebSocketConnectionManager manager = new WebSocketConnectionManager(client(),
-					handler(), WS_URI);
-			manager.setAutoStartup(true);
+            WebSocketConnectionManager manager = new WebSocketConnectionManager(client(),
+                    handler(), WS_URI);
+            manager.setAutoStartup(true);
 
-			return manager;
-		}
+            return manager;
+        }
 
-		@Bean
-		public StandardWebSocketClient client() {
-			return new StandardWebSocketClient();
-		}
+        @Bean
+        public StandardWebSocketClient client() {
+            return new StandardWebSocketClient();
+        }
 
-		@Bean
-		public SimpleClientWebSocketHandler handler() {
-			return new SimpleClientWebSocketHandler(greetingService(), this.latch);
-		}
+        @Bean
+        public SimpleClientWebSocketHandler handler() {
+            return new SimpleClientWebSocketHandler(greetingService(), this.latch);
+        }
 
-		@Bean
-		public GreetingService greetingService() {
-			return new SimpleGreetingService();
-		}
-	}
+        @Bean
+        public GreetingService greetingService() {
+            return new SimpleGreetingService();
+        }
+    }
 
 }

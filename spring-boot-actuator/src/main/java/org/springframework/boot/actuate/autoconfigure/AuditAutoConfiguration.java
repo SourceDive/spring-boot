@@ -31,38 +31,38 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link AuditEvent}s.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
 public class AuditAutoConfiguration {
 
-	@Autowired(required = false)
-	private final AuditEventRepository auditEventRepository = new InMemoryAuditEventRepository();
+    @Autowired(required = false)
+    private final AuditEventRepository auditEventRepository = new InMemoryAuditEventRepository();
 
-	@Bean
-	public AuditListener auditListener() throws Exception {
-		return new AuditListener(this.auditEventRepository);
-	}
+    @Bean
+    public AuditListener auditListener() throws Exception {
+        return new AuditListener(this.auditEventRepository);
+    }
 
-	@Bean
-	@ConditionalOnClass(name = "org.springframework.security.authentication.event.AbstractAuthenticationEvent")
-	public AuthenticationAuditListener authenticationAuditListener() throws Exception {
-		return new AuthenticationAuditListener();
-	}
+    @Bean
+    @ConditionalOnClass(name = "org.springframework.security.authentication.event.AbstractAuthenticationEvent")
+    public AuthenticationAuditListener authenticationAuditListener() throws Exception {
+        return new AuthenticationAuditListener();
+    }
 
-	@Bean
-	@ConditionalOnClass(name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
-	public AuthorizationAuditListener authorizationAuditListener() throws Exception {
-		return new AuthorizationAuditListener();
-	}
+    @Bean
+    @ConditionalOnClass(name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
+    public AuthorizationAuditListener authorizationAuditListener() throws Exception {
+        return new AuthorizationAuditListener();
+    }
 
-	@ConditionalOnMissingBean(AuditEventRepository.class)
-	protected static class AuditEventRepositoryConfiguration {
-		@Bean
-		public AuditEventRepository auditEventRepository() throws Exception {
-			return new InMemoryAuditEventRepository();
-		}
-	}
+    @ConditionalOnMissingBean(AuditEventRepository.class)
+    protected static class AuditEventRepositoryConfiguration {
+        @Bean
+        public AuditEventRepository auditEventRepository() throws Exception {
+            return new InMemoryAuditEventRepository();
+        }
+    }
 
 }

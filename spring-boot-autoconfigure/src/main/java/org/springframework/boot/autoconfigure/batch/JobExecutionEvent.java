@@ -21,26 +21,26 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * Spring {@link ApplicationEvent} encapsulating a {@link JobExecution}.
- * 
+ *
  * @author Dave Syer
  */
 public class JobExecutionEvent extends ApplicationEvent {
 
-	private final JobExecution execution;
+    private final JobExecution execution;
 
-	/**
-	 * @param execution the job execution
-	 */
-	public JobExecutionEvent(JobExecution execution) {
-		super(execution);
-		this.execution = execution;
-	}
+    /**
+     * @param execution the job execution
+     */
+    public JobExecutionEvent(JobExecution execution) {
+        super(execution);
+        this.execution = execution;
+    }
 
-	/**
-	 * @return the job execution
-	 */
-	public JobExecution getJobExecution() {
-		return this.execution;
-	}
+    /**
+     * @return the job execution
+     */
+    public JobExecution getJobExecution() {
+        return this.execution;
+    }
 
 }

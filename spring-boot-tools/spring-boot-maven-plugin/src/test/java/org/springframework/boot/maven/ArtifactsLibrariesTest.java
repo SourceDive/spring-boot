@@ -16,10 +16,6 @@
 
 package org.springframework.boot.maven;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Set;
-
 import org.apache.maven.artifact.Artifact;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,41 +24,45 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.boot.loader.tools.LibraryScope;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.Set;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ArtifactsLibraries}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ArtifactsLibrariesTest {
 
-	@Mock
-	private Artifact artifact;
+    @Mock
+    private Artifact artifact;
 
-	private Set<Artifact> artifacts;
+    private Set<Artifact> artifacts;
 
-	private File file = new File(".");
+    private File file = new File(".");
 
-	private ArtifactsLibraries libs;
+    private ArtifactsLibraries libs;
 
-	@Mock
-	private LibraryCallback callback;
+    @Mock
+    private LibraryCallback callback;
 
-	@Before
-	public void setup() {
-		MockitoAnnotations.initMocks(this);
-		this.artifacts = Collections.singleton(this.artifact);
-		this.libs = new ArtifactsLibraries(this.artifacts);
-		given(this.artifact.getFile()).willReturn(this.file);
-	}
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        this.artifacts = Collections.singleton(this.artifact);
+        this.libs = new ArtifactsLibraries(this.artifacts);
+        given(this.artifact.getFile()).willReturn(this.file);
+    }
 
-	@Test
-	public void callbackForJars() throws Exception {
-		given(this.artifact.getType()).willReturn("jar");
-		given(this.artifact.getScope()).willReturn("compile");
-		this.libs.doWithLibraries(this.callback);
-		verify(this.callback).library(this.file, LibraryScope.COMPILE);
-	}
+    @Test
+    public void callbackForJars() throws Exception {
+        given(this.artifact.getType()).willReturn("jar");
+        given(this.artifact.getScope()).willReturn("compile");
+        this.libs.doWithLibraries(this.callback);
+        verify(this.callback).library(this.file, LibraryScope.COMPILE);
+    }
 }

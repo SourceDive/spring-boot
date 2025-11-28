@@ -37,38 +37,38 @@ import static org.mockito.Mockito.verify;
  */
 public class AuthenticationAuditListenerTests {
 
-	private final AuthenticationAuditListener listener = new AuthenticationAuditListener();
+    private final AuthenticationAuditListener listener = new AuthenticationAuditListener();
 
-	private final ApplicationEventPublisher publisher = Mockito
-			.mock(ApplicationEventPublisher.class);
+    private final ApplicationEventPublisher publisher = Mockito
+            .mock(ApplicationEventPublisher.class);
 
-	@Before
-	public void init() {
-		this.listener.setApplicationEventPublisher(this.publisher);
-	}
+    @Before
+    public void init() {
+        this.listener.setApplicationEventPublisher(this.publisher);
+    }
 
-	@Test
-	public void testAuthenticationSuccess() {
-		this.listener.onApplicationEvent(new AuthenticationSuccessEvent(
-				new UsernamePasswordAuthenticationToken("user", "password")));
-		verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
-	}
+    @Test
+    public void testAuthenticationSuccess() {
+        this.listener.onApplicationEvent(new AuthenticationSuccessEvent(
+                new UsernamePasswordAuthenticationToken("user", "password")));
+        verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
+    }
 
-	@Test
-	public void testAuthenticationFailed() {
-		this.listener.onApplicationEvent(new AuthenticationFailureExpiredEvent(
-				new UsernamePasswordAuthenticationToken("user", "password"),
-				new BadCredentialsException("Bad user")));
-		verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
-	}
+    @Test
+    public void testAuthenticationFailed() {
+        this.listener.onApplicationEvent(new AuthenticationFailureExpiredEvent(
+                new UsernamePasswordAuthenticationToken("user", "password"),
+                new BadCredentialsException("Bad user")));
+        verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
+    }
 
-	@Test
-	public void testAuthenticationSwitch() {
-		this.listener.onApplicationEvent(new AuthenticationSwitchUserEvent(
-				new UsernamePasswordAuthenticationToken("user", "password"), new User(
-						"user", "password", AuthorityUtils
-								.commaSeparatedStringToAuthorityList("USER"))));
-		verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
-	}
+    @Test
+    public void testAuthenticationSwitch() {
+        this.listener.onApplicationEvent(new AuthenticationSwitchUserEvent(
+                new UsernamePasswordAuthenticationToken("user", "password"), new User(
+                "user", "password", AuthorityUtils
+                .commaSeparatedStringToAuthorityList("USER"))));
+        verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
+    }
 
 }

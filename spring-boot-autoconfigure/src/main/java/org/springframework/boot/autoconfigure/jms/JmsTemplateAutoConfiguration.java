@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
-import javax.jms.ConnectionFactory;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,50 +27,52 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
 
+import javax.jms.ConnectionFactory;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link JmsTemplate}.
- * 
+ *
  * @author Greg Turnquist
  */
 @Configuration
-@ConditionalOnClass({ JmsTemplate.class, ConnectionFactory.class })
+@ConditionalOnClass({JmsTemplate.class, ConnectionFactory.class})
 @EnableConfigurationProperties(JmsTemplateProperties.class)
 public class JmsTemplateAutoConfiguration {
 
-	@Autowired
-	private JmsTemplateProperties properties;
+    @Autowired
+    private JmsTemplateProperties properties;
 
-	@Autowired
-	private ConnectionFactory connectionFactory;
+    @Autowired
+    private ConnectionFactory connectionFactory;
 
-	@Bean
-	@ConditionalOnMissingBean(JmsTemplate.class)
-	public JmsTemplate jmsTemplate() {
-		JmsTemplate jmsTemplate = new JmsTemplate(this.connectionFactory);
-		jmsTemplate.setPubSubDomain(this.properties.isPubSubDomain());
-		return jmsTemplate;
-	}
+    @Bean
+    @ConditionalOnMissingBean(JmsTemplate.class)
+    public JmsTemplate jmsTemplate() {
+        JmsTemplate jmsTemplate = new JmsTemplate(this.connectionFactory);
+        jmsTemplate.setPubSubDomain(this.properties.isPubSubDomain());
+        return jmsTemplate;
+    }
 
-	@Configuration
-	@ConditionalOnClass(ActiveMQConnectionFactory.class)
-	@ConditionalOnMissingBean(ConnectionFactory.class)
-	@EnableConfigurationProperties(ActiveMQProperties.class)
-	protected static class ActiveMQConnectionFactoryCreator {
+    @Configuration
+    @ConditionalOnClass(ActiveMQConnectionFactory.class)
+    @ConditionalOnMissingBean(ConnectionFactory.class)
+    @EnableConfigurationProperties(ActiveMQProperties.class)
+    protected static class ActiveMQConnectionFactoryCreator {
 
-		@Autowired
-		private ActiveMQProperties config;
+        @Autowired
+        private ActiveMQProperties config;
 
-		@Bean
-		public ConnectionFactory jmsConnectionFactory() {
-			if (this.config.isPooled()) {
-				PooledConnectionFactory pool = new PooledConnectionFactory();
-				pool.setConnectionFactory(new ActiveMQConnectionFactory(this.config
-						.getBrokerUrl()));
-				return pool;
-			}
-			return new ActiveMQConnectionFactory(this.config.getBrokerUrl());
-		}
+        @Bean
+        public ConnectionFactory jmsConnectionFactory() {
+            if (this.config.isPooled()) {
+                PooledConnectionFactory pool = new PooledConnectionFactory();
+                pool.setConnectionFactory(new ActiveMQConnectionFactory(this.config
+                        .getBrokerUrl()));
+                return pool;
+            }
+            return new ActiveMQConnectionFactory(this.config.getBrokerUrl());
+        }
 
-	}
+    }
 
 }

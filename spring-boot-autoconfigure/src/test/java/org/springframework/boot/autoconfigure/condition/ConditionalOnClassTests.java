@@ -17,91 +17,85 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link ConditionalOnClass}.
- * 
+ *
  * @author Dave Syer
  */
 public class ConditionalOnClassTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@Test
-	public void testVanillaOnClassCondition() {
-		this.context.register(BasicConfiguration.class, FooConfiguration.class);
-		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
-	}
+    @Test
+    public void testVanillaOnClassCondition() {
+        this.context.register(BasicConfiguration.class, FooConfiguration.class);
+        this.context.refresh();
+        assertTrue(this.context.containsBean("bar"));
+        assertEquals("bar", this.context.getBean("bar"));
+    }
 
-	@Test
-	public void testMissingOnClassCondition() {
-		this.context.register(MissingConfiguration.class, FooConfiguration.class);
-		this.context.refresh();
-		assertFalse(this.context.containsBean("bar"));
-		assertEquals("foo", this.context.getBean("foo"));
-	}
+    @Test
+    public void testMissingOnClassCondition() {
+        this.context.register(MissingConfiguration.class, FooConfiguration.class);
+        this.context.refresh();
+        assertFalse(this.context.containsBean("bar"));
+        assertEquals("foo", this.context.getBean("foo"));
+    }
 
-	@Test
-	public void testOnClassConditionWithXml() {
-		this.context.register(BasicConfiguration.class, XmlConfiguration.class);
-		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
-	}
+    @Test
+    public void testOnClassConditionWithXml() {
+        this.context.register(BasicConfiguration.class, XmlConfiguration.class);
+        this.context.refresh();
+        assertTrue(this.context.containsBean("bar"));
+        assertEquals("bar", this.context.getBean("bar"));
+    }
 
-	@Test
-	public void testOnClassConditionWithCombinedXml() {
-		this.context.register(CombinedXmlConfiguration.class);
-		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
-	}
+    @Test
+    public void testOnClassConditionWithCombinedXml() {
+        this.context.register(CombinedXmlConfiguration.class);
+        this.context.refresh();
+        assertTrue(this.context.containsBean("bar"));
+        assertEquals("bar", this.context.getBean("bar"));
+    }
 
-	@Configuration
-	@ConditionalOnClass(ConditionalOnClassTests.class)
-	protected static class BasicConfiguration {
-		@Bean
-		public String bar() {
-			return "bar";
-		}
-	}
+    @Configuration
+    @ConditionalOnClass(ConditionalOnClassTests.class)
+    protected static class BasicConfiguration {
+        @Bean
+        public String bar() {
+            return "bar";
+        }
+    }
 
-	@Configuration
-	@ConditionalOnClass(name = "FOO")
-	protected static class MissingConfiguration {
-		@Bean
-		public String bar() {
-			return "bar";
-		}
-	}
+    @Configuration
+    @ConditionalOnClass(name = "FOO")
+    protected static class MissingConfiguration {
+        @Bean
+        public String bar() {
+            return "bar";
+        }
+    }
 
-	@Configuration
-	protected static class FooConfiguration {
-		@Bean
-		public String foo() {
-			return "foo";
-		}
-	}
+    @Configuration
+    protected static class FooConfiguration {
+        @Bean
+        public String foo() {
+            return "foo";
+        }
+    }
 
-	@Configuration
-	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
-	protected static class XmlConfiguration {
-	}
+    @Configuration
+    @ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
+    protected static class XmlConfiguration {
+    }
 
-	@Configuration
-	@Import(BasicConfiguration.class)
-	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
-	protected static class CombinedXmlConfiguration {
-	}
+    @Configuration
+    @Import(BasicConfiguration.class)
+    @ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
+    protected static class CombinedXmlConfiguration {
+    }
 }

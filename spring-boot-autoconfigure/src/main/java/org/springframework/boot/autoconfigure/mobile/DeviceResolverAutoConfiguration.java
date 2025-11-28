@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mobile;
 
-import java.util.List;
-
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,45 +31,47 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import java.util.List;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Mobile's
  * {@link DeviceResolver}.
- * 
+ *
  * @author Roy Clarkson
  */
 @Configuration
-@ConditionalOnClass({ DeviceResolverHandlerInterceptor.class,
-		DeviceHandlerMethodArgumentResolver.class })
+@ConditionalOnClass({DeviceResolverHandlerInterceptor.class,
+        DeviceHandlerMethodArgumentResolver.class})
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class DeviceResolverAutoConfiguration {
 
-	@Configuration
-	@ConditionalOnWebApplication
-	protected static class DeviceResolverAutoConfigurationAdapter extends
-			WebMvcConfigurerAdapter {
+    @Configuration
+    @ConditionalOnWebApplication
+    protected static class DeviceResolverAutoConfigurationAdapter extends
+            WebMvcConfigurerAdapter {
 
-		@Bean
-		@ConditionalOnMissingBean(DeviceResolverHandlerInterceptor.class)
-		public DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor() {
-			return new DeviceResolverHandlerInterceptor();
-		}
+        @Bean
+        @ConditionalOnMissingBean(DeviceResolverHandlerInterceptor.class)
+        public DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor() {
+            return new DeviceResolverHandlerInterceptor();
+        }
 
-		@Bean
-		public DeviceHandlerMethodArgumentResolver deviceHandlerMethodArgumentResolver() {
-			return new DeviceHandlerMethodArgumentResolver();
-		}
+        @Bean
+        public DeviceHandlerMethodArgumentResolver deviceHandlerMethodArgumentResolver() {
+            return new DeviceHandlerMethodArgumentResolver();
+        }
 
-		@Override
-		public void addInterceptors(InterceptorRegistry registry) {
-			registry.addInterceptor(deviceResolverHandlerInterceptor());
-		}
+        @Override
+        public void addInterceptors(InterceptorRegistry registry) {
+            registry.addInterceptor(deviceResolverHandlerInterceptor());
+        }
 
-		@Override
-		public void addArgumentResolvers(
-				List<HandlerMethodArgumentResolver> argumentResolvers) {
-			argumentResolvers.add(deviceHandlerMethodArgumentResolver());
-		}
+        @Override
+        public void addArgumentResolvers(
+                List<HandlerMethodArgumentResolver> argumentResolvers) {
+            argumentResolvers.add(deviceHandlerMethodArgumentResolver());
+        }
 
-	}
+    }
 
 }

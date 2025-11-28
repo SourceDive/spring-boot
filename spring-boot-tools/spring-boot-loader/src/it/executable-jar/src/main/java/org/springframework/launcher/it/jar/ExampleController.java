@@ -28,10 +28,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class ExampleController {
 
-	@RequestMapping("/")
-	@ResponseBody
-	public String helloWorld() {
-		return "Hello Embedded Jar World!";
-	}
+    @RequestMapping("/")
+    @ResponseBody
+    public String helloWorld() {
+        return "Hello Embedded Jar World!";
+    }
 
 }

@@ -20,19 +20,19 @@ import java.util.Set;
 
 /**
  * Help for a specific option.
- * 
+ *
  * @author Phillip Webb
  */
 public interface OptionHelp {
 
-	/**
-	 * Returns the set of options that are mutually synonymous.
-	 */
-	Set<String> getOptions();
+    /**
+     * Returns the set of options that are mutually synonymous.
+     */
+    Set<String> getOptions();
 
-	/**
-	 * Returns usage help for the option.
-	 */
-	String getUsageHelp();
+    /**
+     * Returns usage help for the option.
+     */
+    String getUsageHelp();
 
 }

@@ -16,114 +16,114 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.net.InetAddress;
-
-import javax.validation.constraints.NotNull;
-
 import org.springframework.boot.autoconfigure.security.SecurityPrequisite;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.util.ClassUtils;
 
+import javax.validation.constraints.NotNull;
+import java.net.InetAddress;
+
 /**
  * Properties for the management server (e.g. port and path settings).
- * 
+ *
  * @author Dave Syer
  * @see ServerProperties
  */
 @ConfigurationProperties(prefix = "management", ignoreUnknownFields = false)
 public class ManagementServerProperties implements SecurityPrequisite {
 
-	private static final String SECURITY_CHECK_CLASS = "org.springframework.security.config.http.SessionCreationPolicy";
+    private static final String SECURITY_CHECK_CLASS = "org.springframework.security.config.http.SessionCreationPolicy";
 
-	private Integer port;
+    private Integer port;
 
-	private InetAddress address;
+    private InetAddress address;
 
-	@NotNull
-	private String contextPath = "";
+    @NotNull
+    private String contextPath = "";
 
-	private final Security security = maybeCreateSecurity();
+    private final Security security = maybeCreateSecurity();
 
-	/**
-	 * Returns the management port or {@code null} if the
-	 * {@link ServerProperties#getPort() server port} should be used.
-	 * @see #setPort(Integer)
-	 */
-	public Integer getPort() {
-		return this.port;
-	}
+    /**
+     * Returns the management port or {@code null} if the
+     * {@link ServerProperties#getPort() server port} should be used.
+     *
+     * @see #setPort(Integer)
+     */
+    public Integer getPort() {
+        return this.port;
+    }
 
-	/**
-	 * Sets the port of the management server, use {@code null} if the
-	 * {@link ServerProperties#getPort() server port} should be used. To disable use 0.
-	 */
-	public void setPort(Integer port) {
-		this.port = port;
-	}
+    /**
+     * Sets the port of the management server, use {@code null} if the
+     * {@link ServerProperties#getPort() server port} should be used. To disable use 0.
+     */
+    public void setPort(Integer port) {
+        this.port = port;
+    }
 
-	public InetAddress getAddress() {
-		return this.address;
-	}
+    public InetAddress getAddress() {
+        return this.address;
+    }
 
-	public void setAddress(InetAddress address) {
-		this.address = address;
-	}
+    public void setAddress(InetAddress address) {
+        this.address = address;
+    }
 
-	public String getContextPath() {
-		return this.contextPath;
-	}
+    public String getContextPath() {
+        return this.contextPath;
+    }
 
-	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
-	}
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
+    }
 
-	public Security getSecurity() {
-		return this.security;
-	}
+    public Security getSecurity() {
+        return this.security;
+    }
 
-	/**
-	 * Security configuration.
-	 */
-	public static class Security {
+    /**
+     * Security configuration.
+     */
+    public static class Security {
 
-		private boolean enabled = true;
+        private boolean enabled = true;
 
-		private String role = "ADMIN";
+        private String role = "ADMIN";
 
-		private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
+        private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
 
-		public SessionCreationPolicy getSessions() {
-			return this.sessions;
-		}
+        public SessionCreationPolicy getSessions() {
+            return this.sessions;
+        }
 
-		public void setSessions(SessionCreationPolicy sessions) {
-			this.sessions = sessions;
-		}
+        public void setSessions(SessionCreationPolicy sessions) {
+            this.sessions = sessions;
+        }
 
-		public void setRole(String role) {
-			this.role = role;
-		}
+        public void setRole(String role) {
+            this.role = role;
+        }
 
-		public String getRole() {
-			return this.role;
-		}
+        public String getRole() {
+            return this.role;
+        }
 
-		public boolean isEnabled() {
-			return this.enabled;
-		}
+        public boolean isEnabled() {
+            return this.enabled;
+        }
 
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
 
-	}
+    }
 
-	private static Security maybeCreateSecurity() {
-		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
-			return new Security();
-		}
-		return null;
-	}
+    private static Security maybeCreateSecurity() {
+        if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
+            return new Security();
+        }
+        return null;
+    }
 }

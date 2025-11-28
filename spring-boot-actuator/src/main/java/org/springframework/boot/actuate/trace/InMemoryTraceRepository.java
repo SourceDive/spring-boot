@@ -16,46 +16,42 @@
 
 package org.springframework.boot.actuate.trace;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * In-memory implementation of {@link TraceRepository}.
- * 
+ *
  * @author Dave Syer
  */
 public class InMemoryTraceRepository implements TraceRepository {
 
-	private int capacity = 100;
+    private int capacity = 100;
 
-	private final List<Trace> traces = new ArrayList<Trace>();
+    private final List<Trace> traces = new ArrayList<Trace>();
 
-	/**
-	 * @param capacity the capacity to set
-	 */
-	public void setCapacity(int capacity) {
-		this.capacity = capacity;
-	}
+    /**
+     * @param capacity the capacity to set
+     */
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
 
-	@Override
-	public List<Trace> findAll() {
-		synchronized (this.traces) {
-			return Collections.unmodifiableList(this.traces);
-		}
-	}
+    @Override
+    public List<Trace> findAll() {
+        synchronized (this.traces) {
+            return Collections.unmodifiableList(this.traces);
+        }
+    }
 
-	@Override
-	public void add(Map<String, Object> map) {
-		Trace trace = new Trace(new Date(), map);
-		synchronized (this.traces) {
-			while (this.traces.size() >= this.capacity) {
-				this.traces.remove(0);
-			}
-			this.traces.add(trace);
-		}
-	}
+    @Override
+    public void add(Map<String, Object> map) {
+        Trace trace = new Trace(new Date(), map);
+        synchronized (this.traces) {
+            while (this.traces.size() >= this.capacity) {
+                this.traces.remove(0);
+            }
+            this.traces.add(trace);
+        }
+    }
 
 }

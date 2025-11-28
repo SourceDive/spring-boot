@@ -17,7 +17,6 @@
 package org.springframework.boot.cli.compiler;
 
 import groovy.lang.GroovyClassLoader;
-
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
@@ -29,46 +28,46 @@ import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesRes
  * {@link ASTTransformation} to apply
  * {@link CompilerAutoConfiguration#applyDependencies(DependencyCustomizer) dependency
  * auto-configuration}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
  */
 public class DependencyAutoConfigurationTransformation implements ASTTransformation {
 
-	private final GroovyClassLoader loader;
+    private final GroovyClassLoader loader;
 
-	private final ArtifactCoordinatesResolver coordinatesResolver;
+    private final ArtifactCoordinatesResolver coordinatesResolver;
 
-	private final Iterable<CompilerAutoConfiguration> compilerAutoConfigurations;
+    private final Iterable<CompilerAutoConfiguration> compilerAutoConfigurations;
 
-	public DependencyAutoConfigurationTransformation(GroovyClassLoader loader,
-			ArtifactCoordinatesResolver coordinatesResolver,
-			Iterable<CompilerAutoConfiguration> compilerAutoConfigurations) {
-		this.loader = loader;
-		this.coordinatesResolver = coordinatesResolver;
-		this.compilerAutoConfigurations = compilerAutoConfigurations;
+    public DependencyAutoConfigurationTransformation(GroovyClassLoader loader,
+                                                     ArtifactCoordinatesResolver coordinatesResolver,
+                                                     Iterable<CompilerAutoConfiguration> compilerAutoConfigurations) {
+        this.loader = loader;
+        this.coordinatesResolver = coordinatesResolver;
+        this.compilerAutoConfigurations = compilerAutoConfigurations;
 
-	}
+    }
 
-	@Override
-	public void visit(ASTNode[] nodes, SourceUnit source) {
-		for (ASTNode astNode : nodes) {
-			if (astNode instanceof ModuleNode) {
-				visitModule((ModuleNode) astNode);
-			}
-		}
-	}
+    @Override
+    public void visit(ASTNode[] nodes, SourceUnit source) {
+        for (ASTNode astNode : nodes) {
+            if (astNode instanceof ModuleNode) {
+                visitModule((ModuleNode) astNode);
+            }
+        }
+    }
 
-	private void visitModule(ModuleNode module) {
-		DependencyCustomizer dependencies = new DependencyCustomizer(this.loader, module,
-				this.coordinatesResolver);
-		for (ClassNode classNode : module.getClasses()) {
-			for (CompilerAutoConfiguration autoConfiguration : this.compilerAutoConfigurations) {
-				if (autoConfiguration.matches(classNode)) {
-					autoConfiguration.applyDependencies(dependencies);
-				}
-			}
-		}
-	}
+    private void visitModule(ModuleNode module) {
+        DependencyCustomizer dependencies = new DependencyCustomizer(this.loader, module,
+                this.coordinatesResolver);
+        for (ClassNode classNode : module.getClasses()) {
+            for (CompilerAutoConfiguration autoConfiguration : this.compilerAutoConfigurations) {
+                if (autoConfiguration.matches(classNode)) {
+                    autoConfiguration.applyDependencies(dependencies);
+                }
+            }
+        }
+    }
 }

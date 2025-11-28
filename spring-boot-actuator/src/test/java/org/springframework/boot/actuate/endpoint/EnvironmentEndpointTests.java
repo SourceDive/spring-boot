@@ -26,28 +26,28 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link EnvironmentEndpoint}.
- * 
+ *
  * @author Phillip Webb
  */
 public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentEndpoint> {
 
-	public EnvironmentEndpointTests() {
-		super(Config.class, EnvironmentEndpoint.class, "env", true, "endpoints.env");
-	}
+    public EnvironmentEndpointTests() {
+        super(Config.class, EnvironmentEndpoint.class, "env", true, "endpoints.env");
+    }
 
-	@Test
-	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke().size(), greaterThan(0));
-	}
+    @Test
+    public void invoke() throws Exception {
+        assertThat(getEndpointBean().invoke().size(), greaterThan(0));
+    }
 
-	@Configuration
-	@EnableConfigurationProperties
-	public static class Config {
+    @Configuration
+    @EnableConfigurationProperties
+    public static class Config {
 
-		@Bean
-		public EnvironmentEndpoint endpoint() {
-			return new EnvironmentEndpoint();
-		}
+        @Bean
+        public EnvironmentEndpoint endpoint() {
+            return new EnvironmentEndpoint();
+        }
 
-	}
+    }
 }

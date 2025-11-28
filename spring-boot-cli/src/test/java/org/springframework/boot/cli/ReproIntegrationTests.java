@@ -25,43 +25,43 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests to exercise and reproduce specific issues.
- * 
+ *
  * @author Phillip Webb
  */
 public class ReproIntegrationTests {
 
-	@Rule
-	public CliTester cli = new CliTester("src/test/resources/repro-samples/");
+    @Rule
+    public CliTester cli = new CliTester("src/test/resources/repro-samples/");
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	@Test
-	public void grabAntBuilder() throws Exception {
-		this.cli.run("grab-ant-builder.groovy");
-		assertThat(this.cli.getHttpOutput(),
-				containsString("{\"message\":\"Hello World\"}"));
-	}
+    @Test
+    public void grabAntBuilder() throws Exception {
+        this.cli.run("grab-ant-builder.groovy");
+        assertThat(this.cli.getHttpOutput(),
+                containsString("{\"message\":\"Hello World\"}"));
+    }
 
-	// Security depends on old versions of Spring so if the dependencies aren't pinned
-	// this will fail
-	@Test
-	public void securityDependencies() throws Exception {
-		this.cli.run("secure.groovy");
-		assertThat(this.cli.getOutput(), containsString("Hello World"));
-	}
+    // Security depends on old versions of Spring so if the dependencies aren't pinned
+    // this will fail
+    @Test
+    public void securityDependencies() throws Exception {
+        this.cli.run("secure.groovy");
+        assertThat(this.cli.getOutput(), containsString("Hello World"));
+    }
 
-	@Test
-	public void shellDependencies() throws Exception {
-		this.cli.run("crsh.groovy");
-		assertThat(this.cli.getHttpOutput(),
-				containsString("{\"message\":\"Hello World\"}"));
-	}
+    @Test
+    public void shellDependencies() throws Exception {
+        this.cli.run("crsh.groovy");
+        assertThat(this.cli.getHttpOutput(),
+                containsString("{\"message\":\"Hello World\"}"));
+    }
 
-	@Test
-	public void jarFileExtensionNeeded() throws Exception {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("is not a JAR file");
-		this.cli.jar("secure.groovy", "crsh.groovy");
-	}
+    @Test
+    public void jarFileExtensionNeeded() throws Exception {
+        this.thrown.expect(IllegalStateException.class);
+        this.thrown.expectMessage("is not a JAR file");
+        this.cli.jar("secure.groovy", "crsh.groovy");
+    }
 }

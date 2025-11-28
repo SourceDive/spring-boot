@@ -16,41 +16,41 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.util.Assert;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+
 /**
  * Default implementation of {@link PublicMetrics} that exposes all metrics from a
  * {@link MetricReader} along with memory information.
- * 
+ *
  * @author Dave Syer
  */
 public class VanillaPublicMetrics implements PublicMetrics {
 
-	private final MetricReader reader;
+    private final MetricReader reader;
 
-	public VanillaPublicMetrics(MetricReader reader) {
-		Assert.notNull(reader, "MetricReader must not be null");
-		this.reader = reader;
-	}
+    public VanillaPublicMetrics(MetricReader reader) {
+        Assert.notNull(reader, "MetricReader must not be null");
+        this.reader = reader;
+    }
 
-	@Override
-	public Collection<Metric<?>> metrics() {
-		Collection<Metric<?>> result = new LinkedHashSet<Metric<?>>();
-		for (Metric<?> metric : this.reader.findAll()) {
-			result.add(metric);
-		}
-		result.add(new Metric<Long>("mem",
-				new Long(Runtime.getRuntime().totalMemory()) / 1024));
-		result.add(new Metric<Long>("mem.free", new Long(Runtime.getRuntime()
-				.freeMemory()) / 1024));
-		result.add(new Metric<Integer>("processors", Runtime.getRuntime()
-				.availableProcessors()));
-		return result;
-	}
+    @Override
+    public Collection<Metric<?>> metrics() {
+        Collection<Metric<?>> result = new LinkedHashSet<Metric<?>>();
+        for (Metric<?> metric : this.reader.findAll()) {
+            result.add(metric);
+        }
+        result.add(new Metric<Long>("mem",
+                new Long(Runtime.getRuntime().totalMemory()) / 1024));
+        result.add(new Metric<Long>("mem.free", new Long(Runtime.getRuntime()
+                .freeMemory()) / 1024));
+        result.add(new Metric<Integer>("processors", Runtime.getRuntime()
+                .availableProcessors()));
+        return result;
+    }
 
 }

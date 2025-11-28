@@ -21,32 +21,33 @@ import org.springframework.boot.actuate.metrics.Metric;
 
 /**
  * Default implementation of {@link GaugeService}.
- * 
+ *
  * @author Dave Syer
  */
 public class DefaultGaugeService implements GaugeService {
 
-	private final MetricWriter writer;
+    private final MetricWriter writer;
 
-	/**
-	 * Create a {@link DefaultCounterService} instance.
-	 * @param writer the underlying writer used to manage metrics
-	 */
-	public DefaultGaugeService(MetricWriter writer) {
-		this.writer = writer;
-	}
+    /**
+     * Create a {@link DefaultCounterService} instance.
+     *
+     * @param writer the underlying writer used to manage metrics
+     */
+    public DefaultGaugeService(MetricWriter writer) {
+        this.writer = writer;
+    }
 
-	@Override
-	public void submit(String metricName, double value) {
-		this.writer.set(new Metric<Double>(wrap(metricName), value));
-	}
+    @Override
+    public void submit(String metricName, double value) {
+        this.writer.set(new Metric<Double>(wrap(metricName), value));
+    }
 
-	private String wrap(String metricName) {
-		if (metricName.startsWith("gauge") || metricName.startsWith("histogram")
-				|| metricName.startsWith("timer")) {
-			return metricName;
-		}
-		return "gauge." + metricName;
-	}
+    private String wrap(String metricName) {
+        if (metricName.startsWith("gauge") || metricName.startsWith("histogram")
+                || metricName.startsWith("timer")) {
+            return metricName;
+        }
+        return "gauge." + metricName;
+    }
 
 }

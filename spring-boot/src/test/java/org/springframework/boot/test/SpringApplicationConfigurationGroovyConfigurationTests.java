@@ -25,19 +25,19 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link SpringApplicationContextLoader} (detectDefaultConfigurationClasses).
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(locations = "classpath:test.groovy")
 public class SpringApplicationConfigurationGroovyConfigurationTests {
 
-	@Autowired
-	private String foo;
+    @Autowired
+    private String foo;
 
-	@Test
-	public void groovyConfigLoaded() {
-		assertNotNull(this.foo);
-	}
+    @Test
+    public void groovyConfigLoaded() {
+        assertNotNull(this.foo);
+    }
 
 }

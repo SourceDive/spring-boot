@@ -18,11 +18,7 @@ package org.springframework.boot.autoconfigure.batch;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -48,140 +44,140 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link JobLauncherCommandLineRunner}.
- * 
+ *
  * @author Dave Syer
  */
 public class JobLauncherCommandLineRunnerTests {
 
-	private JobLauncherCommandLineRunner runner;
+    private JobLauncherCommandLineRunner runner;
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	private JobExplorer jobExplorer;
+    private JobExplorer jobExplorer;
 
-	private JobLauncher jobLauncher;
+    private JobLauncher jobLauncher;
 
-	private JobBuilderFactory jobs;
+    private JobBuilderFactory jobs;
 
-	private StepBuilderFactory steps;
+    private StepBuilderFactory steps;
 
-	private Job job;
+    private Job job;
 
-	private Step step;
+    private Step step;
 
-	@Before
-	public void init() throws Exception {
-		this.context.register(BatchConfiguration.class);
-		this.context.refresh();
-		JobRepository jobRepository = this.context.getBean(JobRepository.class);
-		this.jobLauncher = this.context.getBean(JobLauncher.class);
-		this.jobs = new JobBuilderFactory(jobRepository);
-		PlatformTransactionManager transactionManager = this.context
-				.getBean(PlatformTransactionManager.class);
-		this.steps = new StepBuilderFactory(jobRepository, transactionManager);
-		this.step = this.steps.get("step").tasklet(new Tasklet() {
-			@Override
-			public RepeatStatus execute(StepContribution contribution,
-					ChunkContext chunkContext) throws Exception {
-				return null;
-			}
-		}).build();
-		this.job = this.jobs.get("job").start(this.step).build();
-		this.jobExplorer = this.context.getBean(JobExplorer.class);
-		this.runner = new JobLauncherCommandLineRunner(this.jobLauncher, this.jobExplorer);
-		this.context.getBean(BatchConfiguration.class).clear();
-	}
+    @Before
+    public void init() throws Exception {
+        this.context.register(BatchConfiguration.class);
+        this.context.refresh();
+        JobRepository jobRepository = this.context.getBean(JobRepository.class);
+        this.jobLauncher = this.context.getBean(JobLauncher.class);
+        this.jobs = new JobBuilderFactory(jobRepository);
+        PlatformTransactionManager transactionManager = this.context
+                .getBean(PlatformTransactionManager.class);
+        this.steps = new StepBuilderFactory(jobRepository, transactionManager);
+        this.step = this.steps.get("step").tasklet(new Tasklet() {
+            @Override
+            public RepeatStatus execute(StepContribution contribution,
+                                        ChunkContext chunkContext) throws Exception {
+                return null;
+            }
+        }).build();
+        this.job = this.jobs.get("job").start(this.step).build();
+        this.jobExplorer = this.context.getBean(JobExplorer.class);
+        this.runner = new JobLauncherCommandLineRunner(this.jobLauncher, this.jobExplorer);
+        this.context.getBean(BatchConfiguration.class).clear();
+    }
 
-	@Test
-	public void basicExecution() throws Exception {
-		this.runner.execute(this.job, new JobParameters());
-		assertEquals(1, this.jobExplorer.getJobInstances("job", 0, 100).size());
-		this.runner.execute(this.job, new JobParametersBuilder().addLong("id", 1L)
-				.toJobParameters());
-		assertEquals(2, this.jobExplorer.getJobInstances("job", 0, 100).size());
-	}
+    @Test
+    public void basicExecution() throws Exception {
+        this.runner.execute(this.job, new JobParameters());
+        assertEquals(1, this.jobExplorer.getJobInstances("job", 0, 100).size());
+        this.runner.execute(this.job, new JobParametersBuilder().addLong("id", 1L)
+                .toJobParameters());
+        assertEquals(2, this.jobExplorer.getJobInstances("job", 0, 100).size());
+    }
 
-	@Test
-	public void incrementExistingExecution() throws Exception {
-		this.job = this.jobs.get("job").start(this.step)
-				.incrementer(new RunIdIncrementer()).build();
-		this.runner.execute(this.job, new JobParameters());
-		this.runner.execute(this.job, new JobParameters());
-		assertEquals(2, this.jobExplorer.getJobInstances("job", 0, 100).size());
-	}
+    @Test
+    public void incrementExistingExecution() throws Exception {
+        this.job = this.jobs.get("job").start(this.step)
+                .incrementer(new RunIdIncrementer()).build();
+        this.runner.execute(this.job, new JobParameters());
+        this.runner.execute(this.job, new JobParameters());
+        assertEquals(2, this.jobExplorer.getJobInstances("job", 0, 100).size());
+    }
 
-	@Test
-	public void retryFailedExecution() throws Exception {
-		this.job = this.jobs.get("job")
-				.start(this.steps.get("step").tasklet(new Tasklet() {
-					@Override
-					public RepeatStatus execute(StepContribution contribution,
-							ChunkContext chunkContext) throws Exception {
-						throw new RuntimeException("Planned");
-					}
-				}).build()).incrementer(new RunIdIncrementer()).build();
-		this.runner.execute(this.job, new JobParameters());
-		this.runner.execute(this.job, new JobParameters());
-		assertEquals(1, this.jobExplorer.getJobInstances("job", 0, 100).size());
-	}
+    @Test
+    public void retryFailedExecution() throws Exception {
+        this.job = this.jobs.get("job")
+                .start(this.steps.get("step").tasklet(new Tasklet() {
+                    @Override
+                    public RepeatStatus execute(StepContribution contribution,
+                                                ChunkContext chunkContext) throws Exception {
+                        throw new RuntimeException("Planned");
+                    }
+                }).build()).incrementer(new RunIdIncrementer()).build();
+        this.runner.execute(this.job, new JobParameters());
+        this.runner.execute(this.job, new JobParameters());
+        assertEquals(1, this.jobExplorer.getJobInstances("job", 0, 100).size());
+    }
 
-	@Test
-	public void retryFailedExecutionWithNonIdentifyingParameters() throws Exception {
-		this.job = this.jobs.get("job")
-				.start(this.steps.get("step").tasklet(new Tasklet() {
-					@Override
-					public RepeatStatus execute(StepContribution contribution,
-							ChunkContext chunkContext) throws Exception {
-						throw new RuntimeException("Planned");
-					}
-				}).build()).incrementer(new RunIdIncrementer()).build();
-		JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false)
-				.toJobParameters();
-		this.runner.execute(this.job, jobParameters);
-		this.runner.execute(this.job, jobParameters);
-		assertEquals(1, this.jobExplorer.getJobInstances("job", 0, 100).size());
-	}
+    @Test
+    public void retryFailedExecutionWithNonIdentifyingParameters() throws Exception {
+        this.job = this.jobs.get("job")
+                .start(this.steps.get("step").tasklet(new Tasklet() {
+                    @Override
+                    public RepeatStatus execute(StepContribution contribution,
+                                                ChunkContext chunkContext) throws Exception {
+                        throw new RuntimeException("Planned");
+                    }
+                }).build()).incrementer(new RunIdIncrementer()).build();
+        JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false)
+                .toJobParameters();
+        this.runner.execute(this.job, jobParameters);
+        this.runner.execute(this.job, jobParameters);
+        assertEquals(1, this.jobExplorer.getJobInstances("job", 0, 100).size());
+    }
 
-	@Configuration
-	@EnableBatchProcessing
-	protected static class BatchConfiguration implements BatchConfigurer {
+    @Configuration
+    @EnableBatchProcessing
+    protected static class BatchConfiguration implements BatchConfigurer {
 
-		private ResourcelessTransactionManager transactionManager = new ResourcelessTransactionManager();
-		private JobRepository jobRepository;
-		private MapJobRepositoryFactoryBean jobRepositoryFactory = new MapJobRepositoryFactoryBean(
-				this.transactionManager);
+        private ResourcelessTransactionManager transactionManager = new ResourcelessTransactionManager();
+        private JobRepository jobRepository;
+        private MapJobRepositoryFactoryBean jobRepositoryFactory = new MapJobRepositoryFactoryBean(
+                this.transactionManager);
 
-		public BatchConfiguration() throws Exception {
-			this.jobRepository = this.jobRepositoryFactory.getJobRepository();
-		}
+        public BatchConfiguration() throws Exception {
+            this.jobRepository = this.jobRepositoryFactory.getJobRepository();
+        }
 
-		public void clear() {
-			this.jobRepositoryFactory.clear();
-		}
+        public void clear() {
+            this.jobRepositoryFactory.clear();
+        }
 
-		@Override
-		public JobRepository getJobRepository() throws Exception {
-			return this.jobRepository;
-		}
+        @Override
+        public JobRepository getJobRepository() throws Exception {
+            return this.jobRepository;
+        }
 
-		@Override
-		public PlatformTransactionManager getTransactionManager() throws Exception {
-			return this.transactionManager;
-		}
+        @Override
+        public PlatformTransactionManager getTransactionManager() throws Exception {
+            return this.transactionManager;
+        }
 
-		@Override
-		public JobLauncher getJobLauncher() throws Exception {
-			SimpleJobLauncher launcher = new SimpleJobLauncher();
-			launcher.setJobRepository(this.jobRepository);
-			launcher.setTaskExecutor(new SyncTaskExecutor());
-			return launcher;
-		}
+        @Override
+        public JobLauncher getJobLauncher() throws Exception {
+            SimpleJobLauncher launcher = new SimpleJobLauncher();
+            launcher.setJobRepository(this.jobRepository);
+            launcher.setTaskExecutor(new SyncTaskExecutor());
+            return launcher;
+        }
 
-		@Bean
-		public JobExplorer jobExplorer() throws Exception {
-			return (JobExplorer) new MapJobExplorerFactoryBean(this.jobRepositoryFactory)
-					.getObject();
-		}
-	}
+        @Bean
+        public JobExplorer jobExplorer() throws Exception {
+            return (JobExplorer) new MapJobExplorerFactoryBean(this.jobRepositoryFactory)
+                    .getObject();
+        }
+    }
 
 }

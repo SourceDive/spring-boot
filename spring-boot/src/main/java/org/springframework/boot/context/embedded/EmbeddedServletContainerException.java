@@ -18,14 +18,14 @@ package org.springframework.boot.context.embedded;
 
 /**
  * Exceptions thrown by an embedded servlet container.
- * 
+ *
  * @author Phillip Webb
  */
 @SuppressWarnings("serial")
 public class EmbeddedServletContainerException extends RuntimeException {
 
-	public EmbeddedServletContainerException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public EmbeddedServletContainerException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

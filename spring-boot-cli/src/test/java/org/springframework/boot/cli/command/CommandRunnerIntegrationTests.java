@@ -29,24 +29,24 @@ import static org.junit.Assert.assertTrue;
  */
 public class CommandRunnerIntegrationTests {
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
+    @Rule
+    public OutputCapture output = new OutputCapture();
 
-	@Test
-	public void debugAddsAutoconfigReport() {
-		CommandRunner runner = new CommandRunner("spring");
-		runner.addCommand(new RunCommand());
-		// -d counts as "debug" for the spring command, but not for the
-		// LoggingApplicationListener
-		runner.runAndHandleErrors("run", "samples/app.groovy", "-d");
-		assertTrue(this.output.toString().contains("Negative matches:"));
-	}
+    @Test
+    public void debugAddsAutoconfigReport() {
+        CommandRunner runner = new CommandRunner("spring");
+        runner.addCommand(new RunCommand());
+        // -d counts as "debug" for the spring command, but not for the
+        // LoggingApplicationListener
+        runner.runAndHandleErrors("run", "samples/app.groovy", "-d");
+        assertTrue(this.output.toString().contains("Negative matches:"));
+    }
 
-	@Test
-	public void debugSwitchedOffForAppArgs() {
-		CommandRunner runner = new CommandRunner("spring");
-		runner.addCommand(new RunCommand());
-		runner.runAndHandleErrors("run", "samples/app.groovy", "--", "-d");
-		assertFalse(this.output.toString().contains("Negative matches:"));
-	}
+    @Test
+    public void debugSwitchedOffForAppArgs() {
+        CommandRunner runner = new CommandRunner("spring");
+        runner.addCommand(new RunCommand());
+        runner.runAndHandleErrors("run", "samples/app.groovy", "--", "-d");
+        assertFalse(this.output.toString().contains("Negative matches:"));
+    }
 }

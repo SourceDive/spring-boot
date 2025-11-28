@@ -16,44 +16,45 @@
 
 package org.springframework.boot.context.web;
 
-import javax.servlet.ServletContext;
-
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.core.Ordered;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
+import javax.servlet.ServletContext;
+
 /**
  * {@link ApplicationContextInitializer} for setting the servlet context.
- * 
+ *
  * @author Dave Syer
  */
 public class ServletContextApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableWebApplicationContext>, Ordered {
+        ApplicationContextInitializer<ConfigurableWebApplicationContext>, Ordered {
 
-	private int order = Integer.MIN_VALUE;
+    private int order = Integer.MIN_VALUE;
 
-	private final ServletContext servletContext;
+    private final ServletContext servletContext;
 
-	/**
-	 * Create a new {@link ServletContextApplicationContextInitializer} instance
-	 * @param servletContext the servlet that should be ultimately set.
-	 */
-	public ServletContextApplicationContextInitializer(ServletContext servletContext) {
-		this.servletContext = servletContext;
-	}
+    /**
+     * Create a new {@link ServletContextApplicationContextInitializer} instance
+     *
+     * @param servletContext the servlet that should be ultimately set.
+     */
+    public ServletContextApplicationContextInitializer(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
 
-	public void setOrder(int order) {
-		this.order = order;
-	}
+    public void setOrder(int order) {
+        this.order = order;
+    }
 
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
+    @Override
+    public int getOrder() {
+        return this.order;
+    }
 
-	@Override
-	public void initialize(ConfigurableWebApplicationContext applicationContext) {
-		applicationContext.setServletContext(this.servletContext);
-	}
+    @Override
+    public void initialize(ConfigurableWebApplicationContext applicationContext) {
+        applicationContext.setServletContext(this.servletContext);
+    }
 
 }

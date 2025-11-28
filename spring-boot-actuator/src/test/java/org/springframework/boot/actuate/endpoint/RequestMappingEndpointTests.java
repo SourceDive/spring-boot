@@ -16,10 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
@@ -27,6 +23,10 @@ import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -36,72 +36,72 @@ import static org.junit.Assert.assertTrue;
  */
 public class RequestMappingEndpointTests {
 
-	private RequestMappingEndpoint endpoint = new RequestMappingEndpoint();
+    private RequestMappingEndpoint endpoint = new RequestMappingEndpoint();
 
-	@Test
-	public void concreteUrlMappings() {
-		SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-		mapping.setUrlMap(Collections.singletonMap("/foo", new Object()));
-		mapping.setApplicationContext(new StaticApplicationContext());
-		mapping.initApplicationContext();
-		this.endpoint.setHandlerMappings(Collections
-				.<AbstractUrlHandlerMapping> singletonList(mapping));
-		Map<String, Object> result = this.endpoint.invoke();
-		assertEquals(1, result.size());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = (Map<String, Object>) result.get("/foo");
-		assertEquals("java.lang.Object", map.get("type"));
-	}
+    @Test
+    public void concreteUrlMappings() {
+        SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
+        mapping.setUrlMap(Collections.singletonMap("/foo", new Object()));
+        mapping.setApplicationContext(new StaticApplicationContext());
+        mapping.initApplicationContext();
+        this.endpoint.setHandlerMappings(Collections
+                .<AbstractUrlHandlerMapping>singletonList(mapping));
+        Map<String, Object> result = this.endpoint.invoke();
+        assertEquals(1, result.size());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) result.get("/foo");
+        assertEquals("java.lang.Object", map.get("type"));
+    }
 
-	@Test
-	public void beanUrlMappings() {
-		StaticApplicationContext context = new StaticApplicationContext();
-		SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-		mapping.setUrlMap(Collections.singletonMap("/foo", new Object()));
-		mapping.setApplicationContext(context);
-		mapping.initApplicationContext();
-		context.getDefaultListableBeanFactory().registerSingleton("mapping", mapping);
-		this.endpoint.setApplicationContext(context);
-		Map<String, Object> result = this.endpoint.invoke();
-		assertEquals(1, result.size());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = (Map<String, Object>) result.get("/foo");
-		assertEquals("mapping", map.get("bean"));
-	}
+    @Test
+    public void beanUrlMappings() {
+        StaticApplicationContext context = new StaticApplicationContext();
+        SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
+        mapping.setUrlMap(Collections.singletonMap("/foo", new Object()));
+        mapping.setApplicationContext(context);
+        mapping.initApplicationContext();
+        context.getDefaultListableBeanFactory().registerSingleton("mapping", mapping);
+        this.endpoint.setApplicationContext(context);
+        Map<String, Object> result = this.endpoint.invoke();
+        assertEquals(1, result.size());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) result.get("/foo");
+        assertEquals("mapping", map.get("bean"));
+    }
 
-	@Test
-	public void beanMethodMappings() {
-		StaticApplicationContext context = new StaticApplicationContext();
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(new EndpointMvcAdapter(new DumpEndpoint())));
-		mapping.setApplicationContext(new StaticApplicationContext());
-		mapping.afterPropertiesSet();
-		context.getDefaultListableBeanFactory().registerSingleton("mapping", mapping);
-		this.endpoint.setApplicationContext(context);
-		Map<String, Object> result = this.endpoint.invoke();
-		assertEquals(1, result.size());
-		assertTrue(result.keySet().iterator().next().contains("/dump"));
-		@SuppressWarnings("unchecked")
-		Map<String, Object> handler = (Map<String, Object>) result.values().iterator()
-				.next();
-		assertTrue(handler.containsKey("method"));
-	}
+    @Test
+    public void beanMethodMappings() {
+        StaticApplicationContext context = new StaticApplicationContext();
+        EndpointHandlerMapping mapping = new EndpointHandlerMapping(
+                Arrays.asList(new EndpointMvcAdapter(new DumpEndpoint())));
+        mapping.setApplicationContext(new StaticApplicationContext());
+        mapping.afterPropertiesSet();
+        context.getDefaultListableBeanFactory().registerSingleton("mapping", mapping);
+        this.endpoint.setApplicationContext(context);
+        Map<String, Object> result = this.endpoint.invoke();
+        assertEquals(1, result.size());
+        assertTrue(result.keySet().iterator().next().contains("/dump"));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> handler = (Map<String, Object>) result.values().iterator()
+                .next();
+        assertTrue(handler.containsKey("method"));
+    }
 
-	@Test
-	public void concreteMethodMappings() {
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(new EndpointMvcAdapter(new DumpEndpoint())));
-		mapping.setApplicationContext(new StaticApplicationContext());
-		mapping.afterPropertiesSet();
-		this.endpoint.setMethodMappings(Collections
-				.<AbstractHandlerMethodMapping<?>> singletonList(mapping));
-		Map<String, Object> result = this.endpoint.invoke();
-		assertEquals(1, result.size());
-		assertTrue(result.keySet().iterator().next().contains("/dump"));
-		@SuppressWarnings("unchecked")
-		Map<String, Object> handler = (Map<String, Object>) result.values().iterator()
-				.next();
-		assertTrue(handler.containsKey("method"));
-	}
+    @Test
+    public void concreteMethodMappings() {
+        EndpointHandlerMapping mapping = new EndpointHandlerMapping(
+                Arrays.asList(new EndpointMvcAdapter(new DumpEndpoint())));
+        mapping.setApplicationContext(new StaticApplicationContext());
+        mapping.afterPropertiesSet();
+        this.endpoint.setMethodMappings(Collections
+                .<AbstractHandlerMethodMapping<?>>singletonList(mapping));
+        Map<String, Object> result = this.endpoint.invoke();
+        assertEquals(1, result.size());
+        assertTrue(result.keySet().iterator().next().contains("/dump"));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> handler = (Map<String, Object>) result.values().iterator()
+                .next();
+        assertTrue(handler.containsKey("method"));
+    }
 
 }

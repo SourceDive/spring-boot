@@ -30,8 +30,8 @@ import org.springframework.context.annotation.ImportResource;
 @ImportResource("integration-context.xml")
 public class SampleIntegrationApplication {
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleIntegrationApplication.class, args);
-	}
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(SampleIntegrationApplication.class, args);
+    }
 
 }

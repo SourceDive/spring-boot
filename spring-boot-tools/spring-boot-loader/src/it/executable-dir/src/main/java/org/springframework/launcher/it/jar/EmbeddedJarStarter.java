@@ -29,19 +29,19 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 public final class EmbeddedJarStarter {
 
-	public static void main(String[] args) throws Exception {
-		Server server = new Server(8080);
+    public static void main(String[] args) throws Exception {
+        Server server = new Server(8080);
 
-		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-		context.setContextPath("/");
-		server.setHandler(context);
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.setContextPath("/");
+        server.setHandler(context);
 
-		AnnotationConfigWebApplicationContext webApplicationContext = new AnnotationConfigWebApplicationContext();
-		webApplicationContext.register(SpringConfiguration.class);
-		DispatcherServlet dispatcherServlet = new DispatcherServlet(webApplicationContext);
-		context.addServlet(new ServletHolder(dispatcherServlet), "/*");
+        AnnotationConfigWebApplicationContext webApplicationContext = new AnnotationConfigWebApplicationContext();
+        webApplicationContext.register(SpringConfiguration.class);
+        DispatcherServlet dispatcherServlet = new DispatcherServlet(webApplicationContext);
+        context.addServlet(new ServletHolder(dispatcherServlet), "/*");
 
-		server.start();
-		server.join();
-	}
+        server.start();
+        server.join();
+    }
 }

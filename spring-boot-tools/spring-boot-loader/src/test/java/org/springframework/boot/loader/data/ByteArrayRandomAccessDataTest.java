@@ -25,27 +25,27 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ByteArrayRandomAccessData}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ByteArrayRandomAccessDataTest {
 
-	@Test
-	public void testGetInputStream() throws Exception {
-		byte[] bytes = new byte[] { 0, 1, 2, 3, 4, 5 };
-		RandomAccessData data = new ByteArrayRandomAccessData(bytes);
-		assertThat(FileCopyUtils.copyToByteArray(data
-				.getInputStream(ResourceAccess.PER_READ)), equalTo(bytes));
-		assertThat(data.getSize(), equalTo((long) bytes.length));
-	}
+    @Test
+    public void testGetInputStream() throws Exception {
+        byte[] bytes = new byte[]{0, 1, 2, 3, 4, 5};
+        RandomAccessData data = new ByteArrayRandomAccessData(bytes);
+        assertThat(FileCopyUtils.copyToByteArray(data
+                .getInputStream(ResourceAccess.PER_READ)), equalTo(bytes));
+        assertThat(data.getSize(), equalTo((long) bytes.length));
+    }
 
-	@Test
-	public void testGetSubsection() throws Exception {
-		byte[] bytes = new byte[] { 0, 1, 2, 3, 4, 5 };
-		RandomAccessData data = new ByteArrayRandomAccessData(bytes);
-		data = data.getSubsection(1, 4).getSubsection(1, 2);
-		assertThat(FileCopyUtils.copyToByteArray(data
-				.getInputStream(ResourceAccess.PER_READ)), equalTo(new byte[] { 2, 3 }));
-		assertThat(data.getSize(), equalTo(2L));
-	}
+    @Test
+    public void testGetSubsection() throws Exception {
+        byte[] bytes = new byte[]{0, 1, 2, 3, 4, 5};
+        RandomAccessData data = new ByteArrayRandomAccessData(bytes);
+        data = data.getSubsection(1, 4).getSubsection(1, 2);
+        assertThat(FileCopyUtils.copyToByteArray(data
+                .getInputStream(ResourceAccess.PER_READ)), equalTo(new byte[]{2, 3}));
+        assertThat(data.getSize(), equalTo(2L));
+    }
 }

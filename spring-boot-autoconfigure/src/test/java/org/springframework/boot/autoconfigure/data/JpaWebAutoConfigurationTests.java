@@ -38,29 +38,29 @@ import static org.junit.Assert.assertTrue;
  */
 public class JpaWebAutoConfigurationTests {
 
-	private AnnotationConfigWebApplicationContext context;
+    private AnnotationConfigWebApplicationContext context;
 
-	@Test
-	public void testDefaultRepositoryConfiguration() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
-				JpaRepositoriesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(CityRepository.class));
-		assertNotNull(this.context.getBean(PageableHandlerMethodArgumentResolver.class));
-		assertTrue(this.context.getBean(FormattingConversionService.class).canConvert(
-				Long.class, City.class));
-	}
+    @Test
+    public void testDefaultRepositoryConfiguration() throws Exception {
+        this.context = new AnnotationConfigWebApplicationContext();
+        this.context.setServletContext(new MockServletContext());
+        this.context.register(TestConfiguration.class,
+                EmbeddedDataSourceConfiguration.class,
+                HibernateJpaAutoConfiguration.class,
+                JpaRepositoriesAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context.getBean(CityRepository.class));
+        assertNotNull(this.context.getBean(PageableHandlerMethodArgumentResolver.class));
+        assertTrue(this.context.getBean(FormattingConversionService.class).canConvert(
+                Long.class, City.class));
+    }
 
-	@Configuration
-	@TestAutoConfigurationPackage(City.class)
-	@EnableWebMvc
-	protected static class TestConfiguration {
+    @Configuration
+    @TestAutoConfigurationPackage(City.class)
+    @EnableWebMvc
+    protected static class TestConfiguration {
 
-	}
+    }
 
 }

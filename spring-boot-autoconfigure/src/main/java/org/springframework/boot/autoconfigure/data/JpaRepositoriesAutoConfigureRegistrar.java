@@ -16,39 +16,39 @@
 
 package org.springframework.boot.autoconfigure.data;
 
-import java.lang.annotation.Annotation;
-
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
+import java.lang.annotation.Annotation;
+
 /**
  * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data JPA
  * Repositories.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
 class JpaRepositoriesAutoConfigureRegistrar extends
-		AbstractRepositoryConfigurationSourceSupport {
+        AbstractRepositoryConfigurationSourceSupport {
 
-	@Override
-	protected Class<? extends Annotation> getAnnotation() {
-		return EnableJpaRepositories.class;
-	}
+    @Override
+    protected Class<? extends Annotation> getAnnotation() {
+        return EnableJpaRepositories.class;
+    }
 
-	@Override
-	protected Class<?> getConfiguration() {
-		return EnableJpaRepositoriesConfiguration.class;
-	}
+    @Override
+    protected Class<?> getConfiguration() {
+        return EnableJpaRepositoriesConfiguration.class;
+    }
 
-	@Override
-	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
-		return new JpaRepositoryConfigExtension();
-	}
+    @Override
+    protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
+        return new JpaRepositoryConfigExtension();
+    }
 
-	@EnableJpaRepositories
-	private static class EnableJpaRepositoriesConfiguration {
-	}
+    @EnableJpaRepositories
+    private static class EnableJpaRepositoriesConfiguration {
+    }
 }

@@ -22,17 +22,17 @@ import org.springframework.jmx.export.annotation.ManagedOperation;
 
 /**
  * Special endpoint wrapper for {@link ShutdownEndpoint}.
- * 
+ *
  * @author Christian Dupuis
  */
 public class ShutdownEndpointMBean extends EndpointMBean {
 
-	public ShutdownEndpointMBean(String beanName, Endpoint<?> endpoint) {
-		super(beanName, endpoint);
-	}
+    public ShutdownEndpointMBean(String beanName, Endpoint<?> endpoint) {
+        super(beanName, endpoint);
+    }
 
-	@ManagedOperation(description = "Shutdown the ApplicationContext")
-	public Object shutdown() {
-		return convert(getEndpoint().invoke());
-	}
+    @ManagedOperation(description = "Shutdown the ApplicationContext")
+    public Object shutdown() {
+        return convert(getEndpoint().invoke());
+    }
 }

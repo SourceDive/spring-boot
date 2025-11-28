@@ -16,14 +16,6 @@
 
 package org.springframework.boot.logging.logback;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.slf4j.Marker;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -32,170 +24,179 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.LoggerContextVO;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.AppenderBase;
+import org.slf4j.Marker;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@link Appender} that can remap {@link ILoggingEvent} {@link Level}s as they are
  * written.
- * 
+ *
  * @author Phillip Webb
  * @see #setRemapLevels(String)
  * @see #setDestinationLogger(String)
  */
 public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 
-	private static final Map<Level, Level> DEFAULT_REMAPS = Collections.singletonMap(
-			Level.INFO, Level.DEBUG);
+    private static final Map<Level, Level> DEFAULT_REMAPS = Collections.singletonMap(
+            Level.INFO, Level.DEBUG);
 
-	private String destinationLogger = Logger.ROOT_LOGGER_NAME;
+    private String destinationLogger = Logger.ROOT_LOGGER_NAME;
 
-	private Map<Level, Level> remapLevels = DEFAULT_REMAPS;
+    private Map<Level, Level> remapLevels = DEFAULT_REMAPS;
 
-	@Override
-	protected void append(ILoggingEvent event) {
-		Level remappedLevel = this.remapLevels.get(event.getLevel());
-		if (remappedLevel != null) {
-			AppendableLogger logger = getLogger(this.destinationLogger);
-			logger.callAppenders(new RemappedLoggingEvent(event));
-		}
-	}
+    @Override
+    protected void append(ILoggingEvent event) {
+        Level remappedLevel = this.remapLevels.get(event.getLevel());
+        if (remappedLevel != null) {
+            AppendableLogger logger = getLogger(this.destinationLogger);
+            logger.callAppenders(new RemappedLoggingEvent(event));
+        }
+    }
 
-	protected AppendableLogger getLogger(String name) {
-		LoggerContext loggerContext = (LoggerContext) this.context;
-		return new AppendableLogger(loggerContext.getLogger(name));
-	}
+    protected AppendableLogger getLogger(String name) {
+        LoggerContext loggerContext = (LoggerContext) this.context;
+        return new AppendableLogger(loggerContext.getLogger(name));
+    }
 
-	/**
-	 * Sets the destination logger that will be used to send remapped events. If not
-	 * specified the root logger is used.
-	 * @param destinationLogger the destinationLogger name
-	 */
-	public void setDestinationLogger(String destinationLogger) {
-		Assert.hasLength(destinationLogger, "DestinationLogger must not be empty");
-		this.destinationLogger = destinationLogger;
-	}
+    /**
+     * Sets the destination logger that will be used to send remapped events. If not
+     * specified the root logger is used.
+     *
+     * @param destinationLogger the destinationLogger name
+     */
+    public void setDestinationLogger(String destinationLogger) {
+        Assert.hasLength(destinationLogger, "DestinationLogger must not be empty");
+        this.destinationLogger = destinationLogger;
+    }
 
-	/**
-	 * Set the remapped level.
-	 * @param remapLevels Comma separated String of remapped levels in the form
-	 * {@literal "FROM->TO"}. For example, {@literal "DEBUG->TRACE,ERROR->WARN"}.
-	 */
-	public void setRemapLevels(String remapLevels) {
-		Assert.hasLength(remapLevels, "RemapLevels must not be empty");
-		this.remapLevels = new HashMap<Level, Level>();
-		for (String remap : StringUtils.commaDelimitedListToStringArray(remapLevels)) {
-			String[] split = StringUtils.split(remap, "->");
-			Assert.notNull(split, "Remap element '" + remap + "' must contain '->'");
-			this.remapLevels.put(Level.toLevel(split[0]), Level.toLevel(split[1]));
-		}
-	}
+    /**
+     * Set the remapped level.
+     *
+     * @param remapLevels Comma separated String of remapped levels in the form
+     *                    {@literal "FROM->TO"}. For example, {@literal "DEBUG->TRACE,ERROR->WARN"}.
+     */
+    public void setRemapLevels(String remapLevels) {
+        Assert.hasLength(remapLevels, "RemapLevels must not be empty");
+        this.remapLevels = new HashMap<Level, Level>();
+        for (String remap : StringUtils.commaDelimitedListToStringArray(remapLevels)) {
+            String[] split = StringUtils.split(remap, "->");
+            Assert.notNull(split, "Remap element '" + remap + "' must contain '->'");
+            this.remapLevels.put(Level.toLevel(split[0]), Level.toLevel(split[1]));
+        }
+    }
 
-	/**
-	 * Simple wrapper around a logger that can have events appended.
-	 */
-	protected static class AppendableLogger {
+    /**
+     * Simple wrapper around a logger that can have events appended.
+     */
+    protected static class AppendableLogger {
 
-		private Logger logger;
+        private Logger logger;
 
-		public AppendableLogger(Logger logger) {
-			this.logger = logger;
-		}
+        public AppendableLogger(Logger logger) {
+            this.logger = logger;
+        }
 
-		public void callAppenders(ILoggingEvent event) {
-			if (this.logger.isEnabledFor(event.getLevel())) {
-				this.logger.callAppenders(event);
-			}
-		}
-	}
+        public void callAppenders(ILoggingEvent event) {
+            if (this.logger.isEnabledFor(event.getLevel())) {
+                this.logger.callAppenders(event);
+            }
+        }
+    }
 
-	/**
-	 * Decorate an existing {@link ILoggingEvent} changing the level to DEBUG.
-	 */
-	private class RemappedLoggingEvent implements ILoggingEvent {
+    /**
+     * Decorate an existing {@link ILoggingEvent} changing the level to DEBUG.
+     */
+    private class RemappedLoggingEvent implements ILoggingEvent {
 
-		private final ILoggingEvent event;
+        private final ILoggingEvent event;
 
-		public RemappedLoggingEvent(ILoggingEvent event) {
-			this.event = event;
-		}
+        public RemappedLoggingEvent(ILoggingEvent event) {
+            this.event = event;
+        }
 
-		@Override
-		public String getThreadName() {
-			return this.event.getThreadName();
-		}
+        @Override
+        public String getThreadName() {
+            return this.event.getThreadName();
+        }
 
-		@Override
-		public Level getLevel() {
-			Level remappedLevel = LevelRemappingAppender.this.remapLevels.get(this.event
-					.getLevel());
-			return (remappedLevel == null ? this.event.getLevel() : remappedLevel);
-		}
+        @Override
+        public Level getLevel() {
+            Level remappedLevel = LevelRemappingAppender.this.remapLevels.get(this.event
+                    .getLevel());
+            return (remappedLevel == null ? this.event.getLevel() : remappedLevel);
+        }
 
-		@Override
-		public String getMessage() {
-			return this.event.getMessage();
-		}
+        @Override
+        public String getMessage() {
+            return this.event.getMessage();
+        }
 
-		@Override
-		public Object[] getArgumentArray() {
-			return this.event.getArgumentArray();
-		}
+        @Override
+        public Object[] getArgumentArray() {
+            return this.event.getArgumentArray();
+        }
 
-		@Override
-		public String getFormattedMessage() {
-			return this.event.getFormattedMessage();
-		}
+        @Override
+        public String getFormattedMessage() {
+            return this.event.getFormattedMessage();
+        }
 
-		@Override
-		public String getLoggerName() {
-			return this.event.getLoggerName();
-		}
+        @Override
+        public String getLoggerName() {
+            return this.event.getLoggerName();
+        }
 
-		@Override
-		public LoggerContextVO getLoggerContextVO() {
-			return this.event.getLoggerContextVO();
-		}
+        @Override
+        public LoggerContextVO getLoggerContextVO() {
+            return this.event.getLoggerContextVO();
+        }
 
-		@Override
-		public IThrowableProxy getThrowableProxy() {
-			return this.event.getThrowableProxy();
-		}
+        @Override
+        public IThrowableProxy getThrowableProxy() {
+            return this.event.getThrowableProxy();
+        }
 
-		@Override
-		public StackTraceElement[] getCallerData() {
-			return this.event.getCallerData();
-		}
+        @Override
+        public StackTraceElement[] getCallerData() {
+            return this.event.getCallerData();
+        }
 
-		@Override
-		public boolean hasCallerData() {
-			return this.event.hasCallerData();
-		}
+        @Override
+        public boolean hasCallerData() {
+            return this.event.hasCallerData();
+        }
 
-		@Override
-		public Marker getMarker() {
-			return this.event.getMarker();
-		}
+        @Override
+        public Marker getMarker() {
+            return this.event.getMarker();
+        }
 
-		@Override
-		public Map<String, String> getMDCPropertyMap() {
-			return this.event.getMDCPropertyMap();
-		}
+        @Override
+        public Map<String, String> getMDCPropertyMap() {
+            return this.event.getMDCPropertyMap();
+        }
 
-		@Override
-		@Deprecated
-		public Map<String, String> getMdc() {
-			return this.event.getMdc();
-		}
+        @Override
+        @Deprecated
+        public Map<String, String> getMdc() {
+            return this.event.getMdc();
+        }
 
-		@Override
-		public long getTimeStamp() {
-			return this.event.getTimeStamp();
-		}
+        @Override
+        public long getTimeStamp() {
+            return this.event.getTimeStamp();
+        }
 
-		@Override
-		public void prepareForDeferredProcessing() {
-			this.event.prepareForDeferredProcessing();
-		}
+        @Override
+        public void prepareForDeferredProcessing() {
+            this.event.prepareForDeferredProcessing();
+        }
 
-	}
+    }
 
 }

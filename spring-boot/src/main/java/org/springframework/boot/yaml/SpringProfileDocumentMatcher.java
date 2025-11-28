@@ -16,50 +16,50 @@
 
 package org.springframework.boot.yaml;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Properties;
-
 import org.springframework.boot.yaml.YamlProcessor.DocumentMatcher;
 import org.springframework.boot.yaml.YamlProcessor.MatchStatus;
 import org.springframework.core.env.Environment;
+
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Properties;
 
 /**
  * {@link DocumentMatcher} backed by {@link Environment#getActiveProfiles()}. A YAML
  * document matches if it contains an element "spring.profiles" (a comma-separated list)
  * and one of the profiles is in the active list.
- * 
+ *
  * @author Dave Syer
  */
 public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
-	private static final String[] DEFAULT_PROFILES = new String[] { "default" };
+    private static final String[] DEFAULT_PROFILES = new String[]{"default"};
 
-	private String[] activeProfiles = new String[0];
+    private String[] activeProfiles = new String[0];
 
-	public SpringProfileDocumentMatcher() {
-	}
+    public SpringProfileDocumentMatcher() {
+    }
 
-	public SpringProfileDocumentMatcher(String... profiles) {
-		addActiveProfiles(profiles);
-	}
+    public SpringProfileDocumentMatcher(String... profiles) {
+        addActiveProfiles(profiles);
+    }
 
-	public void addActiveProfiles(String... profiles) {
-		LinkedHashSet<String> set = new LinkedHashSet<String>(
-				Arrays.asList(this.activeProfiles));
-		for (String profile : profiles) {
-			set.add(profile);
-		}
-		this.activeProfiles = set.toArray(new String[set.size()]);
-	}
+    public void addActiveProfiles(String... profiles) {
+        LinkedHashSet<String> set = new LinkedHashSet<String>(
+                Arrays.asList(this.activeProfiles));
+        for (String profile : profiles) {
+            set.add(profile);
+        }
+        this.activeProfiles = set.toArray(new String[set.size()]);
+    }
 
-	@Override
-	public MatchStatus matches(Properties properties) {
-		String[] profiles = this.activeProfiles;
-		if (profiles.length == 0) {
-			profiles = DEFAULT_PROFILES;
-		}
-		return new ArrayDocumentMatcher("spring.profiles", profiles).matches(properties);
-	}
+    @Override
+    public MatchStatus matches(Properties properties) {
+        String[] profiles = this.activeProfiles;
+        if (profiles.length == 0) {
+            profiles = DEFAULT_PROFILES;
+        }
+        return new ArrayDocumentMatcher("spring.profiles", profiles).matches(properties);
+    }
 
 }

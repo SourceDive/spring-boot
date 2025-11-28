@@ -16,55 +16,53 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Conditional;
 
+import java.lang.annotation.*;
+
 /**
  * {@link Conditional} that only matches when the specified bean classes and/or names are
  * not already contained in the {@link BeanFactory}.
- * 
+ *
  * @author Phillip Webb
  */
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Conditional(OnBeanCondition.class)
 public @interface ConditionalOnMissingBean {
 
-	/**
-	 * The class type of bean that should be checked. The condition matches when each
-	 * class specified is missing in the {@link ApplicationContext}.
-	 * @return the class types of beans to check
-	 */
-	Class<?>[] value() default {};
+    /**
+     * The class type of bean that should be checked. The condition matches when each
+     * class specified is missing in the {@link ApplicationContext}.
+     *
+     * @return the class types of beans to check
+     */
+    Class<?>[] value() default {};
 
-	/**
-	 * The annotation type decorating a bean that should be checked. The condition matches
-	 * when each class specified is missing from all beans in the
-	 * {@link ApplicationContext}.
-	 * @return the class types of beans to check
-	 */
-	Class<? extends Annotation>[] annotation() default {};
+    /**
+     * The annotation type decorating a bean that should be checked. The condition matches
+     * when each class specified is missing from all beans in the
+     * {@link ApplicationContext}.
+     *
+     * @return the class types of beans to check
+     */
+    Class<? extends Annotation>[] annotation() default {};
 
-	/**
-	 * The names of beans to check. The condition matches when each bean name specified is
-	 * missing in the {@link ApplicationContext}.
-	 * @return the name of beans to check
-	 */
-	String[] name() default {};
+    /**
+     * The names of beans to check. The condition matches when each bean name specified is
+     * missing in the {@link ApplicationContext}.
+     *
+     * @return the name of beans to check
+     */
+    String[] name() default {};
 
-	/**
-	 * Strategy to decide if the application context hierarchy (parent contexts) should be
-	 * considered.
-	 */
-	SearchStrategy search() default SearchStrategy.ALL;
+    /**
+     * Strategy to decide if the application context hierarchy (parent contexts) should be
+     * considered.
+     */
+    SearchStrategy search() default SearchStrategy.ALL;
 
 }

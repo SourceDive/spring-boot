@@ -16,11 +16,11 @@
 
 package org.springframework.boot.actuate.metrics.repository;
 
-import java.util.Date;
-
 import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
+
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,18 +29,18 @@ import static org.junit.Assert.assertEquals;
  */
 public class InMemoryMetricRepositoryTests {
 
-	private final InMemoryMetricRepository repository = new InMemoryMetricRepository();
+    private final InMemoryMetricRepository repository = new InMemoryMetricRepository();
 
-	@Test
-	public void increment() {
-		this.repository.increment(new Delta<Integer>("foo", 1, new Date()));
-		assertEquals(1.0, this.repository.findOne("foo").getValue().doubleValue(), 0.01);
-	}
+    @Test
+    public void increment() {
+        this.repository.increment(new Delta<Integer>("foo", 1, new Date()));
+        assertEquals(1.0, this.repository.findOne("foo").getValue().doubleValue(), 0.01);
+    }
 
-	@Test
-	public void set() {
-		this.repository.set(new Metric<Double>("foo", 2.5, new Date()));
-		assertEquals(2.5, this.repository.findOne("foo").getValue().doubleValue(), 0.01);
-	}
+    @Test
+    public void set() {
+        this.repository.set(new Metric<Double>("foo", 2.5, new Date()));
+        assertEquals(2.5, this.repository.findOne("foo").getValue().doubleValue(), 0.01);
+    }
 
 }

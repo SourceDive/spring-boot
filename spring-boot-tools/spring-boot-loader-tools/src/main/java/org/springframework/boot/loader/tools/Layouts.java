@@ -23,105 +23,107 @@ import java.util.Map;
 
 /**
  * Common {@link Layout}s.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
 public class Layouts {
 
-	/**
-	 * Return the a layout for the given source file.
-	 * @param file the source file
-	 * @return a {@link Layout}
-	 */
-	public static Layout forFile(File file) {
-		if (file == null) {
-			throw new IllegalArgumentException("File must not be null");
-		}
-		if (file.getName().toLowerCase().endsWith(".jar")) {
-			return new Jar();
-		}
-		if (file.getName().toLowerCase().endsWith(".war")) {
-			return new War();
-		}
-		if (file.isDirectory() || file.getName().toLowerCase().endsWith(".zip")) {
-			return new Expanded();
-		}
-		throw new IllegalStateException("Unable to deduce layout for '" + file + "'");
-	}
+    /**
+     * Return the a layout for the given source file.
+     *
+     * @param file the source file
+     * @return a {@link Layout}
+     */
+    public static Layout forFile(File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("File must not be null");
+        }
+        if (file.getName().toLowerCase().endsWith(".jar")) {
+            return new Jar();
+        }
+        if (file.getName().toLowerCase().endsWith(".war")) {
+            return new War();
+        }
+        if (file.isDirectory() || file.getName().toLowerCase().endsWith(".zip")) {
+            return new Expanded();
+        }
+        throw new IllegalStateException("Unable to deduce layout for '" + file + "'");
+    }
 
-	/**
-	 * Executable JAR layout.
-	 */
-	public static class Jar implements Layout {
+    /**
+     * Executable JAR layout.
+     */
+    public static class Jar implements Layout {
 
-		@Override
-		public String getLauncherClassName() {
-			return "org.springframework.boot.loader.JarLauncher";
-		}
+        @Override
+        public String getLauncherClassName() {
+            return "org.springframework.boot.loader.JarLauncher";
+        }
 
-		@Override
-		public String getLibraryDestination(String libraryName, LibraryScope scope) {
-			return "lib/";
-		}
+        @Override
+        public String getLibraryDestination(String libraryName, LibraryScope scope) {
+            return "lib/";
+        }
 
-		@Override
-		public String getClassesLocation() {
-			return "";
-		}
-	}
+        @Override
+        public String getClassesLocation() {
+            return "";
+        }
+    }
 
-	/**
-	 * Executable expanded archive layout.
-	 */
-	public static class Expanded extends Jar {
+    /**
+     * Executable expanded archive layout.
+     */
+    public static class Expanded extends Jar {
 
-		@Override
-		public String getLauncherClassName() {
-			return "org.springframework.boot.loader.PropertiesLauncher";
-		}
+        @Override
+        public String getLauncherClassName() {
+            return "org.springframework.boot.loader.PropertiesLauncher";
+        }
 
-	}
+    }
 
-	/**
-	 * Executable expanded archive layout.
-	 */
-	public static class None extends Jar {
+    /**
+     * Executable expanded archive layout.
+     */
+    public static class None extends Jar {
 
-		@Override
-		public String getLauncherClassName() {
-			return null;
-		}
-	}
+        @Override
+        public String getLauncherClassName() {
+            return null;
+        }
+    }
 
-	/**
-	 * Executable WAR layout.
-	 */
-	public static class War implements Layout {
+    /**
+     * Executable WAR layout.
+     */
+    public static class War implements Layout {
 
-		private static final Map<LibraryScope, String> SCOPE_DESTINATIONS;
-		static {
-			Map<LibraryScope, String> map = new HashMap<LibraryScope, String>();
-			map.put(LibraryScope.COMPILE, "WEB-INF/lib/");
-			map.put(LibraryScope.RUNTIME, "WEB-INF/lib/");
-			map.put(LibraryScope.PROVIDED, "WEB-INF/lib-provided/");
-			SCOPE_DESTINATIONS = Collections.unmodifiableMap(map);
-		}
+        private static final Map<LibraryScope, String> SCOPE_DESTINATIONS;
 
-		@Override
-		public String getLauncherClassName() {
-			return "org.springframework.boot.loader.WarLauncher";
-		}
+        static {
+            Map<LibraryScope, String> map = new HashMap<LibraryScope, String>();
+            map.put(LibraryScope.COMPILE, "WEB-INF/lib/");
+            map.put(LibraryScope.RUNTIME, "WEB-INF/lib/");
+            map.put(LibraryScope.PROVIDED, "WEB-INF/lib-provided/");
+            SCOPE_DESTINATIONS = Collections.unmodifiableMap(map);
+        }
 
-		@Override
-		public String getLibraryDestination(String libraryName, LibraryScope scope) {
-			return SCOPE_DESTINATIONS.get(scope);
-		}
+        @Override
+        public String getLauncherClassName() {
+            return "org.springframework.boot.loader.WarLauncher";
+        }
 
-		@Override
-		public String getClassesLocation() {
-			return "WEB-INF/classes/";
-		}
-	}
+        @Override
+        public String getLibraryDestination(String libraryName, LibraryScope scope) {
+            return SCOPE_DESTINATIONS.get(scope);
+        }
+
+        @Override
+        public String getClassesLocation() {
+            return "WEB-INF/classes/";
+        }
+    }
 
 }

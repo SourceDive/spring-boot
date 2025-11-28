@@ -16,30 +16,30 @@
 
 package org.springframework.boot.actuate.audit;
 
-import java.util.Date;
-
 import org.junit.Test;
+
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link InMemoryAuditEventRepository}.
- * 
+ *
  * @author Dave Syer
  */
 public class InMemoryAuditEventRepositoryTests {
 
-	private final InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
+    private final InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
 
-	@Test
-	public void testAddToCapacity() throws Exception {
-		this.repository.setCapacity(2);
-		this.repository.add(new AuditEvent("phil", "UNKNOWN"));
-		this.repository.add(new AuditEvent("phil", "UNKNOWN"));
-		this.repository.add(new AuditEvent("dave", "UNKNOWN"));
-		this.repository.add(new AuditEvent("dave", "UNKNOWN"));
-		this.repository.add(new AuditEvent("phil", "UNKNOWN"));
-		assertEquals(2, this.repository.find("phil", new Date(0L)).size());
-	}
+    @Test
+    public void testAddToCapacity() throws Exception {
+        this.repository.setCapacity(2);
+        this.repository.add(new AuditEvent("phil", "UNKNOWN"));
+        this.repository.add(new AuditEvent("phil", "UNKNOWN"));
+        this.repository.add(new AuditEvent("dave", "UNKNOWN"));
+        this.repository.add(new AuditEvent("dave", "UNKNOWN"));
+        this.repository.add(new AuditEvent("phil", "UNKNOWN"));
+        assertEquals(2, this.repository.find("phil", new Date(0L)).size());
+    }
 
 }

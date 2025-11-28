@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for demo application.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -47,34 +47,34 @@ import static org.junit.Assert.assertTrue;
 @DirtiesContext
 public class SampleWebUiApplicationTests {
 
-	@Test
-	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
-				.getBody().contains("<title>Messages"));
-		assertFalse("Wrong body (found layout:fragment):\n" + entity.getBody(), entity
-				.getBody().contains("layout:fragment"));
-	}
+    @Test
+    public void testHome() throws Exception {
+        ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:8080", String.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
+                .getBody().contains("<title>Messages"));
+        assertFalse("Wrong body (found layout:fragment):\n" + entity.getBody(), entity
+                .getBody().contains("layout:fragment"));
+    }
 
-	@Test
-	public void testCreate() throws Exception {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		map.set("text", "FOO text");
-		map.set("summary", "FOO");
-		URI location = new TestRestTemplate().postForLocation("http://localhost:8080",
-				map);
-		assertTrue("Wrong location:\n" + location,
-				location.toString().contains("localhost:8080"));
-	}
+    @Test
+    public void testCreate() throws Exception {
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+        map.set("text", "FOO text");
+        map.set("summary", "FOO");
+        URI location = new TestRestTemplate().postForLocation("http://localhost:8080",
+                map);
+        assertTrue("Wrong location:\n" + location,
+                location.toString().contains("localhost:8080"));
+    }
 
-	@Test
-	public void testCss() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/css/bootstrap.min.css", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
-	}
+    @Test
+    public void testCss() throws Exception {
+        ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:8080/css/bootstrap.min.css", String.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
+    }
 
 }

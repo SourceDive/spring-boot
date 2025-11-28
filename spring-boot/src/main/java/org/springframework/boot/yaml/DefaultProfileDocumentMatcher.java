@@ -16,27 +16,26 @@
 
 package org.springframework.boot.yaml;
 
-import java.util.Properties;
-
 import org.springframework.boot.yaml.YamlProcessor.DocumentMatcher;
 import org.springframework.boot.yaml.YamlProcessor.MatchStatus;
+
+import java.util.Properties;
 
 /**
  * A {@link DocumentMatcher} that matches the default profile implicitly but not
  * explicitly (i.e. matches if "spring.profiles" is not found and not otherwise).
- * 
+ *
  * @author Dave Syer
  */
 public class DefaultProfileDocumentMatcher implements DocumentMatcher {
 
-	@Override
-	public MatchStatus matches(Properties properties) {
-		if (!properties.containsKey("spring.profiles")) {
-			return MatchStatus.FOUND;
-		}
-		else {
-			return MatchStatus.NOT_FOUND;
-		}
-	}
+    @Override
+    public MatchStatus matches(Properties properties) {
+        if (!properties.containsKey("spring.profiles")) {
+            return MatchStatus.FOUND;
+        } else {
+            return MatchStatus.NOT_FOUND;
+        }
+    }
 
 }

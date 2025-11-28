@@ -16,41 +16,41 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Collections;
-
 import org.junit.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link InfoEndpoint}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
 public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
 
-	public InfoEndpointTests() {
-		super(Config.class, InfoEndpoint.class, "info", false, "endpoints.info");
-	}
+    public InfoEndpointTests() {
+        super(Config.class, InfoEndpoint.class, "info", false, "endpoints.info");
+    }
 
-	@Test
-	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke().get("a"), equalTo((Object) "b"));
-	}
+    @Test
+    public void invoke() throws Exception {
+        assertThat(getEndpointBean().invoke().get("a"), equalTo((Object) "b"));
+    }
 
-	@Configuration
-	@EnableConfigurationProperties
-	public static class Config {
+    @Configuration
+    @EnableConfigurationProperties
+    public static class Config {
 
-		@Bean
-		public InfoEndpoint endpoint() {
-			return new InfoEndpoint(Collections.singletonMap("a", "b"));
-		}
+        @Bean
+        public InfoEndpoint endpoint() {
+            return new InfoEndpoint(Collections.singletonMap("a", "b"));
+        }
 
-	}
+    }
 }

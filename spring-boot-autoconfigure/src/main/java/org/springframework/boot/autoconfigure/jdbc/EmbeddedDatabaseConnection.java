@@ -21,105 +21,106 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Connection details for {@link EmbeddedDatabaseType embedded databases}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see #get(ClassLoader)
  */
 public enum EmbeddedDatabaseConnection {
 
-	/**
-	 * No Connection.
-	 */
-	NONE(null, null, null),
+    /**
+     * No Connection.
+     */
+    NONE(null, null, null),
 
-	/**
-	 * H2 Database Connection.
-	 */
-	H2(EmbeddedDatabaseType.H2, "org.h2.Driver",
-			"jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"),
+    /**
+     * H2 Database Connection.
+     */
+    H2(EmbeddedDatabaseType.H2, "org.h2.Driver",
+            "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"),
 
-	/**
-	 * Derby Database Connection.
-	 */
-	DERBY(EmbeddedDatabaseType.DERBY, "org.apache.derby.jdbc.EmbeddedDriver",
-			"jdbc:derby:memory:testdb;create=true"),
+    /**
+     * Derby Database Connection.
+     */
+    DERBY(EmbeddedDatabaseType.DERBY, "org.apache.derby.jdbc.EmbeddedDriver",
+            "jdbc:derby:memory:testdb;create=true"),
 
-	/**
-	 * HSQL Database Connection.
-	 */
-	HSQL(EmbeddedDatabaseType.HSQL, "org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:testdb");
+    /**
+     * HSQL Database Connection.
+     */
+    HSQL(EmbeddedDatabaseType.HSQL, "org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:testdb");
 
-	private final EmbeddedDatabaseType type;
+    private final EmbeddedDatabaseType type;
 
-	private final String driverClass;
+    private final String driverClass;
 
-	private final String url;
+    private final String url;
 
-	private EmbeddedDatabaseConnection(EmbeddedDatabaseType type, String driverClass,
-			String url) {
-		this.type = type;
-		this.driverClass = driverClass;
-		this.url = url;
-	}
+    private EmbeddedDatabaseConnection(EmbeddedDatabaseType type, String driverClass,
+                                       String url) {
+        this.type = type;
+        this.driverClass = driverClass;
+        this.url = url;
+    }
 
-	/**
-	 * Returns the driver class name.
-	 */
-	public String getDriverClassName() {
-		return this.driverClass;
-	}
+    /**
+     * Returns the driver class name.
+     */
+    public String getDriverClassName() {
+        return this.driverClass;
+    }
 
-	/**
-	 * Returns the {@link EmbeddedDatabaseType} for the connection.
-	 */
-	public EmbeddedDatabaseType getType() {
-		return this.type;
-	}
+    /**
+     * Returns the {@link EmbeddedDatabaseType} for the connection.
+     */
+    public EmbeddedDatabaseType getType() {
+        return this.type;
+    }
 
-	/**
-	 * Returns the URL for the connection.
-	 */
-	public String getUrl() {
-		return this.url;
-	}
+    /**
+     * Returns the URL for the connection.
+     */
+    public String getUrl() {
+        return this.url;
+    }
 
-	/**
-	 * Override for testing.
-	 */
-	static EmbeddedDatabaseConnection override;
+    /**
+     * Override for testing.
+     */
+    static EmbeddedDatabaseConnection override;
 
-	/**
-	 * Convenience method to determine if a given driver class name represents an embedded
-	 * database type.
-	 * 
-	 * @param driverClass the driver class
-	 * @return true if the driver class is one of the embedded types
-	 */
-	public static boolean isEmbedded(String driverClass) {
-		return driverClass != null
-				&& (driverClass.equals(HSQL.driverClass)
-						|| driverClass.equals(H2.driverClass) || driverClass
-							.equals(DERBY.driverClass));
-	}
+    /**
+     * Convenience method to determine if a given driver class name represents an embedded
+     * database type.
+     *
+     * @param driverClass the driver class
+     * @return true if the driver class is one of the embedded types
+     */
+    public static boolean isEmbedded(String driverClass) {
+        return driverClass != null
+                && (driverClass.equals(HSQL.driverClass)
+                || driverClass.equals(H2.driverClass) || driverClass
+                .equals(DERBY.driverClass));
+    }
 
-	/**
-	 * Returns the most suitable {@link EmbeddedDatabaseConnection} for the given class
-	 * loader.
-	 * @param classLoader the class loader used to check for classes
-	 * @return an {@link EmbeddedDatabaseConnection} or {@link #NONE}.
-	 */
-	public static EmbeddedDatabaseConnection get(ClassLoader classLoader) {
-		if (override != null) {
-			return override;
-		}
-		for (EmbeddedDatabaseConnection candidate : EmbeddedDatabaseConnection.values()) {
-			if (candidate != NONE
-					&& ClassUtils.isPresent(candidate.getDriverClassName(), classLoader)) {
-				return candidate;
-			}
-		}
-		return NONE;
-	}
+    /**
+     * Returns the most suitable {@link EmbeddedDatabaseConnection} for the given class
+     * loader.
+     *
+     * @param classLoader the class loader used to check for classes
+     * @return an {@link EmbeddedDatabaseConnection} or {@link #NONE}.
+     */
+    public static EmbeddedDatabaseConnection get(ClassLoader classLoader) {
+        if (override != null) {
+            return override;
+        }
+        for (EmbeddedDatabaseConnection candidate : EmbeddedDatabaseConnection.values()) {
+            if (candidate != NONE
+                    && ClassUtils.isPresent(candidate.getDriverClassName(), classLoader)) {
+                return candidate;
+            }
+        }
+        return NONE;
+    }
 
 }

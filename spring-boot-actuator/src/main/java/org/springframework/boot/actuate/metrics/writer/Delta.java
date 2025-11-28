@@ -16,23 +16,23 @@
 
 package org.springframework.boot.actuate.metrics.writer;
 
-import java.util.Date;
-
 import org.springframework.boot.actuate.metrics.Metric;
+
+import java.util.Date;
 
 /**
  * A value object representing an increment in a metric value (usually a counter).
- * 
+ *
  * @author Dave Syer
  */
 public class Delta<T extends Number> extends Metric<T> {
 
-	public Delta(String name, T value, Date timestamp) {
-		super(name, value, timestamp);
-	}
+    public Delta(String name, T value, Date timestamp) {
+        super(name, value, timestamp);
+    }
 
-	public Delta(String name, T value) {
-		super(name, value);
-	}
+    public Delta(String name, T value) {
+        super(name, value);
+    }
 
 }

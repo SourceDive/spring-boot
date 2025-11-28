@@ -16,45 +16,45 @@
 
 package org.springframework.boot.yaml;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import org.junit.Test;
 import org.springframework.boot.yaml.YamlProcessor.MatchStatus;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
+import java.io.IOException;
+import java.util.Properties;
+
 import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link ArrayDocumentMatcher}.
- * 
+ *
  * @author Dave Syer
  */
 public class ArrayDocumentMatcherTests {
 
-	@Test
-	public void testMatchesSingleValue() throws IOException {
-		ArrayDocumentMatcher matcher = new ArrayDocumentMatcher("foo", "bar");
-		assertEquals(MatchStatus.FOUND, matcher.matches(getProperties("foo: bar")));
-	}
+    @Test
+    public void testMatchesSingleValue() throws IOException {
+        ArrayDocumentMatcher matcher = new ArrayDocumentMatcher("foo", "bar");
+        assertEquals(MatchStatus.FOUND, matcher.matches(getProperties("foo: bar")));
+    }
 
-	@Test
-	public void testDoesNotMatchesIndexedArray() throws IOException {
-		ArrayDocumentMatcher matcher = new ArrayDocumentMatcher("foo", "bar");
-		assertEquals(MatchStatus.ABSTAIN,
-				matcher.matches(getProperties("foo[0]: bar\nfoo[1]: spam")));
-	}
+    @Test
+    public void testDoesNotMatchesIndexedArray() throws IOException {
+        ArrayDocumentMatcher matcher = new ArrayDocumentMatcher("foo", "bar");
+        assertEquals(MatchStatus.ABSTAIN,
+                matcher.matches(getProperties("foo[0]: bar\nfoo[1]: spam")));
+    }
 
-	@Test
-	public void testMatchesCommaSeparatedArray() throws IOException {
-		ArrayDocumentMatcher matcher = new ArrayDocumentMatcher("foo", "bar");
-		assertEquals(MatchStatus.FOUND, matcher.matches(getProperties("foo: bar,spam")));
-	}
+    @Test
+    public void testMatchesCommaSeparatedArray() throws IOException {
+        ArrayDocumentMatcher matcher = new ArrayDocumentMatcher("foo", "bar");
+        assertEquals(MatchStatus.FOUND, matcher.matches(getProperties("foo: bar,spam")));
+    }
 
-	private Properties getProperties(String values) throws IOException {
-		return PropertiesLoaderUtils.loadProperties(new ByteArrayResource(values
-				.getBytes()));
-	}
+    private Properties getProperties(String values) throws IOException {
+        return PropertiesLoaderUtils.loadProperties(new ByteArrayResource(values
+                .getBytes()));
+    }
 
 }

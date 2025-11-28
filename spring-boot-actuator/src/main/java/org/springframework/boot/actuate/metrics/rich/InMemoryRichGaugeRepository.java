@@ -27,55 +27,54 @@ import org.springframework.boot.actuate.metrics.writer.MetricWriter;
  * set a metric value (using {@link MetricWriter#set(Metric)}) it is used to update a rich
  * gauge (increment is a no-op). Gauge values can then be read out using the reader
  * operations.
- * 
+ *
  * @author Dave Syer
  */
 public class InMemoryRichGaugeRepository implements RichGaugeRepository {
 
-	private final SimpleInMemoryRepository<RichGauge> repository = new SimpleInMemoryRepository<RichGauge>();
+    private final SimpleInMemoryRepository<RichGauge> repository = new SimpleInMemoryRepository<RichGauge>();
 
-	@Override
-	public void increment(Delta<?> delta) {
-		// No-op
-	}
+    @Override
+    public void increment(Delta<?> delta) {
+        // No-op
+    }
 
-	@Override
-	public void set(Metric<?> metric) {
+    @Override
+    public void set(Metric<?> metric) {
 
-		final String name = metric.getName();
-		final double value = metric.getValue().doubleValue();
-		this.repository.update(name, new Callback<RichGauge>() {
-			@Override
-			public RichGauge modify(RichGauge current) {
-				if (current == null) {
-					current = new RichGauge(name, value);
-				}
-				else {
-					current.set(value);
-				}
-				return current;
-			}
-		});
+        final String name = metric.getName();
+        final double value = metric.getValue().doubleValue();
+        this.repository.update(name, new Callback<RichGauge>() {
+            @Override
+            public RichGauge modify(RichGauge current) {
+                if (current == null) {
+                    current = new RichGauge(name, value);
+                } else {
+                    current.set(value);
+                }
+                return current;
+            }
+        });
 
-	}
+    }
 
-	@Override
-	public void reset(String metricName) {
-		this.repository.remove(metricName);
-	}
+    @Override
+    public void reset(String metricName) {
+        this.repository.remove(metricName);
+    }
 
-	@Override
-	public RichGauge findOne(String metricName) {
-		return this.repository.findOne(metricName);
-	}
+    @Override
+    public RichGauge findOne(String metricName) {
+        return this.repository.findOne(metricName);
+    }
 
-	@Override
-	public Iterable<RichGauge> findAll() {
-		return this.repository.findAll();
-	}
+    @Override
+    public Iterable<RichGauge> findAll() {
+        return this.repository.findAll();
+    }
 
-	@Override
-	public long count() {
-		return this.repository.count();
-	}
+    @Override
+    public long count() {
+        return this.repository.count();
+    }
 }

@@ -16,9 +16,6 @@
 
 package org.springframework.boot.orm.jpa;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -27,147 +24,150 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceException;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link EntityScan}.
- * 
+ *
  * @author Phillip Webb
  */
 public class EntityScanTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	private AnnotationConfigApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
-	@Test
-	public void testValue() throws Exception {
-		this.context = new AnnotationConfigApplicationContext(ValueConfig.class);
-		assertSetPackagesToScan("com.mycorp.entity");
-	}
+    @Test
+    public void testValue() throws Exception {
+        this.context = new AnnotationConfigApplicationContext(ValueConfig.class);
+        assertSetPackagesToScan("com.mycorp.entity");
+    }
 
-	@Test
-	public void basePackages() throws Exception {
-		this.context = new AnnotationConfigApplicationContext(BasePackagesConfig.class);
-		assertSetPackagesToScan("com.mycorp.entity2");
-	}
+    @Test
+    public void basePackages() throws Exception {
+        this.context = new AnnotationConfigApplicationContext(BasePackagesConfig.class);
+        assertSetPackagesToScan("com.mycorp.entity2");
+    }
 
-	@Test
-	public void basePackageClasses() throws Exception {
-		this.context = new AnnotationConfigApplicationContext(
-				BasePackageClassesConfig.class);
-		assertSetPackagesToScan(getClass().getPackage().getName());
-	}
+    @Test
+    public void basePackageClasses() throws Exception {
+        this.context = new AnnotationConfigApplicationContext(
+                BasePackageClassesConfig.class);
+        assertSetPackagesToScan(getClass().getPackage().getName());
+    }
 
-	@Test
-	public void fromConfigurationClass() throws Exception {
-		this.context = new AnnotationConfigApplicationContext(FromConfigConfig.class);
-		assertSetPackagesToScan(getClass().getPackage().getName());
-	}
+    @Test
+    public void fromConfigurationClass() throws Exception {
+        this.context = new AnnotationConfigApplicationContext(FromConfigConfig.class);
+        assertSetPackagesToScan(getClass().getPackage().getName());
+    }
 
-	@Test
-	public void valueAndBasePackagesThrows() throws Exception {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("@EntityScan basePackages and value "
-				+ "attributes are mutually exclusive");
-		this.context = new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
-	}
+    @Test
+    public void valueAndBasePackagesThrows() throws Exception {
+        this.thrown.expect(IllegalStateException.class);
+        this.thrown.expectMessage("@EntityScan basePackages and value "
+                + "attributes are mutually exclusive");
+        this.context = new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
+    }
 
-	@Test
-	public void valueAndBasePackageClassesMerges() throws Exception {
-		this.context = new AnnotationConfigApplicationContext(
-				ValueAndBasePackageClasses.class);
-		assertSetPackagesToScan("com.mycorp.entity", getClass().getPackage().getName());
-	}
+    @Test
+    public void valueAndBasePackageClassesMerges() throws Exception {
+        this.context = new AnnotationConfigApplicationContext(
+                ValueAndBasePackageClasses.class);
+        assertSetPackagesToScan("com.mycorp.entity", getClass().getPackage().getName());
+    }
 
-	@Test
-	public void basePackageAndBasePackageClassesMerges() throws Exception {
-		this.context = new AnnotationConfigApplicationContext(
-				BasePackagesAndBasePackageClasses.class);
-		assertSetPackagesToScan("com.mycorp.entity2", getClass().getPackage().getName());
-	}
+    @Test
+    public void basePackageAndBasePackageClassesMerges() throws Exception {
+        this.context = new AnnotationConfigApplicationContext(
+                BasePackagesAndBasePackageClasses.class);
+        assertSetPackagesToScan("com.mycorp.entity2", getClass().getPackage().getName());
+    }
 
-	@Test
-	public void needsEntityManageFactory() throws Exception {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Unable to configure "
-				+ "LocalContainerEntityManagerFactoryBean from @EntityScan, "
-				+ "ensure an appropriate bean is registered.");
-		this.context = new AnnotationConfigApplicationContext(MissingEntityManager.class);
-	}
+    @Test
+    public void needsEntityManageFactory() throws Exception {
+        this.thrown.expect(IllegalStateException.class);
+        this.thrown.expectMessage("Unable to configure "
+                + "LocalContainerEntityManagerFactoryBean from @EntityScan, "
+                + "ensure an appropriate bean is registered.");
+        this.context = new AnnotationConfigApplicationContext(MissingEntityManager.class);
+    }
 
-	private void assertSetPackagesToScan(String... expected) {
-		String[] actual = this.context.getBean(
-				TestLocalContainerEntityManagerFactoryBean.class).getPackagesToScan();
-		assertThat(actual, equalTo(expected));
-	}
+    private void assertSetPackagesToScan(String... expected) {
+        String[] actual = this.context.getBean(
+                TestLocalContainerEntityManagerFactoryBean.class).getPackagesToScan();
+        assertThat(actual, equalTo(expected));
+    }
 
-	@Configuration
-	static class BaseConfig {
+    @Configuration
+    static class BaseConfig {
 
-		@Bean
-		public TestLocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
-			return new TestLocalContainerEntityManagerFactoryBean();
-		}
+        @Bean
+        public TestLocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
+            return new TestLocalContainerEntityManagerFactoryBean();
+        }
 
-	}
+    }
 
-	@EntityScan("com.mycorp.entity")
-	static class ValueConfig extends BaseConfig {
-	}
+    @EntityScan("com.mycorp.entity")
+    static class ValueConfig extends BaseConfig {
+    }
 
-	@EntityScan(basePackages = "com.mycorp.entity2")
-	static class BasePackagesConfig extends BaseConfig {
-	}
+    @EntityScan(basePackages = "com.mycorp.entity2")
+    static class BasePackagesConfig extends BaseConfig {
+    }
 
-	@EntityScan(basePackageClasses = EntityScanTests.class)
-	static class BasePackageClassesConfig extends BaseConfig {
-	}
+    @EntityScan(basePackageClasses = EntityScanTests.class)
+    static class BasePackageClassesConfig extends BaseConfig {
+    }
 
-	@EntityScan
-	static class FromConfigConfig extends BaseConfig {
-	}
+    @EntityScan
+    static class FromConfigConfig extends BaseConfig {
+    }
 
-	@EntityScan(value = "com.mycorp.entity", basePackages = "com.mycorp")
-	static class ValueAndBasePackages extends BaseConfig {
-	}
+    @EntityScan(value = "com.mycorp.entity", basePackages = "com.mycorp")
+    static class ValueAndBasePackages extends BaseConfig {
+    }
 
-	@EntityScan(value = "com.mycorp.entity", basePackageClasses = EntityScanTests.class)
-	static class ValueAndBasePackageClasses extends BaseConfig {
-	}
+    @EntityScan(value = "com.mycorp.entity", basePackageClasses = EntityScanTests.class)
+    static class ValueAndBasePackageClasses extends BaseConfig {
+    }
 
-	@EntityScan(basePackages = "com.mycorp.entity2", basePackageClasses = EntityScanTests.class)
-	static class BasePackagesAndBasePackageClasses extends BaseConfig {
-	}
+    @EntityScan(basePackages = "com.mycorp.entity2", basePackageClasses = EntityScanTests.class)
+    static class BasePackagesAndBasePackageClasses extends BaseConfig {
+    }
 
-	@Configuration
-	@EntityScan("com.mycorp.entity")
-	static class MissingEntityManager {
-	}
+    @Configuration
+    @EntityScan("com.mycorp.entity")
+    static class MissingEntityManager {
+    }
 
-	private static class TestLocalContainerEntityManagerFactoryBean extends
-			LocalContainerEntityManagerFactoryBean {
+    private static class TestLocalContainerEntityManagerFactoryBean extends
+            LocalContainerEntityManagerFactoryBean {
 
-		private String[] packagesToScan;
+        private String[] packagesToScan;
 
-		@Override
-		protected EntityManagerFactory createNativeEntityManagerFactory()
-				throws PersistenceException {
-			return mock(EntityManagerFactory.class);
-		}
+        @Override
+        protected EntityManagerFactory createNativeEntityManagerFactory()
+                throws PersistenceException {
+            return mock(EntityManagerFactory.class);
+        }
 
-		@Override
-		public void setPackagesToScan(String... packagesToScan) {
-			this.packagesToScan = packagesToScan;
-		}
+        @Override
+        public void setPackagesToScan(String... packagesToScan) {
+            this.packagesToScan = packagesToScan;
+        }
 
-		public String[] getPackagesToScan() {
-			return this.packagesToScan;
-		}
+        public String[] getPackagesToScan() {
+            return this.packagesToScan;
+        }
 
-	}
+    }
 
 }

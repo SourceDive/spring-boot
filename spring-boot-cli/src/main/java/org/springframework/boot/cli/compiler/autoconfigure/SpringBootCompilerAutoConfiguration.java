@@ -17,7 +17,6 @@
 package org.springframework.boot.cli.compiler.autoconfigure;
 
 import groovy.lang.GroovyClassLoader;
-
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.classgen.GeneratorContext;
@@ -30,74 +29,73 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
 public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
-	@Override
-	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses("org.springframework.boot.SpringApplication")
-				.add("spring-boot-starter");
-	}
+    @Override
+    public void applyDependencies(DependencyCustomizer dependencies) {
+        dependencies.ifAnyMissingClasses("org.springframework.boot.SpringApplication")
+                .add("spring-boot-starter");
+    }
 
-	@Override
-	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("javax.annotation.PostConstruct",
-				"javax.annotation.PreDestroy", "groovy.util.logging.Log",
-				"org.springframework.stereotype.Controller",
-				"org.springframework.stereotype.Service",
-				"org.springframework.stereotype.Component",
-				"org.springframework.beans.factory.annotation.Autowired",
-				"org.springframework.beans.factory.annotation.Value",
-				"org.springframework.context.annotation.Import",
-				"org.springframework.context.annotation.ImportResource",
-				"org.springframework.context.annotation.Profile",
-				"org.springframework.context.annotation.Scope",
-				"org.springframework.context.annotation.Configuration",
-				"org.springframework.context.annotation.ComponentScan",
-				"org.springframework.context.annotation.Bean",
-				"org.springframework.context.ApplicationContext",
-				"org.springframework.context.MessageSource",
-				"org.springframework.core.annotation.Order",
-				"org.springframework.core.io.ResourceLoader",
-				"org.springframework.boot.CommandLineRunner",
-				"org.springframework.boot.autoconfigure.EnableAutoConfiguration");
-		imports.addStarImports("org.springframework.stereotype",
-				"org.springframework.scheduling.annotation");
-	}
+    @Override
+    public void applyImports(ImportCustomizer imports) {
+        imports.addImports("javax.annotation.PostConstruct",
+                "javax.annotation.PreDestroy", "groovy.util.logging.Log",
+                "org.springframework.stereotype.Controller",
+                "org.springframework.stereotype.Service",
+                "org.springframework.stereotype.Component",
+                "org.springframework.beans.factory.annotation.Autowired",
+                "org.springframework.beans.factory.annotation.Value",
+                "org.springframework.context.annotation.Import",
+                "org.springframework.context.annotation.ImportResource",
+                "org.springframework.context.annotation.Profile",
+                "org.springframework.context.annotation.Scope",
+                "org.springframework.context.annotation.Configuration",
+                "org.springframework.context.annotation.ComponentScan",
+                "org.springframework.context.annotation.Bean",
+                "org.springframework.context.ApplicationContext",
+                "org.springframework.context.MessageSource",
+                "org.springframework.core.annotation.Order",
+                "org.springframework.core.io.ResourceLoader",
+                "org.springframework.boot.CommandLineRunner",
+                "org.springframework.boot.autoconfigure.EnableAutoConfiguration");
+        imports.addStarImports("org.springframework.stereotype",
+                "org.springframework.scheduling.annotation");
+    }
 
-	@Override
-	public void applyToMainClass(GroovyClassLoader loader,
-			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
-			SourceUnit source, ClassNode classNode) throws CompilationFailedException {
-		addEnableAutoConfigurationAnnotation(source, classNode);
-	}
+    @Override
+    public void applyToMainClass(GroovyClassLoader loader,
+                                 GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
+                                 SourceUnit source, ClassNode classNode) throws CompilationFailedException {
+        addEnableAutoConfigurationAnnotation(source, classNode);
+    }
 
-	private void addEnableAutoConfigurationAnnotation(SourceUnit source,
-			ClassNode classNode) {
-		if (!hasEnableAutoConfigureAnnotation(classNode)) {
-			try {
-				Class<?> annotationClass = source.getClassLoader().loadClass(
-						"org.springframework.boot.autoconfigure.EnableAutoConfiguration");
-				AnnotationNode annotationNode = new AnnotationNode(new ClassNode(
-						annotationClass));
-				classNode.addAnnotation(annotationNode);
-			}
-			catch (ClassNotFoundException ex) {
-				throw new IllegalStateException(ex);
-			}
-		}
-	}
+    private void addEnableAutoConfigurationAnnotation(SourceUnit source,
+                                                      ClassNode classNode) {
+        if (!hasEnableAutoConfigureAnnotation(classNode)) {
+            try {
+                Class<?> annotationClass = source.getClassLoader().loadClass(
+                        "org.springframework.boot.autoconfigure.EnableAutoConfiguration");
+                AnnotationNode annotationNode = new AnnotationNode(new ClassNode(
+                        annotationClass));
+                classNode.addAnnotation(annotationNode);
+            } catch (ClassNotFoundException ex) {
+                throw new IllegalStateException(ex);
+            }
+        }
+    }
 
-	private boolean hasEnableAutoConfigureAnnotation(ClassNode classNode) {
-		for (AnnotationNode node : classNode.getAnnotations()) {
-			if ("EnableAutoConfiguration".equals(node.getClassNode()
-					.getNameWithoutPackage())) {
-				return true;
-			}
-		}
-		return false;
-	}
+    private boolean hasEnableAutoConfigureAnnotation(ClassNode classNode) {
+        for (AnnotationNode node : classNode.getAnnotations()) {
+            if ("EnableAutoConfiguration".equals(node.getClassNode()
+                    .getNameWithoutPackage())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

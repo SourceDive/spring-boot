@@ -16,11 +16,6 @@
 
 package org.springframework.boot.context.embedded;
 
-import java.util.EventListener;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextListener;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,43 +24,47 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextListener;
+import java.util.EventListener;
+
 import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServletListenerRegistrationBean}.
- * 
+ *
  * @author Dave Syer
  */
 public class ServletListenerRegistrationBeanTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	private final ServletContextListener listener = Mockito
-			.mock(ServletContextListener.class);
+    private final ServletContextListener listener = Mockito
+            .mock(ServletContextListener.class);
 
-	@Mock
-	private ServletContext servletContext;
+    @Mock
+    private ServletContext servletContext;
 
-	@Before
-	public void setupMocks() {
-		MockitoAnnotations.initMocks(this);
-	}
+    @Before
+    public void setupMocks() {
+        MockitoAnnotations.initMocks(this);
+    }
 
-	@Test
-	public void startupWithDefaults() throws Exception {
-		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<ServletContextListener>(
-				this.listener);
-		bean.onStartup(this.servletContext);
-		verify(this.servletContext).addListener(this.listener);
-	}
+    @Test
+    public void startupWithDefaults() throws Exception {
+        ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<ServletContextListener>(
+                this.listener);
+        bean.onStartup(this.servletContext);
+        verify(this.servletContext).addListener(this.listener);
+    }
 
-	@Test
-	public void cannotRegisterUnsupportedType() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Listener is not of a supported type");
-		new ServletListenerRegistrationBean<EventListener>(new EventListener() {
-		});
-	}
+    @Test
+    public void cannotRegisterUnsupportedType() throws Exception {
+        this.thrown.expect(IllegalArgumentException.class);
+        this.thrown.expectMessage("Listener is not of a supported type");
+        new ServletListenerRegistrationBean<EventListener>(new EventListener() {
+        });
+    }
 
 }

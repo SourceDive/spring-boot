@@ -35,70 +35,70 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link JolokiaAutoConfiguration}.
- * 
+ *
  * @author Christian Dupuis
  */
 public class JolokiaAutoConfigurationTests {
 
-	private AnnotationConfigEmbeddedWebApplicationContext context;
+    private AnnotationConfigEmbeddedWebApplicationContext context;
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-		if (Config.containerFactory != null) {
-			Config.containerFactory = null;
-		}
-	}
+    @After
+    public void close() {
+        if (this.context != null) {
+            this.context.close();
+        }
+        if (Config.containerFactory != null) {
+            Config.containerFactory = null;
+        }
+    }
 
-	@Test
-	public void agentServletRegisteredWithAppContext() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "jolokia.config[key1]:value1",
-				"jolokia.config[key2]:value2");
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				JolokiaAutoConfiguration.class);
-		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
-	}
+    @Test
+    public void agentServletRegisteredWithAppContext() throws Exception {
+        this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+        EnvironmentTestUtils.addEnvironment(this.context, "jolokia.config[key1]:value1",
+                "jolokia.config[key2]:value2");
+        this.context.register(Config.class, WebMvcAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class,
+                ManagementServerPropertiesAutoConfiguration.class,
+                HttpMessageConvertersAutoConfiguration.class,
+                JolokiaAutoConfiguration.class);
+        this.context.refresh();
+        assertEquals(1, this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
+    }
 
-	@Test
-	public void agentDisabled() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.jolokia.enabled:false");
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				JolokiaAutoConfiguration.class);
-		this.context.refresh();
-		assertEquals(0, this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
-	}
+    @Test
+    public void agentDisabled() throws Exception {
+        this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+        EnvironmentTestUtils.addEnvironment(this.context,
+                "endpoints.jolokia.enabled:false");
+        this.context.register(Config.class, WebMvcAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class,
+                ManagementServerPropertiesAutoConfiguration.class,
+                HttpMessageConvertersAutoConfiguration.class,
+                JolokiaAutoConfiguration.class);
+        this.context.refresh();
+        assertEquals(0, this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
+    }
 
-	@Configuration
-	@EnableConfigurationProperties
-	protected static class Config {
+    @Configuration
+    @EnableConfigurationProperties
+    protected static class Config {
 
-		protected static MockEmbeddedServletContainerFactory containerFactory = null;
+        protected static MockEmbeddedServletContainerFactory containerFactory = null;
 
-		@Bean
-		public EmbeddedServletContainerFactory containerFactory() {
-			if (containerFactory == null) {
-				containerFactory = new MockEmbeddedServletContainerFactory();
-			}
-			return containerFactory;
-		}
+        @Bean
+        public EmbeddedServletContainerFactory containerFactory() {
+            if (containerFactory == null) {
+                containerFactory = new MockEmbeddedServletContainerFactory();
+            }
+            return containerFactory;
+        }
 
-		@Bean
-		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
-			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
-		}
+        @Bean
+        public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
+            return new EmbeddedServletContainerCustomizerBeanPostProcessor();
+        }
 
-	}
+    }
 
 }

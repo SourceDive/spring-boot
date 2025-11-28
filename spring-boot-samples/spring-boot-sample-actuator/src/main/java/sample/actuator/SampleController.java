@@ -29,19 +29,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Description("A controller for handling requests for hello messages")
 public class SampleController {
 
-	@Autowired
-	private HelloWorldService helloWorldService;
+    @Autowired
+    private HelloWorldService helloWorldService;
 
-	@RequestMapping("/")
-	@ResponseBody
-	public Map<String, String> helloWorld() {
-		return Collections.singletonMap("message",
-				this.helloWorldService.getHelloMessage());
-	}
+    @RequestMapping("/")
+    @ResponseBody
+    public Map<String, String> helloWorld() {
+        return Collections.singletonMap("message",
+                this.helloWorldService.getHelloMessage());
+    }
 
-	@RequestMapping("/foo")
-	@ResponseBody
-	public String foo() {
-		throw new IllegalArgumentException("Server error");
-	}
+    @RequestMapping("/foo")
+    @ResponseBody
+    public String foo() {
+        throw new IllegalArgumentException("Server error");
+    }
 }

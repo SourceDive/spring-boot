@@ -27,34 +27,34 @@ import static org.junit.Assert.assertEquals;
  */
 public class SystemPropertyUtilsTests {
 
-	@BeforeClass
-	public static void init() {
-		System.setProperty("foo", "bar");
-	}
+    @BeforeClass
+    public static void init() {
+        System.setProperty("foo", "bar");
+    }
 
-	@AfterClass
-	public static void close() {
-		System.clearProperty("foo");
-	}
+    @AfterClass
+    public static void close() {
+        System.clearProperty("foo");
+    }
 
-	@Test
-	public void testVanillaPlaceholder() {
-		assertEquals("bar", SystemPropertyUtils.resolvePlaceholders("${foo}"));
-	}
+    @Test
+    public void testVanillaPlaceholder() {
+        assertEquals("bar", SystemPropertyUtils.resolvePlaceholders("${foo}"));
+    }
 
-	@Test
-	public void testDefaultValue() {
-		assertEquals("foo", SystemPropertyUtils.resolvePlaceholders("${bar:foo}"));
-	}
+    @Test
+    public void testDefaultValue() {
+        assertEquals("foo", SystemPropertyUtils.resolvePlaceholders("${bar:foo}"));
+    }
 
-	@Test
-	public void testNestedPlaceholder() {
-		assertEquals("foo", SystemPropertyUtils.resolvePlaceholders("${bar:${spam:foo}}"));
-	}
+    @Test
+    public void testNestedPlaceholder() {
+        assertEquals("foo", SystemPropertyUtils.resolvePlaceholders("${bar:${spam:foo}}"));
+    }
 
-	@Test
-	public void testEnvVar() {
-		assertEquals(System.getenv("LANG"), SystemPropertyUtils.getProperty("lang"));
-	}
+    @Test
+    public void testEnvVar() {
+        assertEquals(System.getenv("LANG"), SystemPropertyUtils.getProperty("lang"));
+    }
 
 }

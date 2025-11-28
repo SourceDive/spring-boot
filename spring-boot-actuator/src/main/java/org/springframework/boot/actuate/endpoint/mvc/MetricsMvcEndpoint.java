@@ -18,42 +18,38 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Adapter to expose {@link MetricsEndpoint} as an {@link MvcEndpoint}.
- * 
+ *
  * @author Dave Syer
  */
 public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 
-	private final MetricsEndpoint delegate;
+    private final MetricsEndpoint delegate;
 
-	public MetricsMvcEndpoint(MetricsEndpoint delegate) {
-		super(delegate);
-		this.delegate = delegate;
-	}
+    public MetricsMvcEndpoint(MetricsEndpoint delegate) {
+        super(delegate);
+        this.delegate = delegate;
+    }
 
-	@RequestMapping(value = "/{name:.*}", method = RequestMethod.GET)
-	@ResponseBody
-	public Object value(@PathVariable String name) {
-		Object value = this.delegate.invoke().get(name);
-		if (value == null) {
-			throw new NoSuchMetricException("No such metric: " + name);
-		}
-		return value;
-	}
+    @RequestMapping(value = "/{name:.*}", method = RequestMethod.GET)
+    @ResponseBody
+    public Object value(@PathVariable String name) {
+        Object value = this.delegate.invoke().get(name);
+        if (value == null) {
+            throw new NoSuchMetricException("No such metric: " + name);
+        }
+        return value;
+    }
 
-	@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No such metric")
-	public static class NoSuchMetricException extends RuntimeException {
+    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No such metric")
+    public static class NoSuchMetricException extends RuntimeException {
 
-		public NoSuchMetricException(String string) {
-			super(string);
-		}
+        public NoSuchMetricException(String string) {
+            super(string);
+        }
 
-	}
+    }
 }

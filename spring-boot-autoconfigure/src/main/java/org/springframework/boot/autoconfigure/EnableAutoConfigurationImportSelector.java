@@ -16,12 +16,6 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
-
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.DeferredImportSelector;
@@ -32,55 +26,60 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+
 /**
  * {@link DeferredImportSelector} to handle {@link EnableAutoConfiguration
  * auto-configuration}.
- * 
+ *
  * @author Phillip Webb
  * @see EnableAutoConfiguration
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
 class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
-		BeanClassLoaderAware, ResourceLoaderAware {
+        BeanClassLoaderAware, ResourceLoaderAware {
 
-	private ClassLoader beanClassLoader;
+    private ClassLoader beanClassLoader;
 
-	private ResourceLoader resourceLoader;
+    private ResourceLoader resourceLoader;
 
-	@Override
-	public String[] selectImports(AnnotationMetadata metadata) {
-		try {
-			AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
-					.getAnnotationAttributes(EnableAutoConfiguration.class.getName(),
-							true));
+    @Override
+    public String[] selectImports(AnnotationMetadata metadata) {
+        try {
+            AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
+                    .getAnnotationAttributes(EnableAutoConfiguration.class.getName(),
+                            true));
 
-			// Find all possible auto configuration classes, filtering duplicates
-			List<String> factories = new ArrayList<String>(new LinkedHashSet<String>(
-					SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
-							this.beanClassLoader)));
+            // Find all possible auto configuration classes, filtering duplicates
+            List<String> factories = new ArrayList<String>(new LinkedHashSet<String>(
+                    SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
+                            this.beanClassLoader)));
 
-			// Remove those specifically disabled
-			factories.removeAll(Arrays.asList(attributes.getStringArray("exclude")));
+            // Remove those specifically disabled
+            factories.removeAll(Arrays.asList(attributes.getStringArray("exclude")));
 
-			// Sort
-			factories = new AutoConfigurationSorter(this.resourceLoader)
-					.getInPriorityOrder(factories);
+            // Sort
+            factories = new AutoConfigurationSorter(this.resourceLoader)
+                    .getInPriorityOrder(factories);
 
-			return factories.toArray(new String[factories.size()]);
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException(ex);
-		}
-	}
+            return factories.toArray(new String[factories.size()]);
+        } catch (IOException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
 
-	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.beanClassLoader = classLoader;
-	}
+    @Override
+    public void setBeanClassLoader(ClassLoader classLoader) {
+        this.beanClassLoader = classLoader;
+    }
 
-	@Override
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
-	}
+    @Override
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
 
 }

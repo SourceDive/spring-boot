@@ -16,23 +16,22 @@
 
 package org.springframework.boot.context.embedded;
 
-import java.io.IOException;
-
 import javax.servlet.GenericServlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import java.io.IOException;
 
 /**
  * Simple mock Servlet that does nothing.
- * 
+ *
  * @author Phillip Webb
  */
 public class MockServlet extends GenericServlet {
 
-	@Override
-	public void service(ServletRequest req, ServletResponse res) throws ServletException,
-			IOException {
-	}
+    @Override
+    public void service(ServletRequest req, ServletResponse res) throws ServletException,
+            IOException {
+    }
 
 }

@@ -16,10 +16,7 @@
 
 package org.springframework.boot.cli.command.grab;
 
-import java.util.List;
-
 import joptsimple.OptionSet;
-
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.options.CompilerOptionHandler;
@@ -30,38 +27,40 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 
+import java.util.List;
+
 /**
  * {@link Command} to grab the dependencies of one or more Groovy scripts
- * 
+ *
  * @author Andy Wilkinson
  */
 public class GrabCommand extends OptionParsingCommand {
 
-	public GrabCommand() {
-		super("grab", "Download a spring groovy script's dependencies to ./repository",
-				new GrabOptionHandler());
-	}
+    public GrabCommand() {
+        super("grab", "Download a spring groovy script's dependencies to ./repository",
+                new GrabOptionHandler());
+    }
 
-	private static final class GrabOptionHandler extends CompilerOptionHandler {
+    private static final class GrabOptionHandler extends CompilerOptionHandler {
 
-		@Override
-		protected void run(OptionSet options) throws Exception {
-			SourceOptions sourceOptions = new SourceOptions(options);
+        @Override
+        protected void run(OptionSet options) throws Exception {
+            SourceOptions sourceOptions = new SourceOptions(options);
 
-			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
-					.createDefaultRepositoryConfiguration();
+            List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
+                    .createDefaultRepositoryConfiguration();
 
-			GroovyCompilerConfiguration configuration = new OptionSetGroovyCompilerConfiguration(
-					options, this, repositoryConfiguration);
+            GroovyCompilerConfiguration configuration = new OptionSetGroovyCompilerConfiguration(
+                    options, this, repositoryConfiguration);
 
-			if (System.getProperty("grape.root") == null) {
-				System.setProperty("grape.root", ".");
-			}
+            if (System.getProperty("grape.root") == null) {
+                System.setProperty("grape.root", ".");
+            }
 
-			GroovyCompiler groovyCompiler = new GroovyCompiler(configuration);
-			groovyCompiler.compile(sourceOptions.getSourcesArray());
-		}
+            GroovyCompiler groovyCompiler = new GroovyCompiler(configuration);
+            groovyCompiler.compile(sourceOptions.getSourcesArray());
+        }
 
-	}
+    }
 
 }

@@ -24,27 +24,27 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
  * use <code>@Controller</code> or <code>@RequestMapping</code> at the type level (since
  * that would lead to a double mapping of paths, once by the regular MVC handler mappings
  * and once by the {@link EndpointHandlerMapping}).
- * 
+ *
  * @author Dave Syer
  */
 public interface MvcEndpoint {
 
-	/**
-	 * Return the MVC path of the endpoint.
-	 */
-	String getPath();
+    /**
+     * Return the MVC path of the endpoint.
+     */
+    String getPath();
 
-	/**
-	 * Return if the endpoint exposes sensitive information.
-	 */
-	boolean isSensitive();
+    /**
+     * Return if the endpoint exposes sensitive information.
+     */
+    boolean isSensitive();
 
-	/**
-	 * Return the type of {@link Endpoint} exposed, or {@code null} if this
-	 * {@link MvcEndpoint} exposes information that cannot be represented as a traditional
-	 * {@link Endpoint}.
-	 */
-	@SuppressWarnings("rawtypes")
-	Class<? extends Endpoint> getEndpointType();
+    /**
+     * Return the type of {@link Endpoint} exposed, or {@code null} if this
+     * {@link MvcEndpoint} exposes information that cannot be represented as a traditional
+     * {@link Endpoint}.
+     */
+    @SuppressWarnings("rawtypes")
+    Class<? extends Endpoint> getEndpointType();
 
 }

@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletRegistration;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,33 +28,36 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import javax.servlet.Servlet;
+import javax.servlet.ServletRegistration;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link WebRequestTraceFilter
  * tracing}.
- * 
+ *
  * @author Dave Syer
  */
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServletRegistration.class })
+@ConditionalOnClass({Servlet.class, DispatcherServlet.class, ServletRegistration.class})
 @AutoConfigureAfter(TraceRepositoryAutoConfiguration.class)
 public class TraceWebFilterAutoConfiguration {
 
-	@Autowired
-	private TraceRepository traceRepository;
+    @Autowired
+    private TraceRepository traceRepository;
 
-	@Autowired(required = false)
-	private BasicErrorController errorController;
+    @Autowired(required = false)
+    private BasicErrorController errorController;
 
-	@Value("${management.dump_requests:false}")
-	private boolean dumpRequests;
+    @Value("${management.dump_requests:false}")
+    private boolean dumpRequests;
 
-	@Bean
-	public WebRequestTraceFilter webRequestLoggingFilter(BeanFactory beanFactory) {
-		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository);
-		filter.setDumpRequests(this.dumpRequests);
-		if (this.errorController != null) {
-			filter.setErrorController(this.errorController);
-		}
-		return filter;
-	}
+    @Bean
+    public WebRequestTraceFilter webRequestLoggingFilter(BeanFactory beanFactory) {
+        WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository);
+        filter.setDumpRequests(this.dumpRequests);
+        if (this.errorController != null) {
+            filter.setErrorController(this.errorController);
+        }
+        return filter;
+    }
 
 }

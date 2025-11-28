@@ -21,42 +21,42 @@ import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 /**
  * {@link ArtifactCoordinatesResolver} backed by {@link ManagedDependencies}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ManagedDependenciesArtifactCoordinatesResolver implements
-		ArtifactCoordinatesResolver {
+        ArtifactCoordinatesResolver {
 
-	private final ManagedDependencies dependencies;
+    private final ManagedDependencies dependencies;
 
-	public ManagedDependenciesArtifactCoordinatesResolver() {
-		this(ManagedDependencies.get());
-	}
+    public ManagedDependenciesArtifactCoordinatesResolver() {
+        this(ManagedDependencies.get());
+    }
 
-	ManagedDependenciesArtifactCoordinatesResolver(ManagedDependencies dependencies) {
-		this.dependencies = dependencies;
-	}
+    ManagedDependenciesArtifactCoordinatesResolver(ManagedDependencies dependencies) {
+        this.dependencies = dependencies;
+    }
 
-	@Override
-	public String getGroupId(String artifactId) {
-		Dependency dependency = find(artifactId);
-		return (dependency == null ? null : dependency.getGroupId());
-	}
+    @Override
+    public String getGroupId(String artifactId) {
+        Dependency dependency = find(artifactId);
+        return (dependency == null ? null : dependency.getGroupId());
+    }
 
-	@Override
-	public String getVersion(String artifactId) {
-		Dependency dependency = find(artifactId);
-		return (dependency == null ? null : dependency.getVersion());
-	}
+    @Override
+    public String getVersion(String artifactId) {
+        Dependency dependency = find(artifactId);
+        return (dependency == null ? null : dependency.getVersion());
+    }
 
-	private Dependency find(String artifactId) {
-		if (artifactId != null) {
-			if (artifactId.startsWith("spring-boot")) {
-				return new Dependency("org.springframework.boot", artifactId,
-						this.dependencies.getVersion());
-			}
-			return this.dependencies.find(artifactId);
-		}
-		return null;
-	}
+    private Dependency find(String artifactId) {
+        if (artifactId != null) {
+            if (artifactId.startsWith("spring-boot")) {
+                return new Dependency("org.springframework.boot", artifactId,
+                        this.dependencies.getVersion());
+            }
+            return this.dependencies.find(artifactId);
+        }
+        return null;
+    }
 }

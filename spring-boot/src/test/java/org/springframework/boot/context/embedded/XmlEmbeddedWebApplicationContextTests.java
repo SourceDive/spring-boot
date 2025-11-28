@@ -16,75 +16,75 @@
 
 package org.springframework.boot.context.embedded;
 
-import javax.servlet.Servlet;
-
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+
+import javax.servlet.Servlet;
 
 import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link XmlEmbeddedWebApplicationContext}.
- * 
+ *
  * @author Phillip Webb
  */
 public class XmlEmbeddedWebApplicationContextTests {
 
-	private static final String PATH = XmlEmbeddedWebApplicationContextTests.class
-			.getPackage().getName().replace(".", "/")
-			+ "/";
+    private static final String PATH = XmlEmbeddedWebApplicationContextTests.class
+            .getPackage().getName().replace(".", "/")
+            + "/";
 
-	private static final String FILE = "exampleEmbeddedWebApplicationConfiguration.xml";
+    private static final String FILE = "exampleEmbeddedWebApplicationConfiguration.xml";
 
-	private XmlEmbeddedWebApplicationContext context;
+    private XmlEmbeddedWebApplicationContext context;
 
-	@Test
-	public void createFromResource() throws Exception {
-		this.context = new XmlEmbeddedWebApplicationContext(new ClassPathResource(FILE,
-				getClass()));
-		verifyContext();
-	}
+    @Test
+    public void createFromResource() throws Exception {
+        this.context = new XmlEmbeddedWebApplicationContext(new ClassPathResource(FILE,
+                getClass()));
+        verifyContext();
+    }
 
-	@Test
-	public void createFromResourceLocation() throws Exception {
-		this.context = new XmlEmbeddedWebApplicationContext(PATH + FILE);
-		verifyContext();
-	}
+    @Test
+    public void createFromResourceLocation() throws Exception {
+        this.context = new XmlEmbeddedWebApplicationContext(PATH + FILE);
+        verifyContext();
+    }
 
-	@Test
-	public void createFromRelativeResourceLocation() throws Exception {
-		this.context = new XmlEmbeddedWebApplicationContext(getClass(), FILE);
-		verifyContext();
-	}
+    @Test
+    public void createFromRelativeResourceLocation() throws Exception {
+        this.context = new XmlEmbeddedWebApplicationContext(getClass(), FILE);
+        verifyContext();
+    }
 
-	@Test
-	public void loadAndRefreshFromResource() throws Exception {
-		this.context = new XmlEmbeddedWebApplicationContext();
-		this.context.load(new ClassPathResource(FILE, getClass()));
-		this.context.refresh();
-		verifyContext();
-	}
+    @Test
+    public void loadAndRefreshFromResource() throws Exception {
+        this.context = new XmlEmbeddedWebApplicationContext();
+        this.context.load(new ClassPathResource(FILE, getClass()));
+        this.context.refresh();
+        verifyContext();
+    }
 
-	@Test
-	public void loadAndRefreshFromResourceLocation() throws Exception {
-		this.context = new XmlEmbeddedWebApplicationContext();
-		this.context.load(PATH + FILE);
-		this.context.refresh();
-		verifyContext();
-	}
+    @Test
+    public void loadAndRefreshFromResourceLocation() throws Exception {
+        this.context = new XmlEmbeddedWebApplicationContext();
+        this.context.load(PATH + FILE);
+        this.context.refresh();
+        verifyContext();
+    }
 
-	@Test
-	public void loadAndRefreshFromRelativeResourceLocation() throws Exception {
-		this.context = new XmlEmbeddedWebApplicationContext();
-		this.context.load(getClass(), FILE);
-		this.context.refresh();
-		verifyContext();
-	}
+    @Test
+    public void loadAndRefreshFromRelativeResourceLocation() throws Exception {
+        this.context = new XmlEmbeddedWebApplicationContext();
+        this.context.load(getClass(), FILE);
+        this.context.refresh();
+        verifyContext();
+    }
 
-	private void verifyContext() {
-		MockEmbeddedServletContainerFactory containerFactory = this.context
-				.getBean(MockEmbeddedServletContainerFactory.class);
-		Servlet servlet = this.context.getBean(Servlet.class);
-		verify(containerFactory.getServletContext()).addServlet("servlet", servlet);
-	}
+    private void verifyContext() {
+        MockEmbeddedServletContainerFactory containerFactory = this.context
+                .getBean(MockEmbeddedServletContainerFactory.class);
+        Servlet servlet = this.context.getBean(Servlet.class);
+        verify(containerFactory.getServletContext()).addServlet("servlet", servlet);
+    }
 }

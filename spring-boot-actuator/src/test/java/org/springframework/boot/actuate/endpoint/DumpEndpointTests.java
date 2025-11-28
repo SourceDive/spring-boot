@@ -16,42 +16,42 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.lang.management.ThreadInfo;
-import java.util.List;
-
 import org.junit.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.lang.management.ThreadInfo;
+import java.util.List;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link DumpEndpoint}.
- * 
+ *
  * @author Phillip Webb
  */
 public class DumpEndpointTests extends AbstractEndpointTests<DumpEndpoint> {
 
-	public DumpEndpointTests() {
-		super(Config.class, DumpEndpoint.class, "dump", true, "endpoints.dump");
-	}
+    public DumpEndpointTests() {
+        super(Config.class, DumpEndpoint.class, "dump", true, "endpoints.dump");
+    }
 
-	@Test
-	public void invoke() throws Exception {
-		List<ThreadInfo> threadInfo = getEndpointBean().invoke();
-		assertThat(threadInfo.size(), greaterThan(0));
-	}
+    @Test
+    public void invoke() throws Exception {
+        List<ThreadInfo> threadInfo = getEndpointBean().invoke();
+        assertThat(threadInfo.size(), greaterThan(0));
+    }
 
-	@Configuration
-	@EnableConfigurationProperties
-	public static class Config {
+    @Configuration
+    @EnableConfigurationProperties
+    public static class Config {
 
-		@Bean
-		public DumpEndpoint endpoint() {
-			return new DumpEndpoint();
-		}
+        @Bean
+        public DumpEndpoint endpoint() {
+            return new DumpEndpoint();
+        }
 
-	}
+    }
 }

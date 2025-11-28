@@ -30,17 +30,17 @@ import sample.aop.service.HelloWorldService;
 @ComponentScan
 public class SampleAopApplication implements CommandLineRunner {
 
-	// Simple example shows how an application can spy on itself with AOP
+    // Simple example shows how an application can spy on itself with AOP
 
-	@Autowired
-	private HelloWorldService helloWorldService;
+    @Autowired
+    private HelloWorldService helloWorldService;
 
-	@Override
-	public void run(String... args) {
-		System.out.println(this.helloWorldService.getHelloMessage());
-	}
+    @Override
+    public void run(String... args) {
+        System.out.println(this.helloWorldService.getHelloMessage());
+    }
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleAopApplication.class, args);
-	}
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(SampleAopApplication.class, args);
+    }
 }

@@ -22,28 +22,28 @@ import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose application health.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.health", ignoreUnknownFields = false)
 public class HealthEndpoint<T> extends AbstractEndpoint<T> {
 
-	private final HealthIndicator<? extends T> indicator;
+    private final HealthIndicator<? extends T> indicator;
 
-	/**
-	 * Create a new {@link HealthIndicator} instance.
-	 * 
-	 * @param indicator the health indicator
-	 */
-	public HealthEndpoint(HealthIndicator<? extends T> indicator) {
-		super("health", false, true);
-		Assert.notNull(indicator, "Indicator must not be null");
-		this.indicator = indicator;
-	}
+    /**
+     * Create a new {@link HealthIndicator} instance.
+     *
+     * @param indicator the health indicator
+     */
+    public HealthEndpoint(HealthIndicator<? extends T> indicator) {
+        super("health", false, true);
+        Assert.notNull(indicator, "Indicator must not be null");
+        this.indicator = indicator;
+    }
 
-	@Override
-	public T invoke() {
-		return this.indicator.health();
-	}
+    @Override
+    public T invoke() {
+        return this.indicator.health();
+    }
 
 }

@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.reactor;
 
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
 import reactor.core.Reactor;
 
 import static org.junit.Assert.assertNotNull;
@@ -28,14 +27,14 @@ import static org.junit.Assert.assertNotNull;
  */
 public class ReactorAutoConfigurationTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@Test
-	public void reactorIsAvailable() {
-		this.context.register(ReactorAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(Reactor.class));
-		this.context.close();
-	}
+    @Test
+    public void reactorIsAvailable() {
+        this.context.register(ReactorAutoConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context.getBean(Reactor.class));
+        this.context.close();
+    }
 
 }

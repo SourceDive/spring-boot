@@ -16,16 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
@@ -41,80 +31,83 @@ import org.springframework.util.StopWatch;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.UrlPathHelper;
 
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that records Servlet interactions
  * with a {@link CounterService} and {@link GaugeService}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
 @Configuration
-@ConditionalOnBean({ CounterService.class, GaugeService.class })
-@ConditionalOnClass({ Servlet.class, ServletRegistration.class })
+@ConditionalOnBean({CounterService.class, GaugeService.class})
+@ConditionalOnClass({Servlet.class, ServletRegistration.class})
 @AutoConfigureAfter(MetricRepositoryAutoConfiguration.class)
 public class MetricFilterAutoConfiguration {
 
-	private static final int UNDEFINED_HTTP_STATUS = 999;
+    private static final int UNDEFINED_HTTP_STATUS = 999;
 
-	@Autowired
-	private CounterService counterService;
+    @Autowired
+    private CounterService counterService;
 
-	@Autowired
-	private GaugeService gaugeService;
+    @Autowired
+    private GaugeService gaugeService;
 
-	@Bean
-	public Filter metricFilter() {
-		return new MetricsFilter();
-	}
+    @Bean
+    public Filter metricFilter() {
+        return new MetricsFilter();
+    }
 
-	/**
-	 * Filter that counts requests and measures processing times.
-	 */
-	@Order(Ordered.HIGHEST_PRECEDENCE)
-	private final class MetricsFilter extends OncePerRequestFilter {
+    /**
+     * Filter that counts requests and measures processing times.
+     */
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    private final class MetricsFilter extends OncePerRequestFilter {
 
-		@Override
-		protected void doFilterInternal(HttpServletRequest request,
-				HttpServletResponse response, FilterChain chain) throws ServletException,
-				IOException {
-			UrlPathHelper helper = new UrlPathHelper();
-			String suffix = helper.getPathWithinApplication(request);
-			StopWatch stopWatch = new StopWatch();
-			stopWatch.start();
-			try {
-				chain.doFilter(request, response);
-			}
-			finally {
-				stopWatch.stop();
-				String gaugeKey = getKey("response" + suffix);
-				MetricFilterAutoConfiguration.this.gaugeService.submit(gaugeKey,
-						stopWatch.getTotalTimeMillis());
-				String counterKey = getKey("status." + getStatus(response) + suffix);
-				MetricFilterAutoConfiguration.this.counterService.increment(counterKey);
-			}
-		}
+        @Override
+        protected void doFilterInternal(HttpServletRequest request,
+                                        HttpServletResponse response, FilterChain chain) throws ServletException,
+                IOException {
+            UrlPathHelper helper = new UrlPathHelper();
+            String suffix = helper.getPathWithinApplication(request);
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
+            try {
+                chain.doFilter(request, response);
+            } finally {
+                stopWatch.stop();
+                String gaugeKey = getKey("response" + suffix);
+                MetricFilterAutoConfiguration.this.gaugeService.submit(gaugeKey,
+                        stopWatch.getTotalTimeMillis());
+                String counterKey = getKey("status." + getStatus(response) + suffix);
+                MetricFilterAutoConfiguration.this.counterService.increment(counterKey);
+            }
+        }
 
-		private int getStatus(HttpServletResponse response) {
-			try {
-				return response.getStatus();
-			}
-			catch (Exception ex) {
-				return UNDEFINED_HTTP_STATUS;
-			}
-		}
+        private int getStatus(HttpServletResponse response) {
+            try {
+                return response.getStatus();
+            } catch (Exception ex) {
+                return UNDEFINED_HTTP_STATUS;
+            }
+        }
 
-		private String getKey(String string) {
-			// graphite compatible metric names
-			String value = string.replace("/", ".");
-			value = value.replace("..", ".");
-			if (value.endsWith(".")) {
-				value = value + "root";
-			}
-			if (value.startsWith("_")) {
-				value = value.substring(1);
-			}
-			return value;
-		}
-	}
+        private String getKey(String string) {
+            // graphite compatible metric names
+            String value = string.replace("/", ".");
+            value = value.replace("..", ".");
+            if (value.endsWith(".")) {
+                value = value + "root";
+            }
+            if (value.startsWith("_")) {
+                value = value.substring(1);
+            }
+            return value;
+        }
+    }
 
 }

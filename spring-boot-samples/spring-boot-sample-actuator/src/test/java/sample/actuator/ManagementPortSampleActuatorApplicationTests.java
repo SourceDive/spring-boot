@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for separate management and main service ports.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -48,56 +48,56 @@ import static org.junit.Assert.assertEquals;
 @ActiveProfiles("management-port")
 public class ManagementPortSampleActuatorApplicationTests {
 
-	@Autowired
-	private SecurityProperties security;
+    @Autowired
+    private SecurityProperties security;
 
-	@Value("${server.port}")
-	private int port = 9010;
+    @Value("${server.port}")
+    private int port = 9010;
 
-	@Value("${management.port}")
-	private int managementPort = 9011;
+    @Value("${management.port}")
+    private int managementPort = 9011;
 
-	@Test
-	public void testHome() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + this.port, Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals("Hello Phil", body.get("message"));
-	}
+    @Test
+    public void testHome() throws Exception {
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+                .getForEntity("http://localhost:" + this.port, Map.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = entity.getBody();
+        assertEquals("Hello Phil", body.get("message"));
+    }
 
-	@Test
-	public void testMetrics() throws Exception {
-		testHome(); // makes sure some requests have been made
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/metrics", Map.class);
-		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
-	}
+    @Test
+    public void testMetrics() throws Exception {
+        testHome(); // makes sure some requests have been made
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:" + this.managementPort + "/metrics", Map.class);
+        assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+    }
 
-	@Test
-	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/health", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("ok", entity.getBody());
-	}
+    @Test
+    public void testHealth() throws Exception {
+        ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:" + this.managementPort + "/health", String.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        assertEquals("ok", entity.getBody());
+    }
 
-	@Test
-	public void testErrorPage() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/error", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals(999, body.get("status"));
-	}
+    @Test
+    public void testErrorPage() throws Exception {
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:" + this.managementPort + "/error", Map.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = entity.getBody();
+        assertEquals(999, body.get("status"));
+    }
 
-	private String getPassword() {
-		return this.security.getUser().getPassword();
-	}
+    private String getPassword() {
+        return this.security.getUser().getPassword();
+    }
 
 }

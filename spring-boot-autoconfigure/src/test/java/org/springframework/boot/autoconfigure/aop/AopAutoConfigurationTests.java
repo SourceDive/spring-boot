@@ -30,94 +30,94 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link AopAutoConfiguration}.
- * 
+ *
  * @author Eberhard Wolff
  */
 public class AopAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
-	@Test
-	public void testNoAopAutoConfiguration() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.aop.auto:false");
-		this.context.refresh();
-		TestAspect aspect = this.context.getBean(TestAspect.class);
-		assertFalse(aspect.isCalled());
-		TestBean bean = this.context.getBean(TestBean.class);
-		bean.foo();
-		assertFalse(aspect.isCalled());
-	}
+    @Test
+    public void testNoAopAutoConfiguration() {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        EnvironmentTestUtils.addEnvironment(this.context, "spring.aop.auto:false");
+        this.context.refresh();
+        TestAspect aspect = this.context.getBean(TestAspect.class);
+        assertFalse(aspect.isCalled());
+        TestBean bean = this.context.getBean(TestBean.class);
+        bean.foo();
+        assertFalse(aspect.isCalled());
+    }
 
-	@Test
-	public void testAopAutoConfigurationProxyTargetClass() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.aop.proxyTargetClass:true");
-		this.context.refresh();
-		TestAspect aspect = this.context.getBean(TestAspect.class);
-		assertFalse(aspect.isCalled());
-		TestBean bean = this.context.getBean(TestBean.class);
-		bean.foo();
-		assertTrue(aspect.isCalled());
-	}
+    @Test
+    public void testAopAutoConfigurationProxyTargetClass() {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        EnvironmentTestUtils.addEnvironment(this.context,
+                "spring.aop.proxyTargetClass:true");
+        this.context.refresh();
+        TestAspect aspect = this.context.getBean(TestAspect.class);
+        assertFalse(aspect.isCalled());
+        TestBean bean = this.context.getBean(TestBean.class);
+        bean.foo();
+        assertTrue(aspect.isCalled());
+    }
 
-	@Test
-	public void testAopAutoConfigurationNoProxyTargetClass() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.aop.proxyTargetClass:false");
-		this.context.refresh();
-		TestAspect aspect = this.context.getBean(TestAspect.class);
-		assertFalse(aspect.isCalled());
-		TestInterface bean = this.context.getBean(TestInterface.class);
-		bean.foo();
-		assertTrue(aspect.isCalled());
-	}
+    @Test
+    public void testAopAutoConfigurationNoProxyTargetClass() {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        EnvironmentTestUtils.addEnvironment(this.context,
+                "spring.aop.proxyTargetClass:false");
+        this.context.refresh();
+        TestAspect aspect = this.context.getBean(TestAspect.class);
+        assertFalse(aspect.isCalled());
+        TestInterface bean = this.context.getBean(TestInterface.class);
+        bean.foo();
+        assertTrue(aspect.isCalled());
+    }
 
-	@Configuration
-	protected static class TestConfiguration {
-		@Bean
-		public TestAspect aspect() {
-			return new TestAspect();
-		}
+    @Configuration
+    protected static class TestConfiguration {
+        @Bean
+        public TestAspect aspect() {
+            return new TestAspect();
+        }
 
-		@Bean
-		public TestInterface bean() {
-			return new TestBean();
-		}
-	}
+        @Bean
+        public TestInterface bean() {
+            return new TestBean();
+        }
+    }
 
-	protected static class TestBean implements TestInterface {
-		@Override
-		public void foo() {
-		}
-	}
+    protected static class TestBean implements TestInterface {
+        @Override
+        public void foo() {
+        }
+    }
 
-	@Aspect
-	protected static class TestAspect {
-		private boolean called;
+    @Aspect
+    protected static class TestAspect {
+        private boolean called;
 
-		public boolean isCalled() {
-			return this.called;
-		}
+        public boolean isCalled() {
+            return this.called;
+        }
 
-		@Before("execution(* foo(..))")
-		public void before() {
-			this.called = true;
-		}
-	}
+        @Before("execution(* foo(..))")
+        public void before() {
+            this.called = true;
+        }
+    }
 
-	public interface TestInterface {
+    public interface TestInterface {
 
-		public abstract void foo();
+        public abstract void foo();
 
-	}
+    }
 
 }

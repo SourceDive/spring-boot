@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.util.Collections;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -25,45 +23,47 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import java.util.Collections;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link AutoConfigurationPackages}.
- * 
+ *
  * @author Phillip Webb
  */
 @SuppressWarnings("resource")
 public class AutoConfigurationPackagesTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	@Test
-	public void setAndGet() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				ConfigWithRegistrar.class);
-		assertThat(AutoConfigurationPackages.get(context.getBeanFactory()),
-				equalTo(Collections.singletonList(getClass().getPackage().getName())));
-	}
+    @Test
+    public void setAndGet() {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                ConfigWithRegistrar.class);
+        assertThat(AutoConfigurationPackages.get(context.getBeanFactory()),
+                equalTo(Collections.singletonList(getClass().getPackage().getName())));
+    }
 
-	@Test
-	public void getWithoutSet() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				EmptyConfig.class);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown
-				.expectMessage("Unable to retrieve @EnableAutoConfiguration base packages");
-		AutoConfigurationPackages.get(context.getBeanFactory());
-	}
+    @Test
+    public void getWithoutSet() throws Exception {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                EmptyConfig.class);
+        this.thrown.expect(IllegalStateException.class);
+        this.thrown
+                .expectMessage("Unable to retrieve @EnableAutoConfiguration base packages");
+        AutoConfigurationPackages.get(context.getBeanFactory());
+    }
 
-	@Configuration
-	@Import(AutoConfigurationPackages.Registrar.class)
-	static class ConfigWithRegistrar {
-	}
+    @Configuration
+    @Import(AutoConfigurationPackages.Registrar.class)
+    static class ConfigWithRegistrar {
+    }
 
-	@Configuration
-	static class EmptyConfig {
-	}
+    @Configuration
+    static class EmptyConfig {
+    }
 
 }

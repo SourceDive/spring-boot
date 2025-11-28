@@ -21,29 +21,28 @@ import org.springframework.boot.cli.command.Command;
 
 /**
  * {@link Command} to change the {@link Shell} prompt.
- * 
+ *
  * @author Dave Syer
  */
 public class PromptCommand extends AbstractCommand {
 
-	private final ShellPrompts prompts;
+    private final ShellPrompts prompts;
 
-	public PromptCommand(ShellPrompts shellPrompts) {
-		super("prompt", "Change the prompt used with the current 'shell' command. "
-				+ "Execute with no arguments to return to the previous value.");
-		this.prompts = shellPrompts;
-	}
+    public PromptCommand(ShellPrompts shellPrompts) {
+        super("prompt", "Change the prompt used with the current 'shell' command. "
+                + "Execute with no arguments to return to the previous value.");
+        this.prompts = shellPrompts;
+    }
 
-	@Override
-	public void run(String... strings) throws Exception {
-		if (strings.length > 0) {
-			for (String string : strings) {
-				this.prompts.pushPrompt(string + " ");
-			}
-		}
-		else {
-			this.prompts.popPrompt();
-		}
-	}
+    @Override
+    public void run(String... strings) throws Exception {
+        if (strings.length > 0) {
+            for (String string : strings) {
+                this.prompts.pushPrompt(string + " ");
+            }
+        } else {
+            this.prompts.popPrompt();
+        }
+    }
 
 }

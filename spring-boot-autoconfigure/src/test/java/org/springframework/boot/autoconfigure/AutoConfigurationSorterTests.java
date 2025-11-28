@@ -16,10 +16,6 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.IsEqual;
@@ -31,163 +27,167 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.DefaultResourceLoader;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link AutoConfigurationSorter}.
- * 
+ *
  * @author Phillip Webb
  */
 public class AutoConfigurationSorterTests {
 
-	private static final String LOWEST = OrderLowest.class.getName();
-	private static final String HIGHEST = OrderHighest.class.getName();
-	private static final String A = AutoConfigureA.class.getName();
-	private static final String B = AutoConfigureB.class.getName();
-	private static final String C = AutoConfigureC.class.getName();
-	private static final String D = AutoConfigureD.class.getName();
-	private static final String E = AutoConfigureE.class.getName();
-	private static final String W = AutoConfigureW.class.getName();
-	private static final String X = AutoConfigureX.class.getName();
-	private static final String Y = AutoConfigureY.class.getName();
-	private static final String Z = AutoConfigureZ.class.getName();
+    private static final String LOWEST = OrderLowest.class.getName();
+    private static final String HIGHEST = OrderHighest.class.getName();
+    private static final String A = AutoConfigureA.class.getName();
+    private static final String B = AutoConfigureB.class.getName();
+    private static final String C = AutoConfigureC.class.getName();
+    private static final String D = AutoConfigureD.class.getName();
+    private static final String E = AutoConfigureE.class.getName();
+    private static final String W = AutoConfigureW.class.getName();
+    private static final String X = AutoConfigureX.class.getName();
+    private static final String Y = AutoConfigureY.class.getName();
+    private static final String Z = AutoConfigureZ.class.getName();
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	private AutoConfigurationSorter sorter;
+    private AutoConfigurationSorter sorter;
 
-	@Before
-	public void setup() {
-		this.sorter = new AutoConfigurationSorter(new DefaultResourceLoader());
-	}
+    @Before
+    public void setup() {
+        this.sorter = new AutoConfigurationSorter(new DefaultResourceLoader());
+    }
 
-	@Test
-	public void byOrderAnnotation() throws Exception {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(LOWEST,
-				HIGHEST));
-		assertThat(actual, nameMatcher(HIGHEST, LOWEST));
-	}
+    @Test
+    public void byOrderAnnotation() throws Exception {
+        List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(LOWEST,
+                HIGHEST));
+        assertThat(actual, nameMatcher(HIGHEST, LOWEST));
+    }
 
-	@Test
-	public void byAutoConfigureAfter() throws Exception {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B, C));
-		assertThat(actual, nameMatcher(C, B, A));
-	}
+    @Test
+    public void byAutoConfigureAfter() throws Exception {
+        List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B, C));
+        assertThat(actual, nameMatcher(C, B, A));
+    }
 
-	@Test
-	public void byAutoConfigureBefore() throws Exception {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(X, Y, Z));
-		assertThat(actual, nameMatcher(Z, Y, X));
-	}
+    @Test
+    public void byAutoConfigureBefore() throws Exception {
+        List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(X, Y, Z));
+        assertThat(actual, nameMatcher(Z, Y, X));
+    }
 
-	@Test
-	public void byAutoConfigureAfterDoubles() throws Exception {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, E));
-		assertThat(actual, nameMatcher(C, E, B, A));
-	}
+    @Test
+    public void byAutoConfigureAfterDoubles() throws Exception {
+        List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, E));
+        assertThat(actual, nameMatcher(C, E, B, A));
+    }
 
-	@Test
-	public void byAutoConfigureMixedBeforeAndAfter() throws Exception {
-		List<String> actual = this.sorter
-				.getInPriorityOrder(Arrays.asList(A, B, C, W, X));
-		assertThat(actual, nameMatcher(C, W, B, A, X));
-	}
+    @Test
+    public void byAutoConfigureMixedBeforeAndAfter() throws Exception {
+        List<String> actual = this.sorter
+                .getInPriorityOrder(Arrays.asList(A, B, C, W, X));
+        assertThat(actual, nameMatcher(C, W, B, A, X));
+    }
 
-	@Test
-	public void byAutoConfigureMixedBeforeAndAfterWithDifferentInputOrder()
-			throws Exception {
-		List<String> actual = this.sorter
-				.getInPriorityOrder(Arrays.asList(W, X, A, B, C));
-		assertThat(actual, nameMatcher(C, W, B, A, X));
-	}
+    @Test
+    public void byAutoConfigureMixedBeforeAndAfterWithDifferentInputOrder()
+            throws Exception {
+        List<String> actual = this.sorter
+                .getInPriorityOrder(Arrays.asList(W, X, A, B, C));
+        assertThat(actual, nameMatcher(C, W, B, A, X));
+    }
 
-	@Test
-	public void byAutoConfigureAfterWithMissing() throws Exception {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B));
-		assertThat(actual, nameMatcher(B, A));
-	}
+    @Test
+    public void byAutoConfigureAfterWithMissing() throws Exception {
+        List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B));
+        assertThat(actual, nameMatcher(B, A));
+    }
 
-	@Test
-	public void byAutoConfigureAfterWithCycle() throws Exception {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("AutoConfigure cycle detected");
-		this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, D));
-	}
+    @Test
+    public void byAutoConfigureAfterWithCycle() throws Exception {
+        this.thrown.expect(IllegalStateException.class);
+        this.thrown.expectMessage("AutoConfigure cycle detected");
+        this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, D));
+    }
 
-	private Matcher<? super List<String>> nameMatcher(String... names) {
+    private Matcher<? super List<String>> nameMatcher(String... names) {
 
-		final List<String> list = Arrays.asList(names);
+        final List<String> list = Arrays.asList(names);
 
-		return new IsEqual<List<String>>(list) {
+        return new IsEqual<List<String>>(list) {
 
-			@Override
-			public void describeMismatch(Object item, Description description) {
-				@SuppressWarnings("unchecked")
-				List<String> items = (List<String>) item;
-				description.appendText("was ").appendValue(prettify(items));
-			}
+            @Override
+            public void describeMismatch(Object item, Description description) {
+                @SuppressWarnings("unchecked")
+                List<String> items = (List<String>) item;
+                description.appendText("was ").appendValue(prettify(items));
+            }
 
-			@Override
-			public void describeTo(Description description) {
-				description.appendValue(prettify(list));
-			}
+            @Override
+            public void describeTo(Description description) {
+                description.appendValue(prettify(list));
+            }
 
-			private String prettify(List<String> items) {
-				List<String> pretty = new ArrayList<String>();
-				for (String item : items) {
-					if (item.contains("$AutoConfigure")) {
-						item = item.substring(item.indexOf("$AutoConfigure")
-								+ "$AutoConfigure".length());
-					}
-					pretty.add(item);
-				}
-				return pretty.toString();
-			}
-		};
+            private String prettify(List<String> items) {
+                List<String> pretty = new ArrayList<String>();
+                for (String item : items) {
+                    if (item.contains("$AutoConfigure")) {
+                        item = item.substring(item.indexOf("$AutoConfigure")
+                                + "$AutoConfigure".length());
+                    }
+                    pretty.add(item);
+                }
+                return pretty.toString();
+            }
+        };
 
-	}
+    }
 
-	@Order(Ordered.LOWEST_PRECEDENCE)
-	public static class OrderLowest {
-	}
+    @Order(Ordered.LOWEST_PRECEDENCE)
+    public static class OrderLowest {
+    }
 
-	@Order(Ordered.HIGHEST_PRECEDENCE)
-	public static class OrderHighest {
-	}
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public static class OrderHighest {
+    }
 
-	@AutoConfigureAfter(AutoConfigureB.class)
-	public static class AutoConfigureA {
-	}
+    @AutoConfigureAfter(AutoConfigureB.class)
+    public static class AutoConfigureA {
+    }
 
-	@AutoConfigureAfter({ AutoConfigureC.class, AutoConfigureD.class,
-			AutoConfigureE.class })
-	public static class AutoConfigureB {
-	}
+    @AutoConfigureAfter({AutoConfigureC.class, AutoConfigureD.class,
+            AutoConfigureE.class})
+    public static class AutoConfigureB {
+    }
 
-	public static class AutoConfigureC {
-	}
+    public static class AutoConfigureC {
+    }
 
-	@AutoConfigureAfter(AutoConfigureA.class)
-	public static class AutoConfigureD {
-	}
+    @AutoConfigureAfter(AutoConfigureA.class)
+    public static class AutoConfigureD {
+    }
 
-	public static class AutoConfigureE {
-	}
+    public static class AutoConfigureE {
+    }
 
-	@AutoConfigureBefore(AutoConfigureB.class)
-	public static class AutoConfigureW {
-	}
+    @AutoConfigureBefore(AutoConfigureB.class)
+    public static class AutoConfigureW {
+    }
 
-	public static class AutoConfigureX {
-	}
+    public static class AutoConfigureX {
+    }
 
-	@AutoConfigureBefore(AutoConfigureX.class)
-	public static class AutoConfigureY {
-	}
+    @AutoConfigureBefore(AutoConfigureX.class)
+    public static class AutoConfigureY {
+    }
 
-	@AutoConfigureBefore(AutoConfigureY.class)
-	public static class AutoConfigureZ {
-	}
+    @AutoConfigureBefore(AutoConfigureY.class)
+    public static class AutoConfigureZ {
+    }
 
 }

@@ -36,7 +36,7 @@ import static org.junit.Assert.assertFalse;
 /**
  * Integration tests for unsecured service endpoints (even with Spring Security on
  * classpath).
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -47,17 +47,17 @@ import static org.junit.Assert.assertFalse;
 @ActiveProfiles("unsecure")
 public class UnsecureSampleActuatorApplicationTests {
 
-	@Test
-	public void testHome() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals("Hello Phil", body.get("message"));
-		assertFalse("Wrong headers: " + entity.getHeaders(), entity.getHeaders()
-				.containsKey("Set-Cookie"));
-	}
+    @Test
+    public void testHome() throws Exception {
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:8080", Map.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = entity.getBody();
+        assertEquals("Hello Phil", body.get("message"));
+        assertFalse("Wrong headers: " + entity.getHeaders(), entity.getHeaders()
+                .containsKey("Set-Cookie"));
+    }
 
 }

@@ -20,44 +20,44 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for ActiveMQ
- * 
+ *
  * @author Greg Turnquist
  */
 @ConfigurationProperties(prefix = "spring.activemq")
 public class ActiveMQProperties {
 
-	private String brokerUrl = "tcp://localhost:61616";
+    private String brokerUrl = "tcp://localhost:61616";
 
-	private boolean inMemory = true;
+    private boolean inMemory = true;
 
-	private boolean pooled = false;
+    private boolean pooled = false;
 
-	// Will override brokerURL if inMemory is set to true
-	public String getBrokerUrl() {
-		if (this.inMemory) {
-			return "vm://localhost";
-		}
-		return this.brokerUrl;
-	}
+    // Will override brokerURL if inMemory is set to true
+    public String getBrokerUrl() {
+        if (this.inMemory) {
+            return "vm://localhost";
+        }
+        return this.brokerUrl;
+    }
 
-	public void setBrokerUrl(String brokerUrl) {
-		this.brokerUrl = brokerUrl;
-	}
+    public void setBrokerUrl(String brokerUrl) {
+        this.brokerUrl = brokerUrl;
+    }
 
-	public boolean isInMemory() {
-		return this.inMemory;
-	}
+    public boolean isInMemory() {
+        return this.inMemory;
+    }
 
-	public void setInMemory(boolean inMemory) {
-		this.inMemory = inMemory;
-	}
+    public void setInMemory(boolean inMemory) {
+        this.inMemory = inMemory;
+    }
 
-	public boolean isPooled() {
-		return this.pooled;
-	}
+    public boolean isPooled() {
+        return this.pooled;
+    }
 
-	public void setPooled(boolean pooled) {
-		this.pooled = pooled;
-	}
+    public void setPooled(boolean pooled) {
+        this.pooled = pooled;
+    }
 
 }

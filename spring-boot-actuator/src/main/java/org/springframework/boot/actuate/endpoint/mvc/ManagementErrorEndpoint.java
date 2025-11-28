@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.util.Map;
-
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -27,46 +25,48 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import java.util.Map;
+
 /**
  * Special {@link MvcEndpoint} for handling "/error" path when the management servlet is
  * in a child context. The regular {@link ErrorController} should be available there but
  * because of the way the handler mappings are set up it will not be detected.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "error")
 public class ManagementErrorEndpoint implements MvcEndpoint {
 
-	private final ErrorController controller;
+    private final ErrorController controller;
 
-	private final String path;
+    private final String path;
 
-	public ManagementErrorEndpoint(String path, ErrorController controller) {
-		Assert.notNull(controller, "Controller must not be null");
-		this.path = path;
-		this.controller = controller;
-	}
+    public ManagementErrorEndpoint(String path, ErrorController controller) {
+        Assert.notNull(controller, "Controller must not be null");
+        this.path = path;
+        this.controller = controller;
+    }
 
-	@RequestMapping
-	@ResponseBody
-	public Map<String, Object> invoke() {
-		RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
-		return this.controller.extract(attributes, false, true);
-	}
+    @RequestMapping
+    @ResponseBody
+    public Map<String, Object> invoke() {
+        RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
+        return this.controller.extract(attributes, false, true);
+    }
 
-	@Override
-	public String getPath() {
-		return this.path;
-	}
+    @Override
+    public String getPath() {
+        return this.path;
+    }
 
-	@Override
-	public boolean isSensitive() {
-		return false;
-	}
+    @Override
+    public boolean isSensitive() {
+        return false;
+    }
 
-	@Override
-	@SuppressWarnings("rawtypes")
-	public Class<? extends Endpoint> getEndpointType() {
-		return null;
-	}
+    @Override
+    @SuppressWarnings("rawtypes")
+    public Class<? extends Endpoint> getEndpointType() {
+        return null;
+    }
 }

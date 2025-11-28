@@ -16,13 +16,6 @@
 
 package org.springframework.boot.gradle.task;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.concurrent.Callable;
-
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
@@ -32,80 +25,86 @@ import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.concurrent.Callable;
+
 /**
  * Run the project from Gradle.
- * 
+ *
  * @author Dave Syer
  */
 public class RunApp extends DefaultTask {
 
-	@TaskAction
-	public void runApp() {
+    @TaskAction
+    public void runApp() {
 
-		final Project project = getProject();
-		final SourceSet main = ComputeMain.findMainSourceSet(project);
-		final File outputDir = (main == null ? null : main.getOutput().getResourcesDir());
-		final Set<File> allResources = new LinkedHashSet<File>();
-		if (main != null) {
-			allResources.addAll(main.getResources().getSrcDirs());
-		}
+        final Project project = getProject();
+        final SourceSet main = ComputeMain.findMainSourceSet(project);
+        final File outputDir = (main == null ? null : main.getOutput().getResourcesDir());
+        final Set<File> allResources = new LinkedHashSet<File>();
+        if (main != null) {
+            allResources.addAll(main.getResources().getSrcDirs());
+        }
 
-		project.getTasks().withType(JavaExec.class, new Action<JavaExec>() {
+        project.getTasks().withType(JavaExec.class, new Action<JavaExec>() {
 
-			@Override
-			public void execute(JavaExec exec) {
-				ArrayList<File> files = new ArrayList<File>(exec.getClasspath()
-						.getFiles());
-				files.addAll(0, allResources);
-				getLogger().info("Adding classpath: " + allResources);
-				exec.setClasspath(new SimpleFileCollection(files));
-				if (exec.getMain() == null) {
-					final String mainClass = findMainClass(main);
-					exec.setMain(mainClass);
-					exec.getConventionMapping().map("main", new Callable<String>() {
+            @Override
+            public void execute(JavaExec exec) {
+                ArrayList<File> files = new ArrayList<File>(exec.getClasspath()
+                        .getFiles());
+                files.addAll(0, allResources);
+                getLogger().info("Adding classpath: " + allResources);
+                exec.setClasspath(new SimpleFileCollection(files));
+                if (exec.getMain() == null) {
+                    final String mainClass = findMainClass(main);
+                    exec.setMain(mainClass);
+                    exec.getConventionMapping().map("main", new Callable<String>() {
 
-						@Override
-						public String call() throws Exception {
-							return mainClass;
-						}
+                        @Override
+                        public String call() throws Exception {
+                            return mainClass;
+                        }
 
-					});
-					getLogger().info("Found main: " + mainClass);
-				}
-				if (outputDir != null) {
-					for (File directory : allResources) {
-						removeDuplicatesFromOutputDir(directory, outputDir);
-					}
-				}
-				exec.exec();
-			}
+                    });
+                    getLogger().info("Found main: " + mainClass);
+                }
+                if (outputDir != null) {
+                    for (File directory : allResources) {
+                        removeDuplicatesFromOutputDir(directory, outputDir);
+                    }
+                }
+                exec.exec();
+            }
 
-			private void removeDuplicatesFromOutputDir(File directory, File outputDir) {
-				if (directory.isDirectory()) {
-					for (String name : directory.list()) {
-						File outputFile = new File(outputDir, name);
-						if (outputFile.exists() && outputFile.canWrite()) {
-							getProject().delete(outputFile);
-						}
-					}
-				}
-			}
+            private void removeDuplicatesFromOutputDir(File directory, File outputDir) {
+                if (directory.isDirectory()) {
+                    for (String name : directory.list()) {
+                        File outputFile = new File(outputDir, name);
+                        if (outputFile.exists() && outputFile.canWrite()) {
+                            getProject().delete(outputFile);
+                        }
+                    }
+                }
+            }
 
-		});
+        });
 
-	}
+    }
 
-	private String findMainClass(SourceSet main) {
-		if (main == null) {
-			return null;
-		}
-		getLogger().info("Looking for main in: " + main.getOutput().getClassesDir());
-		try {
-			return MainClassFinder.findMainClass(main.getOutput().getClassesDir());
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException("Cannot find main class", ex);
-		}
-	}
+    private String findMainClass(SourceSet main) {
+        if (main == null) {
+            return null;
+        }
+        getLogger().info("Looking for main in: " + main.getOutput().getClassesDir());
+        try {
+            return MainClassFinder.findMainClass(main.getOutput().getClassesDir());
+        } catch (IOException ex) {
+            throw new IllegalStateException("Cannot find main class", ex);
+        }
+    }
 
 }

@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for demo application.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -52,68 +52,68 @@ import static org.junit.Assert.assertTrue;
 @DirtiesContext
 public class SampleMethodSecurityApplicationTests {
 
-	@Test
-	public void testHome() throws Exception {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:8080", HttpMethod.GET, new HttpEntity<Void>(headers),
-				String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
-				.getBody().contains("<title>Login"));
-	}
+    @Test
+    public void testHome() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+        ResponseEntity<String> entity = new TestRestTemplate().exchange(
+                "http://localhost:8080", HttpMethod.GET, new HttpEntity<Void>(headers),
+                String.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
+                .getBody().contains("<title>Login"));
+    }
 
-	@Test
-	public void testLogin() throws Exception {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
-		form.set("username", "admin");
-		form.set("password", "admin");
-		getCsrf(form, headers);
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:8080/login", HttpMethod.POST,
-				new HttpEntity<MultiValueMap<String, String>>(form, headers),
-				String.class);
-		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
-		assertEquals("http://localhost:8080/", entity.getHeaders().getLocation()
-				.toString());
-	}
+    @Test
+    public void testLogin() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+        form.set("username", "admin");
+        form.set("password", "admin");
+        getCsrf(form, headers);
+        ResponseEntity<String> entity = new TestRestTemplate().exchange(
+                "http://localhost:8080/login", HttpMethod.POST,
+                new HttpEntity<MultiValueMap<String, String>>(form, headers),
+                String.class);
+        assertEquals(HttpStatus.FOUND, entity.getStatusCode());
+        assertEquals("http://localhost:8080/", entity.getHeaders().getLocation()
+                .toString());
+    }
 
-	@Test
-	public void testDenied() throws Exception {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
-		form.set("username", "user");
-		form.set("password", "user");
-		getCsrf(form, headers);
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:8080/login", HttpMethod.POST,
-				new HttpEntity<MultiValueMap<String, String>>(form, headers),
-				String.class);
-		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
-		String cookie = entity.getHeaders().getFirst("Set-Cookie");
-		headers.set("Cookie", cookie);
-		ResponseEntity<String> page = new TestRestTemplate().exchange(entity.getHeaders()
-				.getLocation(), HttpMethod.GET, new HttpEntity<Void>(headers),
-				String.class);
-		assertEquals(HttpStatus.FORBIDDEN, page.getStatusCode());
-		assertTrue("Wrong body (message doesn't match):\n" + entity.getBody(), page
-				.getBody().contains("Access denied"));
-	}
+    @Test
+    public void testDenied() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+        form.set("username", "user");
+        form.set("password", "user");
+        getCsrf(form, headers);
+        ResponseEntity<String> entity = new TestRestTemplate().exchange(
+                "http://localhost:8080/login", HttpMethod.POST,
+                new HttpEntity<MultiValueMap<String, String>>(form, headers),
+                String.class);
+        assertEquals(HttpStatus.FOUND, entity.getStatusCode());
+        String cookie = entity.getHeaders().getFirst("Set-Cookie");
+        headers.set("Cookie", cookie);
+        ResponseEntity<String> page = new TestRestTemplate().exchange(entity.getHeaders()
+                        .getLocation(), HttpMethod.GET, new HttpEntity<Void>(headers),
+                String.class);
+        assertEquals(HttpStatus.FORBIDDEN, page.getStatusCode());
+        assertTrue("Wrong body (message doesn't match):\n" + entity.getBody(), page
+                .getBody().contains("Access denied"));
+    }
 
-	private void getCsrf(MultiValueMap<String, String> form, HttpHeaders headers) {
-		ResponseEntity<String> page = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/login", String.class);
-		String cookie = page.getHeaders().getFirst("Set-Cookie");
-		headers.set("Cookie", cookie);
-		String body = page.getBody();
-		Matcher matcher = Pattern.compile("(?s).*name=\"_csrf\".*?value=\"([^\"]+).*")
-				.matcher(body);
-		matcher.find();
-		form.set("_csrf", matcher.group(1));
-	}
+    private void getCsrf(MultiValueMap<String, String> form, HttpHeaders headers) {
+        ResponseEntity<String> page = new TestRestTemplate().getForEntity(
+                "http://localhost:8080/login", String.class);
+        String cookie = page.getHeaders().getFirst("Set-Cookie");
+        headers.set("Cookie", cookie);
+        String body = page.getBody();
+        Matcher matcher = Pattern.compile("(?s).*name=\"_csrf\".*?value=\"([^\"]+).*")
+                .matcher(body);
+        matcher.find();
+        form.set("_csrf", matcher.group(1));
+    }
 
 }

@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -30,6 +27,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.willAnswer;
@@ -40,54 +40,54 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MetricFilterAutoConfiguration}.
- * 
+ *
  * @author Phillip Webb
  */
 public class MetricFilterAutoConfigurationTests {
 
-	@Test
-	public void recordsHttpInteractions() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				Config.class, MetricFilterAutoConfiguration.class);
-		Filter filter = context.getBean(Filter.class);
-		final MockHttpServletRequest request = new MockHttpServletRequest("GET",
-				"/test/path");
-		final MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain chain = mock(FilterChain.class);
-		willAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				response.setStatus(200);
-				return null;
-			}
-		}).given(chain).doFilter(request, response);
-		filter.doFilter(request, response, chain);
-		verify(context.getBean(CounterService.class)).increment("status.200.test.path");
-		verify(context.getBean(GaugeService.class)).submit(eq("response.test.path"),
-				anyDouble());
-		context.close();
-	}
+    @Test
+    public void recordsHttpInteractions() throws Exception {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                Config.class, MetricFilterAutoConfiguration.class);
+        Filter filter = context.getBean(Filter.class);
+        final MockHttpServletRequest request = new MockHttpServletRequest("GET",
+                "/test/path");
+        final MockHttpServletResponse response = new MockHttpServletResponse();
+        FilterChain chain = mock(FilterChain.class);
+        willAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                response.setStatus(200);
+                return null;
+            }
+        }).given(chain).doFilter(request, response);
+        filter.doFilter(request, response, chain);
+        verify(context.getBean(CounterService.class)).increment("status.200.test.path");
+        verify(context.getBean(GaugeService.class)).submit(eq("response.test.path"),
+                anyDouble());
+        context.close();
+    }
 
-	@Test
-	public void skipsFilterIfMissingServices() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				MetricFilterAutoConfiguration.class);
-		assertThat(context.getBeansOfType(Filter.class).size(), equalTo(0));
-		context.close();
-	}
+    @Test
+    public void skipsFilterIfMissingServices() throws Exception {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                MetricFilterAutoConfiguration.class);
+        assertThat(context.getBeansOfType(Filter.class).size(), equalTo(0));
+        context.close();
+    }
 
-	@Configuration
-	public static class Config {
+    @Configuration
+    public static class Config {
 
-		@Bean
-		public CounterService counterService() {
-			return mock(CounterService.class);
-		}
+        @Bean
+        public CounterService counterService() {
+            return mock(CounterService.class);
+        }
 
-		@Bean
-		public GaugeService gaugeService() {
-			return mock(GaugeService.class);
-		}
-	}
+        @Bean
+        public GaugeService gaugeService() {
+            return mock(GaugeService.class);
+        }
+    }
 
 }

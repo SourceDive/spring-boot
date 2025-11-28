@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data;
 
-import java.lang.annotation.Annotation;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -34,76 +32,78 @@ import org.springframework.data.repository.config.AnnotationRepositoryConfigurat
 import org.springframework.data.repository.config.RepositoryConfigurationDelegate;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
+import java.lang.annotation.Annotation;
+
 /**
  * Base {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data
  * Repositories.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Oliver Gierke
  */
 public abstract class AbstractRepositoryConfigurationSourceSupport implements
-		BeanFactoryAware, ImportBeanDefinitionRegistrar, ResourceLoaderAware,
-		EnvironmentAware {
+        BeanFactoryAware, ImportBeanDefinitionRegistrar, ResourceLoaderAware,
+        EnvironmentAware {
 
-	private ResourceLoader resourceLoader;
+    private ResourceLoader resourceLoader;
 
-	private BeanFactory beanFactory;
+    private BeanFactory beanFactory;
 
-	private Environment environment;
+    private Environment environment;
 
-	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-			BeanDefinitionRegistry registry) {
-		new RepositoryConfigurationDelegate(getConfigurationSource(), this.resourceLoader)
-				.registerRepositoriesIn(registry, getRepositoryConfigurationExtension());
-	}
+    @Override
+    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+                                        BeanDefinitionRegistry registry) {
+        new RepositoryConfigurationDelegate(getConfigurationSource(), this.resourceLoader)
+                .registerRepositoriesIn(registry, getRepositoryConfigurationExtension());
+    }
 
-	private AnnotationRepositoryConfigurationSource getConfigurationSource() {
-		StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(
-				getConfiguration(), true);
-		return new AnnotationRepositoryConfigurationSource(metadata, getAnnotation(),
-				this.resourceLoader, this.environment) {
-			@Override
-			public java.lang.Iterable<String> getBasePackages() {
-				return AbstractRepositoryConfigurationSourceSupport.this
-						.getBasePackages();
-			}
-		};
-	}
+    private AnnotationRepositoryConfigurationSource getConfigurationSource() {
+        StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(
+                getConfiguration(), true);
+        return new AnnotationRepositoryConfigurationSource(metadata, getAnnotation(),
+                this.resourceLoader, this.environment) {
+            @Override
+            public java.lang.Iterable<String> getBasePackages() {
+                return AbstractRepositoryConfigurationSourceSupport.this
+                        .getBasePackages();
+            }
+        };
+    }
 
-	protected Iterable<String> getBasePackages() {
-		return AutoConfigurationPackages.get(this.beanFactory);
-	}
+    protected Iterable<String> getBasePackages() {
+        return AutoConfigurationPackages.get(this.beanFactory);
+    }
 
-	/**
-	 * The Spring Data annotation used to enable the particular repository support.
-	 */
-	protected abstract Class<? extends Annotation> getAnnotation();
+    /**
+     * The Spring Data annotation used to enable the particular repository support.
+     */
+    protected abstract Class<? extends Annotation> getAnnotation();
 
-	/**
-	 * The configuration class that will be used by Spring Boot as a template.
-	 */
-	protected abstract Class<?> getConfiguration();
+    /**
+     * The configuration class that will be used by Spring Boot as a template.
+     */
+    protected abstract Class<?> getConfiguration();
 
-	/**
-	 * The {@link RepositoryConfigurationExtension} for the particular repository support.
-	 */
-	protected abstract RepositoryConfigurationExtension getRepositoryConfigurationExtension();
+    /**
+     * The {@link RepositoryConfigurationExtension} for the particular repository support.
+     */
+    protected abstract RepositoryConfigurationExtension getRepositoryConfigurationExtension();
 
-	@Override
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
-	}
+    @Override
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
 
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
-	}
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
 
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
-	}
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
 
 }

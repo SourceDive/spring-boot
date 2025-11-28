@@ -16,12 +16,6 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -31,6 +25,8 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+
+import java.lang.annotation.*;
 
 /**
  * Enable auto-configuration of the Spring Application Context, attempting to guess and
@@ -56,7 +52,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * Generally auto-configuration beans are {@link Conditional @Conditional} beans (most
  * often using {@link ConditionalOnClass @ConditionalOnClass} and
  * {@link ConditionalOnMissingBean @ConditionalOnMissingBean} annotations).
- * 
+ *
  * @author Phillip Webb
  * @see ConditionalOnBean
  * @see ConditionalOnMissingBean
@@ -66,13 +62,13 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({ EnableAutoConfigurationImportSelector.class,
-		AutoConfigurationPackages.Registrar.class })
+@Import({EnableAutoConfigurationImportSelector.class,
+        AutoConfigurationPackages.Registrar.class})
 public @interface EnableAutoConfiguration {
 
-	/**
-	 * Exclude specific auto-configuration classes such that they will never be applied.
-	 */
-	Class<?>[] exclude() default {};
+    /**
+     * Exclude specific auto-configuration classes such that they will never be applied.
+     */
+    Class<?>[] exclude() default {};
 
 }

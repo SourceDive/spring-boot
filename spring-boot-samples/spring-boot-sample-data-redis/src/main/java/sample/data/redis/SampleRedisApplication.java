@@ -28,21 +28,21 @@ import org.springframework.data.redis.core.ValueOperations;
 @EnableAutoConfiguration
 public class SampleRedisApplication implements CommandLineRunner {
 
-	@Autowired
-	private StringRedisTemplate template;
+    @Autowired
+    private StringRedisTemplate template;
 
-	@Override
-	public void run(String... args) throws Exception {
-		ValueOperations<String, String> ops = template.opsForValue();
-		String key = "spring.boot.redis.test";
-		if (!template.hasKey(key)) {
-			ops.set(key, "foo");
-		}
-		System.out.println("Found key " + key + ", value=" + ops.get(key));
-	}
+    @Override
+    public void run(String... args) throws Exception {
+        ValueOperations<String, String> ops = template.opsForValue();
+        String key = "spring.boot.redis.test";
+        if (!template.hasKey(key)) {
+            ops.set(key, "foo");
+        }
+        System.out.println("Found key " + key + ", value=" + ops.get(key));
+    }
 
-	public static void main(String[] args) throws Exception {
-		// Close the context so it doesn't stay awake listening for redis
-		SpringApplication.run(SampleRedisApplication.class, args).close();
-	}
+    public static void main(String[] args) throws Exception {
+        // Close the context so it doesn't stay awake listening for redis
+        SpringApplication.run(SampleRedisApplication.class, args).close();
+    }
 }

@@ -24,32 +24,32 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Security.
- * 
+ *
  * @author Dave Syer
  */
 public class SpringSecurityCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
-	@Override
-	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableWebSecurity");
-	}
+    @Override
+    public boolean matches(ClassNode classNode) {
+        return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableWebSecurity");
+    }
 
-	@Override
-	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies
-				.ifAnyMissingClasses(
-						"org.springframework.security.config.annotation.web.configuration.EnableWebSecurity")
-				.add("spring-security-config").add("spring-security-web", false);
-	}
+    @Override
+    public void applyDependencies(DependencyCustomizer dependencies) {
+        dependencies
+                .ifAnyMissingClasses(
+                        "org.springframework.security.config.annotation.web.configuration.EnableWebSecurity")
+                .add("spring-security-config").add("spring-security-web", false);
+    }
 
-	@Override
-	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("org.springframework.security.core.Authentication",
-				"org.springframework.security.core.authority.AuthorityUtils")
-				.addStarImports(
-						"org.springframework.security.config.annotation.web.configuration",
-						"org.springframework.security.authentication",
-						"org.springframework.security.config.annotation.web",
-						"org.springframework.security.config.annotation.web.builders");
-	}
+    @Override
+    public void applyImports(ImportCustomizer imports) {
+        imports.addImports("org.springframework.security.core.Authentication",
+                        "org.springframework.security.core.authority.AuthorityUtils")
+                .addStarImports(
+                        "org.springframework.security.config.annotation.web.configuration",
+                        "org.springframework.security.authentication",
+                        "org.springframework.security.config.annotation.web",
+                        "org.springframework.security.config.annotation.web.builders");
+    }
 }

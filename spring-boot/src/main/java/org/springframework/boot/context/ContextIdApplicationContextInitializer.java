@@ -33,74 +33,74 @@ import org.springframework.util.StringUtils;
  * <li>spring.config.name</li>
  * </ul>
  * If no property is set the ID 'application' will be used.
- * 
+ *
  * <p>
  * In addition the following environment properties will be consulted to append a relevant
  * port or index:
- * 
+ *
  * <ul>
  * <li>spring.application.index</li>
  * <li>vcap.application.instance_index</li>
  * <li>PORT</li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  */
 public class ContextIdApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
+        ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
-	/**
-	 * Placeholder pattern to resolve for application name
-	 */
-	private static final String NAME_PATTERN = "${vcap.application.name:${spring.application.name:${spring.config.name:application}}}";
+    /**
+     * Placeholder pattern to resolve for application name
+     */
+    private static final String NAME_PATTERN = "${vcap.application.name:${spring.application.name:${spring.config.name:application}}}";
 
-	/**
-	 * Placeholder pattern to resolve for application index
-	 */
-	private static final String INDEX_PATTERN = "${vcap.application.instance_index:${spring.application.index:${server.port:${PORT:null}}}}";
+    /**
+     * Placeholder pattern to resolve for application index
+     */
+    private static final String INDEX_PATTERN = "${vcap.application.instance_index:${spring.application.index:${server.port:${PORT:null}}}}";
 
-	private final String name;
+    private final String name;
 
-	private int order = Integer.MAX_VALUE - 10;
+    private int order = Integer.MAX_VALUE - 10;
 
-	public ContextIdApplicationContextInitializer() {
-		this(NAME_PATTERN);
-	}
+    public ContextIdApplicationContextInitializer() {
+        this(NAME_PATTERN);
+    }
 
-	/**
-	 * @param name
-	 */
-	public ContextIdApplicationContextInitializer(String name) {
-		this.name = name;
-	}
+    /**
+     * @param name
+     */
+    public ContextIdApplicationContextInitializer(String name) {
+        this.name = name;
+    }
 
-	public void setOrder(int order) {
-		this.order = order;
-	}
+    public void setOrder(int order) {
+        this.order = order;
+    }
 
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
+    @Override
+    public int getOrder() {
+        return this.order;
+    }
 
-	@Override
-	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext.setId(getApplicationId(applicationContext.getEnvironment()));
-	}
+    @Override
+    public void initialize(ConfigurableApplicationContext applicationContext) {
+        applicationContext.setId(getApplicationId(applicationContext.getEnvironment()));
+    }
 
-	private String getApplicationId(ConfigurableEnvironment environment) {
-		String name = environment.resolvePlaceholders(this.name);
-		String index = environment.resolvePlaceholders(INDEX_PATTERN);
+    private String getApplicationId(ConfigurableEnvironment environment) {
+        String name = environment.resolvePlaceholders(this.name);
+        String index = environment.resolvePlaceholders(INDEX_PATTERN);
 
-		String profiles = StringUtils.arrayToCommaDelimitedString(environment
-				.getActiveProfiles());
-		if (StringUtils.hasText(profiles)) {
-			name = name + ":" + profiles;
-		}
-		if (!"null".equals(index)) {
-			name = name + ":" + index;
-		}
-		return name;
-	}
+        String profiles = StringUtils.arrayToCommaDelimitedString(environment
+                .getActiveProfiles());
+        if (StringUtils.hasText(profiles)) {
+            name = name + ":" + profiles;
+        }
+        if (!"null".equals(index)) {
+            name = name + ":" + index;
+        }
+        return name;
+    }
 
 }

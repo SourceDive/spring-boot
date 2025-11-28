@@ -16,43 +16,43 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link BeansEndpoint}.
- * 
+ *
  * @author Phillip Webb
  */
 public class BeansEndpointTests extends AbstractEndpointTests<BeansEndpoint> {
 
-	public BeansEndpointTests() {
-		super(Config.class, BeansEndpoint.class, "beans", true, "endpoints.beans");
-	}
+    public BeansEndpointTests() {
+        super(Config.class, BeansEndpoint.class, "beans", true, "endpoints.beans");
+    }
 
-	@Test
-	public void invoke() throws Exception {
-		List<Object> result = getEndpointBean().invoke();
-		assertEquals(1, result.size());
-		assertTrue(result.get(0) instanceof Map);
-	}
+    @Test
+    public void invoke() throws Exception {
+        List<Object> result = getEndpointBean().invoke();
+        assertEquals(1, result.size());
+        assertTrue(result.get(0) instanceof Map);
+    }
 
-	@Configuration
-	@EnableConfigurationProperties
-	public static class Config {
+    @Configuration
+    @EnableConfigurationProperties
+    public static class Config {
 
-		@Bean
-		public BeansEndpoint endpoint() {
-			return new BeansEndpoint();
-		}
+        @Bean
+        public BeansEndpoint endpoint() {
+            return new BeansEndpoint();
+        }
 
-	}
+    }
 }

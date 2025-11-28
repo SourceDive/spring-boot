@@ -16,10 +16,6 @@
 
 package org.springframework.boot.logging.log4j;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -32,56 +28,60 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.StringUtils;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * {@link LoggingSystem} for for <a href="http://logging.apache.org/log4j">log4j</a>.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
 public class Log4JLoggingSystem extends AbstractLoggingSystem {
 
-	private static final Map<LogLevel, Level> LEVELS;
-	static {
-		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
-		levels.put(LogLevel.TRACE, Level.TRACE);
-		levels.put(LogLevel.DEBUG, Level.DEBUG);
-		levels.put(LogLevel.INFO, Level.INFO);
-		levels.put(LogLevel.WARN, Level.WARN);
-		levels.put(LogLevel.ERROR, Level.ERROR);
-		levels.put(LogLevel.FATAL, Level.ERROR);
-		LEVELS = Collections.unmodifiableMap(levels);
-	}
+    private static final Map<LogLevel, Level> LEVELS;
 
-	public Log4JLoggingSystem(ClassLoader classLoader) {
-		super(classLoader, "log4j.xml", "log4j.properties");
-	}
+    static {
+        Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
+        levels.put(LogLevel.TRACE, Level.TRACE);
+        levels.put(LogLevel.DEBUG, Level.DEBUG);
+        levels.put(LogLevel.INFO, Level.INFO);
+        levels.put(LogLevel.WARN, Level.WARN);
+        levels.put(LogLevel.ERROR, Level.ERROR);
+        levels.put(LogLevel.FATAL, Level.ERROR);
+        LEVELS = Collections.unmodifiableMap(levels);
+    }
 
-	@Override
-	public void beforeInitialize() {
-		super.beforeInitialize();
-		if (ClassUtils.isPresent("org.slf4j.bridge.SLF4JBridgeHandler", getClassLoader())) {
-			SLF4JBridgeHandler.removeHandlersForRootLogger();
-			SLF4JBridgeHandler.install();
-		}
-	}
+    public Log4JLoggingSystem(ClassLoader classLoader) {
+        super(classLoader, "log4j.xml", "log4j.properties");
+    }
 
-	@Override
-	public void initialize(String configLocation) {
-		Assert.notNull(configLocation, "ConfigLocation must not be null");
-		try {
-			Log4jConfigurer.initLogging(configLocation);
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Could not initialize logging from "
-					+ configLocation, ex);
-		}
-	}
+    @Override
+    public void beforeInitialize() {
+        super.beforeInitialize();
+        if (ClassUtils.isPresent("org.slf4j.bridge.SLF4JBridgeHandler", getClassLoader())) {
+            SLF4JBridgeHandler.removeHandlersForRootLogger();
+            SLF4JBridgeHandler.install();
+        }
+    }
 
-	@Override
-	public void setLogLevel(String loggerName, LogLevel level) {
-		Logger logger = (StringUtils.hasLength(loggerName) ? LogManager
-				.getLogger(loggerName) : LogManager.getRootLogger());
-		logger.setLevel(LEVELS.get(level));
-	}
+    @Override
+    public void initialize(String configLocation) {
+        Assert.notNull(configLocation, "ConfigLocation must not be null");
+        try {
+            Log4jConfigurer.initLogging(configLocation);
+        } catch (Exception ex) {
+            throw new IllegalStateException("Could not initialize logging from "
+                    + configLocation, ex);
+        }
+    }
+
+    @Override
+    public void setLogLevel(String loggerName, LogLevel level) {
+        Logger logger = (StringUtils.hasLength(loggerName) ? LogManager
+                .getLogger(loggerName) : LogManager.getRootLogger());
+        logger.setLevel(LEVELS.get(level));
+    }
 
 }

@@ -28,16 +28,17 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  * {@link BeanPostProcessor} (so called very early in the ApplicationContext lifecycle).
  * It might be safer to lookup dependencies lazily in the enclosing BeanFactory rather
  * than injecting them with <code>@Autowired</code>.
- * 
+ *
  * @author Dave Syer
  * @see EmbeddedServletContainerCustomizerBeanPostProcessor
  */
 public interface EmbeddedServletContainerCustomizer {
 
-	/**
-	 * Customize the specified {@link ConfigurableEmbeddedServletContainer}.
-	 * @param container the container to customize
-	 */
-	void customize(ConfigurableEmbeddedServletContainer container);
+    /**
+     * Customize the specified {@link ConfigurableEmbeddedServletContainer}.
+     *
+     * @param container the container to customize
+     */
+    void customize(ConfigurableEmbeddedServletContainer container);
 
 }

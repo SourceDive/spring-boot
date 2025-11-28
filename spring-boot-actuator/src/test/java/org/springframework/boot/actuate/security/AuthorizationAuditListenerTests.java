@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.security;
 
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -29,6 +27,8 @@ import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.access.event.AuthorizationFailureEvent;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+import java.util.Arrays;
+
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.verify;
 
@@ -37,23 +37,23 @@ import static org.mockito.Mockito.verify;
  */
 public class AuthorizationAuditListenerTests {
 
-	private final AuthorizationAuditListener listener = new AuthorizationAuditListener();
+    private final AuthorizationAuditListener listener = new AuthorizationAuditListener();
 
-	private final ApplicationEventPublisher publisher = Mockito
-			.mock(ApplicationEventPublisher.class);
+    private final ApplicationEventPublisher publisher = Mockito
+            .mock(ApplicationEventPublisher.class);
 
-	@Before
-	public void init() {
-		this.listener.setApplicationEventPublisher(this.publisher);
-	}
+    @Before
+    public void init() {
+        this.listener.setApplicationEventPublisher(this.publisher);
+    }
 
-	@Test
-	public void testAuthenticationSuccess() {
-		this.listener.onApplicationEvent(new AuthorizationFailureEvent(this, Arrays
-				.<ConfigAttribute> asList(new SecurityConfig("USER")),
-				new UsernamePasswordAuthenticationToken("user", "password"),
-				new AccessDeniedException("Bad user")));
-		verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
-	}
+    @Test
+    public void testAuthenticationSuccess() {
+        this.listener.onApplicationEvent(new AuthorizationFailureEvent(this, Arrays
+                .<ConfigAttribute>asList(new SecurityConfig("USER")),
+                new UsernamePasswordAuthenticationToken("user", "password"),
+                new AccessDeniedException("Bad user")));
+        verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
+    }
 
 }

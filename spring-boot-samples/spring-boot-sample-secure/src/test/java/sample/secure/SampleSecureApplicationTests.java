@@ -40,61 +40,61 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Basic integration tests for demo application.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { SampleSecureApplication.class,
-		TestConfiguration.class })
+@SpringApplicationConfiguration(classes = {SampleSecureApplication.class,
+        TestConfiguration.class})
 public class SampleSecureApplicationTests {
 
-	@Autowired
-	private SampleService service;
+    @Autowired
+    private SampleService service;
 
-	@Autowired
-	private ApplicationContext context;
+    @Autowired
+    private ApplicationContext context;
 
-	private Authentication authentication;
+    private Authentication authentication;
 
-	@Before
-	public void init() {
-		AuthenticationManager authenticationManager = this.context.getBean(
-				AuthenticationManagerBuilder.class).getOrBuild();
-		this.authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken("user", "password"));
-	}
+    @Before
+    public void init() {
+        AuthenticationManager authenticationManager = this.context.getBean(
+                AuthenticationManagerBuilder.class).getOrBuild();
+        this.authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken("user", "password"));
+    }
 
-	@After
-	public void close() {
-		SecurityContextHolder.clearContext();
-	}
+    @After
+    public void close() {
+        SecurityContextHolder.clearContext();
+    }
 
-	@Test(expected = AuthenticationException.class)
-	public void secure() throws Exception {
-		assertEquals(this.service.secure(), "Hello Security");
-	}
+    @Test(expected = AuthenticationException.class)
+    public void secure() throws Exception {
+        assertEquals(this.service.secure(), "Hello Security");
+    }
 
-	@Test
-	public void authenticated() throws Exception {
-		SecurityContextHolder.getContext().setAuthentication(this.authentication);
-		assertEquals(this.service.secure(), "Hello Security");
-	}
+    @Test
+    public void authenticated() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(this.authentication);
+        assertEquals(this.service.secure(), "Hello Security");
+    }
 
-	@Test
-	public void preauth() throws Exception {
-		SecurityContextHolder.getContext().setAuthentication(this.authentication);
-		assertEquals(this.service.authorized(), "Hello World");
-	}
+    @Test
+    public void preauth() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(this.authentication);
+        assertEquals(this.service.authorized(), "Hello World");
+    }
 
-	@Test(expected = AccessDeniedException.class)
-	public void denied() throws Exception {
-		SecurityContextHolder.getContext().setAuthentication(this.authentication);
-		assertEquals(this.service.denied(), "Goodbye World");
-	}
+    @Test(expected = AccessDeniedException.class)
+    public void denied() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(this.authentication);
+        assertEquals(this.service.denied(), "Goodbye World");
+    }
 
-	@PropertySource("classpath:test.properties")
-	@Configuration
-	protected static class TestConfiguration {
-	}
+    @PropertySource("classpath:test.properties")
+    @Configuration
+    protected static class TestConfiguration {
+    }
 
 }

@@ -16,10 +16,10 @@
 
 package org.springframework.boot.loader.tools;
 
+import org.junit.Test;
+
 import java.io.File;
 import java.net.URL;
-
-import org.junit.Test;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
@@ -27,17 +27,17 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link JvmUtils}.
- * 
+ *
  * @author Phillip Webb
  */
 public class JvmUtilsTests {
 
-	@Test
-	public void getToolsJar() throws Exception {
-		URL jarUrl = JvmUtils.getToolsJarUrl();
-		System.out.println(jarUrl);
-		assertThat(jarUrl.toString(), endsWith(".jar"));
-		assertThat(new File(jarUrl.toURI()).exists(), equalTo(true));
-	}
+    @Test
+    public void getToolsJar() throws Exception {
+        URL jarUrl = JvmUtils.getToolsJarUrl();
+        System.out.println(jarUrl);
+        assertThat(jarUrl.toString(), endsWith(".jar"));
+        assertThat(new File(jarUrl.toURI()).exists(), equalTo(true));
+    }
 
 }

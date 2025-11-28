@@ -23,25 +23,27 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link StartupInfoLogger}.
- * 
+ *
  * @author Dave Syer
  */
 public class StartUpLoggerTests {
 
-	private final StringBuffer output = new StringBuffer();
+    private final StringBuffer output = new StringBuffer();
 
-	private final SimpleLog log = new SimpleLog("test") {
-		@Override
-		protected void write(StringBuffer buffer) {
-			StartUpLoggerTests.this.output.append(buffer).append("\n");
-		};
-	};
+    private final SimpleLog log = new SimpleLog("test") {
+        @Override
+        protected void write(StringBuffer buffer) {
+            StartUpLoggerTests.this.output.append(buffer).append("\n");
+        }
 
-	@Test
-	public void sourceClassIncluded() {
-		new StartupInfoLogger(getClass()).logStarting(this.log);
-		assertTrue("Wrong output: " + this.output,
-				this.output.toString().contains("Starting " + getClass().getSimpleName()));
-	}
+        ;
+    };
+
+    @Test
+    public void sourceClassIncluded() {
+        new StartupInfoLogger(getClass()).logStarting(this.log);
+        assertTrue("Wrong output: " + this.output,
+                this.output.toString().contains("Starting " + getClass().getSimpleName()));
+    }
 
 }

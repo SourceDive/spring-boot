@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import javax.annotation.PostConstruct;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint.Report;
@@ -29,49 +27,51 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.PostConstruct;
+
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AutoConfigurationReportEndpoint}.
- * 
+ *
  * @author Greg Turnquist
  * @author Phillip Webb
  */
 public class AutoConfigurationReportEndpointTests extends
-		AbstractEndpointTests<AutoConfigurationReportEndpoint> {
+        AbstractEndpointTests<AutoConfigurationReportEndpoint> {
 
-	public AutoConfigurationReportEndpointTests() {
-		super(Config.class, AutoConfigurationReportEndpoint.class, "autoconfig", true,
-				"endpoints.autoconfig");
-	}
+    public AutoConfigurationReportEndpointTests() {
+        super(Config.class, AutoConfigurationReportEndpoint.class, "autoconfig", true,
+                "endpoints.autoconfig");
+    }
 
-	@Test
-	public void invoke() throws Exception {
-		Report report = getEndpointBean().invoke();
-		assertTrue(report.getPositiveMatches().isEmpty());
-		assertTrue(report.getNegativeMatches().containsKey("a"));
-	}
+    @Test
+    public void invoke() throws Exception {
+        Report report = getEndpointBean().invoke();
+        assertTrue(report.getPositiveMatches().isEmpty());
+        assertTrue(report.getNegativeMatches().containsKey("a"));
+    }
 
-	@Configuration
-	@EnableConfigurationProperties
-	public static class Config {
+    @Configuration
+    @EnableConfigurationProperties
+    public static class Config {
 
-		@Autowired
-		private ConfigurableApplicationContext context;
+        @Autowired
+        private ConfigurableApplicationContext context;
 
-		@PostConstruct
-		public void setupAutoConfigurationReport() {
-			ConditionEvaluationReport report = ConditionEvaluationReport.get(this.context
-					.getBeanFactory());
-			report.recordConditionEvaluation("a", mock(Condition.class),
-					mock(ConditionOutcome.class));
-		}
+        @PostConstruct
+        public void setupAutoConfigurationReport() {
+            ConditionEvaluationReport report = ConditionEvaluationReport.get(this.context
+                    .getBeanFactory());
+            report.recordConditionEvaluation("a", mock(Condition.class),
+                    mock(ConditionOutcome.class));
+        }
 
-		@Bean
-		public AutoConfigurationReportEndpoint endpoint() {
-			return new AutoConfigurationReportEndpoint();
-		}
-	}
+        @Bean
+        public AutoConfigurationReportEndpoint endpoint() {
+            return new AutoConfigurationReportEndpoint();
+        }
+    }
 
 }

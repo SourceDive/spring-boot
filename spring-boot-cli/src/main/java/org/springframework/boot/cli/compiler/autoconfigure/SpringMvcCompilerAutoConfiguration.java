@@ -25,34 +25,34 @@ import org.springframework.boot.groovy.GroovyTemplate;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring MVC.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
 public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
-	@Override
-	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "Controller",
-				"RestController", "EnableWebMvc");
-	}
+    @Override
+    public boolean matches(ClassNode classNode) {
+        return AstUtils.hasAtLeastOneAnnotation(classNode, "Controller",
+                "RestController", "EnableWebMvc");
+    }
 
-	@Override
-	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies
-				.ifAnyMissingClasses("org.springframework.web.servlet.mvc.Controller")
-				.add("spring-boot-starter-web");
-		dependencies.add("groovy-templates");
-	}
+    @Override
+    public void applyDependencies(DependencyCustomizer dependencies) {
+        dependencies
+                .ifAnyMissingClasses("org.springframework.web.servlet.mvc.Controller")
+                .add("spring-boot-starter-web");
+        dependencies.add("groovy-templates");
+    }
 
-	@Override
-	public void applyImports(ImportCustomizer imports) {
-		imports.addStarImports("org.springframework.web.bind.annotation",
-				"org.springframework.web.servlet.config.annotation",
-				"org.springframework.web.servlet",
-				"org.springframework.web.servlet.handler", "org.springframework.http",
-				"org.springframework.ui");
-		imports.addStaticImport(GroovyTemplate.class.getName(), "template");
-	}
+    @Override
+    public void applyImports(ImportCustomizer imports) {
+        imports.addStarImports("org.springframework.web.bind.annotation",
+                "org.springframework.web.servlet.config.annotation",
+                "org.springframework.web.servlet",
+                "org.springframework.web.servlet.handler", "org.springframework.http",
+                "org.springframework.ui");
+        imports.addStaticImport(GroovyTemplate.class.getName(), "template");
+    }
 
 }

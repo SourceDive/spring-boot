@@ -24,16 +24,17 @@ package org.springframework.boot.actuate.metrics;
  * would go to a backend that keeps a histogram of recent values for comparison purposes.
  * Or it could be a simple measurement of a sensor value (like a temperature reading) to
  * be passed on to a monitoring system in its raw form.
- * 
+ *
  * @author Dave Syer
  */
 public interface GaugeService {
 
-	/**
-	 * Set the specified gauge value
-	 * @param metricName the name of the gauge to set
-	 * @param value the value of the gauge
-	 */
-	void submit(String metricName, double value);
+    /**
+     * Set the specified gauge value
+     *
+     * @param metricName the name of the gauge to set
+     * @param value      the value of the gauge
+     */
+    void submit(String metricName, double value);
 
 }

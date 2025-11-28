@@ -30,37 +30,37 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link TraceRepositoryAutoConfiguration}.
- * 
+ *
  * @author Phillip Webb
  */
 public class TraceRepositoryAutoConfigurationTests {
 
-	@Test
-	public void configuresInMemoryTraceRepository() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				TraceRepositoryAutoConfiguration.class);
-		assertNotNull(context.getBean(InMemoryTraceRepository.class));
-		context.close();
-	}
+    @Test
+    public void configuresInMemoryTraceRepository() throws Exception {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                TraceRepositoryAutoConfiguration.class);
+        assertNotNull(context.getBean(InMemoryTraceRepository.class));
+        context.close();
+    }
 
-	@Test
-	public void skipsIfRepositoryExists() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				Config.class, TraceRepositoryAutoConfiguration.class);
-		assertThat(context.getBeansOfType(InMemoryTraceRepository.class).size(),
-				equalTo(0));
-		assertThat(context.getBeansOfType(TraceRepository.class).size(), equalTo(1));
-		context.close();
-	}
+    @Test
+    public void skipsIfRepositoryExists() throws Exception {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                Config.class, TraceRepositoryAutoConfiguration.class);
+        assertThat(context.getBeansOfType(InMemoryTraceRepository.class).size(),
+                equalTo(0));
+        assertThat(context.getBeansOfType(TraceRepository.class).size(), equalTo(1));
+        context.close();
+    }
 
-	@Configuration
-	public static class Config {
+    @Configuration
+    public static class Config {
 
-		@Bean
-		public TraceRepository traceRepository() {
-			return mock(TraceRepository.class);
-		}
+        @Bean
+        public TraceRepository traceRepository() {
+            return mock(TraceRepository.class);
+        }
 
-	}
+    }
 
 }

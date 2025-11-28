@@ -24,15 +24,15 @@ import java.util.Collection;
  */
 public abstract class Iterables {
 
-	public static <T> Collection<T> collection(Iterable<T> iterable) {
-		if (iterable instanceof Collection) {
-			return (Collection<T>) iterable;
-		}
-		ArrayList<T> list = new ArrayList<T>();
-		for (T t : iterable) {
-			list.add(t);
-		}
-		return list;
-	}
+    public static <T> Collection<T> collection(Iterable<T> iterable) {
+        if (iterable instanceof Collection) {
+            return (Collection<T>) iterable;
+        }
+        ArrayList<T> list = new ArrayList<T>();
+        for (T t : iterable) {
+            list.add(t);
+        }
+        return list;
+    }
 
 }

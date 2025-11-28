@@ -23,13 +23,13 @@ import org.springframework.boot.cli.command.AbstractCommand;
  */
 public class CustomCommand extends AbstractCommand {
 
-	public CustomCommand() {
-		super("custom", "Custom command added in tests");
-	}
+    public CustomCommand() {
+        super("custom", "Custom command added in tests");
+    }
 
-	@Override
-	public void run(String... args) throws Exception {
-		System.err.println("Custom Command Hello");
-	}
+    @Override
+    public void run(String... args) throws Exception {
+        System.err.println("Custom Command Hello");
+    }
 
 }

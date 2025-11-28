@@ -20,7 +20,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Factory to create a {@link JsonParser}.
- * 
+ *
  * @author Dave Syer
  * @see JacksonJsonParser
  * @see YamlJsonParser
@@ -28,19 +28,20 @@ import org.springframework.util.ClassUtils;
  */
 public abstract class JsonParserFactory {
 
-	/**
-	 * Static factory for the "best" JSON parser available on the classpath. Tries Jackson
-	 * 2, then Snake YAML, and then falls back to the {@link SimpleJsonParser}.
-	 * @return a {@link JsonParser}
-	 */
-	public static JsonParser getJsonParser() {
-		if (ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", null)) {
-			return new JacksonJsonParser();
-		}
-		if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
-			return new YamlJsonParser();
-		}
-		return new SimpleJsonParser();
-	}
+    /**
+     * Static factory for the "best" JSON parser available on the classpath. Tries Jackson
+     * 2, then Snake YAML, and then falls back to the {@link SimpleJsonParser}.
+     *
+     * @return a {@link JsonParser}
+     */
+    public static JsonParser getJsonParser() {
+        if (ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", null)) {
+            return new JacksonJsonParser();
+        }
+        if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
+            return new YamlJsonParser();
+        }
+        return new SimpleJsonParser();
+    }
 
 }

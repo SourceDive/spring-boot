@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the
  * {@link ManagementServerProperties} bean.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
@@ -37,18 +37,18 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties
 public class ManagementServerPropertiesAutoConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	public ManagementServerProperties managementServerProperties() {
-		return new ManagementServerProperties();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public ManagementServerProperties managementServerProperties() {
+        return new ManagementServerProperties();
+    }
 
-	// In case security auto configuration hasn't been included
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnClass(name = "org.springframework.security.config.annotation.web.configuration.EnableWebSecurity")
-	public SecurityProperties securityProperties() {
-		return new SecurityProperties();
-	}
+    // In case security auto configuration hasn't been included
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnClass(name = "org.springframework.security.config.annotation.web.configuration.EnableWebSecurity")
+    public SecurityProperties securityProperties() {
+        return new SecurityProperties();
+    }
 
 }

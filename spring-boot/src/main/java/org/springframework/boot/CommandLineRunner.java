@@ -24,16 +24,17 @@ import org.springframework.core.annotation.Order;
  * a {@link SpringApplication}. Multiple {@link CommandLineRunner} beans can be defined
  * within the same application context and can be ordered using the {@link Ordered}
  * interface or {@link Order @Order} annotation.
- * 
+ *
  * @author Dave Syer
  */
 public interface CommandLineRunner {
 
-	/**
-	 * Callback used to run the bean.
-	 * @param args incoming main method arguments
-	 * @throws Exception on error
-	 */
-	void run(String... args) throws Exception;
+    /**
+     * Callback used to run the bean.
+     *
+     * @param args incoming main method arguments
+     * @throws Exception on error
+     */
+    void run(String... args) throws Exception;
 
 }

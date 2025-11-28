@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Integration tests for unsecured service endpoints (even with Spring Security on
  * classpath).
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -48,34 +48,33 @@ import static org.junit.Assert.assertTrue;
 @ActiveProfiles("unsecure-management")
 public class UnsecureManagementSampleActuatorApplicationTests {
 
-	@Test
-	public void testHomeIsSecure() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080", Map.class);
-		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals("Wrong body: " + body, "Unauthorized", body.get("error"));
-		assertFalse("Wrong headers: " + entity.getHeaders(), entity.getHeaders()
-				.containsKey("Set-Cookie"));
-	}
+    @Test
+    public void testHomeIsSecure() throws Exception {
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:8080", Map.class);
+        assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = entity.getBody();
+        assertEquals("Wrong body: " + body, "Unauthorized", body.get("error"));
+        assertFalse("Wrong headers: " + entity.getHeaders(), entity.getHeaders()
+                .containsKey("Set-Cookie"));
+    }
 
-	@Test
-	public void testMetrics() throws Exception {
-		try {
-			testHomeIsSecure(); // makes sure some requests have been made
-		}
-		catch (AssertionError ex) {
-			// ignore;
-		}
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/metrics", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body, body.containsKey("counter.status.401.root"));
-	}
+    @Test
+    public void testMetrics() throws Exception {
+        try {
+            testHomeIsSecure(); // makes sure some requests have been made
+        } catch (AssertionError ex) {
+            // ignore;
+        }
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:8080/metrics", Map.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = entity.getBody();
+        assertTrue("Wrong body: " + body, body.containsKey("counter.status.401.root"));
+    }
 
 }

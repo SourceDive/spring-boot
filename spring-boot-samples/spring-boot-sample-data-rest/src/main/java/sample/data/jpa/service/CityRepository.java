@@ -26,9 +26,9 @@ import sample.data.jpa.domain.City;
 @RepositoryRestResource(collectionResourceRel = "citys", path = "cities")
 interface CityRepository extends PagingAndSortingRepository<City, Long> {
 
-	Page<City> findByNameContainingAndCountryContainingAllIgnoringCase(String name,
-			String country, Pageable pageable);
+    Page<City> findByNameContainingAndCountryContainingAllIgnoringCase(String name,
+                                                                       String country, Pageable pageable);
 
-	City findByNameAndCountryAllIgnoringCase(String name, String country);
+    City findByNameAndCountryAllIgnoringCase(String name, String country);
 
 }

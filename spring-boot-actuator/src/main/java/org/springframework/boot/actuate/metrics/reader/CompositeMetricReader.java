@@ -16,57 +16,57 @@
 
 package org.springframework.boot.actuate.metrics.reader;
 
+import org.springframework.boot.actuate.metrics.Metric;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.actuate.metrics.Metric;
-
 /**
  * Composite implementation of {@link MetricReader}.
- * 
+ *
  * @author Dave Syer
  */
 public class CompositeMetricReader implements MetricReader {
 
-	private final List<MetricReader> readers = new ArrayList<MetricReader>();
+    private final List<MetricReader> readers = new ArrayList<MetricReader>();
 
-	public CompositeMetricReader(MetricReader... readers) {
-		for (MetricReader reader : readers) {
-			this.readers.add(reader);
-		}
-	}
+    public CompositeMetricReader(MetricReader... readers) {
+        for (MetricReader reader : readers) {
+            this.readers.add(reader);
+        }
+    }
 
-	@Override
-	public Metric<?> findOne(String metricName) {
-		for (MetricReader delegate : this.readers) {
-			Metric<?> value = delegate.findOne(metricName);
-			if (value != null) {
-				return value;
-			}
-		}
-		return null;
-	}
+    @Override
+    public Metric<?> findOne(String metricName) {
+        for (MetricReader delegate : this.readers) {
+            Metric<?> value = delegate.findOne(metricName);
+            if (value != null) {
+                return value;
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public Iterable<Metric<?>> findAll() {
-		List<Metric<?>> values = new ArrayList<Metric<?>>((int) count());
-		for (MetricReader delegate : this.readers) {
-			Iterable<Metric<?>> all = delegate.findAll();
-			for (Metric<?> value : all) {
-				values.add(value);
-			}
-		}
-		return values;
-	}
+    @Override
+    public Iterable<Metric<?>> findAll() {
+        List<Metric<?>> values = new ArrayList<Metric<?>>((int) count());
+        for (MetricReader delegate : this.readers) {
+            Iterable<Metric<?>> all = delegate.findAll();
+            for (Metric<?> value : all) {
+                values.add(value);
+            }
+        }
+        return values;
+    }
 
-	@Override
-	public long count() {
-		long count = 0;
-		for (MetricReader delegate : this.readers) {
-			count += delegate.count();
+    @Override
+    public long count() {
+        long count = 0;
+        for (MetricReader delegate : this.readers) {
+            count += delegate.count();
 
-		}
-		return count;
-	}
+        }
+        return count;
+    }
 
 }

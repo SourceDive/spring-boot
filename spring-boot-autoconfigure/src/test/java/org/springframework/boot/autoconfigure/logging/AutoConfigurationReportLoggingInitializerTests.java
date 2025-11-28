@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.logging;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogConfigurationException;
 import org.apache.commons.logging.LogFactory;
@@ -43,12 +40,11 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Matchers.anyObject;
@@ -56,174 +52,172 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AutoConfigurationReportLoggingInitializer}.
- * 
+ *
  * @author Phillip Webb
  */
 public class AutoConfigurationReportLoggingInitializerTests {
 
-	private static ThreadLocal<Log> logThreadLocal = new ThreadLocal<Log>();
+    private static ThreadLocal<Log> logThreadLocal = new ThreadLocal<Log>();
 
-	private Log log;
+    private Log log;
 
-	private AutoConfigurationReportLoggingInitializer initializer;
+    private AutoConfigurationReportLoggingInitializer initializer;
 
-	protected List<String> debugLog = new ArrayList<String>();
+    protected List<String> debugLog = new ArrayList<String>();
 
-	protected List<String> infoLog = new ArrayList<String>();
+    protected List<String> infoLog = new ArrayList<String>();
 
-	@Before
-	public void setup() {
-		setupLogging(true, true);
-	}
+    @Before
+    public void setup() {
+        setupLogging(true, true);
+    }
 
-	private void setupLogging(boolean debug, boolean info) {
-		this.log = mock(Log.class);
-		logThreadLocal.set(this.log);
+    private void setupLogging(boolean debug, boolean info) {
+        this.log = mock(Log.class);
+        logThreadLocal.set(this.log);
 
-		given(this.log.isDebugEnabled()).willReturn(debug);
-		willAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				return AutoConfigurationReportLoggingInitializerTests.this.debugLog
-						.add(String.valueOf(invocation.getArguments()[0]));
-			}
-		}).given(this.log).debug(anyObject());
+        given(this.log.isDebugEnabled()).willReturn(debug);
+        willAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return AutoConfigurationReportLoggingInitializerTests.this.debugLog
+                        .add(String.valueOf(invocation.getArguments()[0]));
+            }
+        }).given(this.log).debug(anyObject());
 
-		given(this.log.isInfoEnabled()).willReturn(info);
-		willAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				return AutoConfigurationReportLoggingInitializerTests.this.infoLog
-						.add(String.valueOf(invocation.getArguments()[0]));
-			}
-		}).given(this.log).info(anyObject());
+        given(this.log.isInfoEnabled()).willReturn(info);
+        willAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return AutoConfigurationReportLoggingInitializerTests.this.infoLog
+                        .add(String.valueOf(invocation.getArguments()[0]));
+            }
+        }).given(this.log).info(anyObject());
 
-		LogFactory.releaseAll();
-		System.setProperty(LogFactory.FACTORY_PROPERTY, MockLogFactory.class.getName());
-		this.initializer = new AutoConfigurationReportLoggingInitializer();
-	}
+        LogFactory.releaseAll();
+        System.setProperty(LogFactory.FACTORY_PROPERTY, MockLogFactory.class.getName());
+        this.initializer = new AutoConfigurationReportLoggingInitializer();
+    }
 
-	@After
-	public void cleanup() {
-		System.clearProperty(LogFactory.FACTORY_PROPERTIES);
-		LogFactory.releaseAll();
-	}
+    @After
+    public void cleanup() {
+        System.clearProperty(LogFactory.FACTORY_PROPERTIES);
+        LogFactory.releaseAll();
+    }
 
-	@Test
-	public void logsDebugOnContextRefresh() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		this.initializer.initialize(context);
-		context.register(Config.class);
-		context.refresh();
-		this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
-		assertThat(this.debugLog.size(), not(equalTo(0)));
-	}
+    @Test
+    public void logsDebugOnContextRefresh() {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        this.initializer.initialize(context);
+        context.register(Config.class);
+        context.refresh();
+        this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
+        assertThat(this.debugLog.size(), not(equalTo(0)));
+    }
 
-	@Test
-	public void logsDebugOnError() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		this.initializer.initialize(context);
-		context.register(ErrorConfig.class);
-		try {
-			context.refresh();
-			fail("Did not error");
-		}
-		catch (Exception ex) {
-			this.initializer.onApplicationEvent(new ApplicationFailedEvent(
-					new SpringApplication(), new String[0], context, ex));
-		}
+    @Test
+    public void logsDebugOnError() {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        this.initializer.initialize(context);
+        context.register(ErrorConfig.class);
+        try {
+            context.refresh();
+            fail("Did not error");
+        } catch (Exception ex) {
+            this.initializer.onApplicationEvent(new ApplicationFailedEvent(
+                    new SpringApplication(), new String[0], context, ex));
+        }
 
-		assertThat(this.debugLog.size(), not(equalTo(0)));
-		assertThat(this.infoLog.size(), equalTo(0));
-	}
+        assertThat(this.debugLog.size(), not(equalTo(0)));
+        assertThat(this.infoLog.size(), equalTo(0));
+    }
 
-	@Test
-	public void logsInfoOnErrorIfDebugDisabled() {
-		setupLogging(false, true);
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		this.initializer.initialize(context);
-		context.register(ErrorConfig.class);
-		try {
-			context.refresh();
-			fail("Did not error");
-		}
-		catch (Exception ex) {
-			this.initializer.onApplicationEvent(new ApplicationFailedEvent(
-					new SpringApplication(), new String[0], context, ex));
-		}
+    @Test
+    public void logsInfoOnErrorIfDebugDisabled() {
+        setupLogging(false, true);
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        this.initializer.initialize(context);
+        context.register(ErrorConfig.class);
+        try {
+            context.refresh();
+            fail("Did not error");
+        } catch (Exception ex) {
+            this.initializer.onApplicationEvent(new ApplicationFailedEvent(
+                    new SpringApplication(), new String[0], context, ex));
+        }
 
-		assertThat(this.debugLog.size(), equalTo(0));
-		assertThat(this.infoLog.size(), not(equalTo(0)));
-	}
+        assertThat(this.debugLog.size(), equalTo(0));
+        assertThat(this.infoLog.size(), not(equalTo(0)));
+    }
 
-	@Test
-	public void logsOutput() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		this.initializer.initialize(context);
-		context.register(Config.class);
-		context.refresh();
-		this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
-		for (String message : this.debugLog) {
-			System.out.println(message);
-		}
-		// Just basic sanity check, test is for visual inspection
-		String l = this.debugLog.get(0);
-		assertThat(l, containsString("not a web application (OnWebApplicationCondition)"));
-	}
+    @Test
+    public void logsOutput() throws Exception {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        this.initializer.initialize(context);
+        context.register(Config.class);
+        context.refresh();
+        this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
+        for (String message : this.debugLog) {
+            System.out.println(message);
+        }
+        // Just basic sanity check, test is for visual inspection
+        String l = this.debugLog.get(0);
+        assertThat(l, containsString("not a web application (OnWebApplicationCondition)"));
+    }
 
-	@Test
-	public void canBeUsedInApplicationContext() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.register(Config.class);
-		new AutoConfigurationReportLoggingInitializer().initialize(context);
-		context.refresh();
-		assertNotNull(context.getBean(ConditionEvaluationReport.class));
-	}
+    @Test
+    public void canBeUsedInApplicationContext() throws Exception {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.register(Config.class);
+        new AutoConfigurationReportLoggingInitializer().initialize(context);
+        context.refresh();
+        assertNotNull(context.getBean(ConditionEvaluationReport.class));
+    }
 
-	@Test
-	public void canBeUsedInNonGenericApplicationContext() throws Exception {
-		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.setServletContext(new MockServletContext());
-		context.register(Config.class);
-		new AutoConfigurationReportLoggingInitializer().initialize(context);
-		context.refresh();
-		assertNotNull(context.getBean(ConditionEvaluationReport.class));
-	}
+    @Test
+    public void canBeUsedInNonGenericApplicationContext() throws Exception {
+        AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+        context.setServletContext(new MockServletContext());
+        context.register(Config.class);
+        new AutoConfigurationReportLoggingInitializer().initialize(context);
+        context.refresh();
+        assertNotNull(context.getBean(ConditionEvaluationReport.class));
+    }
 
-	@Test
-	public void noErrorIfNotInitialized() throws Exception {
-		this.initializer.onApplicationEvent(new ApplicationFailedEvent(
-				new SpringApplication(), new String[0], null, new RuntimeException(
-						"Planned")));
-		assertThat(this.infoLog.get(0),
-				containsString("Unable to provide auto-configuration report"));
-	}
+    @Test
+    public void noErrorIfNotInitialized() throws Exception {
+        this.initializer.onApplicationEvent(new ApplicationFailedEvent(
+                new SpringApplication(), new String[0], null, new RuntimeException(
+                "Planned")));
+        assertThat(this.infoLog.get(0),
+                containsString("Unable to provide auto-configuration report"));
+    }
 
-	public static class MockLogFactory extends LogFactoryImpl {
-		@Override
-		public Log getInstance(String name) throws LogConfigurationException {
-			if (AutoConfigurationReportLoggingInitializer.class.getName().equals(name)) {
-				return logThreadLocal.get();
-			}
-			return new NoOpLog();
-		}
-	}
+    public static class MockLogFactory extends LogFactoryImpl {
+        @Override
+        public Log getInstance(String name) throws LogConfigurationException {
+            if (AutoConfigurationReportLoggingInitializer.class.getName().equals(name)) {
+                return logThreadLocal.get();
+            }
+            return new NoOpLog();
+        }
+    }
 
-	@Configuration
-	@Import({ WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
-	static class Config {
+    @Configuration
+    @Import({WebMvcAutoConfiguration.class,
+            HttpMessageConvertersAutoConfiguration.class,
+            PropertyPlaceholderAutoConfiguration.class})
+    static class Config {
 
-	}
+    }
 
-	@Configuration
-	@Import(WebMvcAutoConfiguration.class)
-	static class ErrorConfig {
-		@Bean
-		public String iBreak() {
-			throw new RuntimeException();
-		}
-	}
+    @Configuration
+    @Import(WebMvcAutoConfiguration.class)
+    static class ErrorConfig {
+        @Bean
+        public String iBreak() {
+            throw new RuntimeException();
+        }
+    }
 
 }

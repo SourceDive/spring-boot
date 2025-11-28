@@ -37,42 +37,42 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Controller
 public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
 
-	@RequestMapping("/")
-	public String home(Map<String, Object> model) {
-		model.put("message", "Hello World");
-		model.put("title", "Hello Home");
-		model.put("date", new Date());
-		return "home";
-	}
+    @RequestMapping("/")
+    public String home(Map<String, Object> model) {
+        model.put("message", "Hello World");
+        model.put("title", "Hello Home");
+        model.put("date", new Date());
+        return "home";
+    }
 
-	@RequestMapping("/foo")
-	public String foo() {
-		throw new RuntimeException("Expected exception in controller");
-	}
+    @RequestMapping("/foo")
+    public String foo() {
+        throw new RuntimeException("Expected exception in controller");
+    }
 
-	public static void main(String[] args) throws Exception {
-		// Set user password to "password" for demo purposes only
-		new SpringApplicationBuilder(SampleWebSecureApplication.class).properties(
-				"security.user.password=password").run(args);
-	}
+    public static void main(String[] args) throws Exception {
+        // Set user password to "password" for demo purposes only
+        new SpringApplicationBuilder(SampleWebSecureApplication.class).properties(
+                "security.user.password=password").run(args);
+    }
 
-	@Override
-	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/login").setViewName("login");
-	}
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/login").setViewName("login");
+    }
 
-	@Bean
-	public ApplicationSecurity applicationSecurity() {
-		return new ApplicationSecurity();
-	}
+    @Bean
+    public ApplicationSecurity applicationSecurity() {
+        return new ApplicationSecurity();
+    }
 
-	@Order(Ordered.LOWEST_PRECEDENCE - 8)
-	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().anyRequest().fullyAuthenticated().and().formLogin()
-					.loginPage("/login").failureUrl("/login?error").permitAll();
-		}
-	}
+    @Order(Ordered.LOWEST_PRECEDENCE - 8)
+    protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.authorizeRequests().anyRequest().fullyAuthenticated().and().formLogin()
+                    .loginPage("/login").failureUrl("/login?error").permitAll();
+        }
+    }
 
 }

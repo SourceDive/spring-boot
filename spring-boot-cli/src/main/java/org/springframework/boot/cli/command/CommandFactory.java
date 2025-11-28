@@ -22,15 +22,16 @@ import java.util.ServiceLoader;
 /**
  * Factory used to create CLI {@link Command}s. Intended for use with a Java
  * {@link ServiceLoader}.
- * 
+ *
  * @author Dave Syer
  */
 public interface CommandFactory {
 
-	/**
-	 * Returns the CLI {@link Command}s.
-	 * @return The commands
-	 */
-	Collection<Command> getCommands();
+    /**
+     * Returns the CLI {@link Command}s.
+     *
+     * @return The commands
+     */
+    Collection<Command> getCommands();
 
 }

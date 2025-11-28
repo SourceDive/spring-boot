@@ -16,10 +16,7 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.net.UnknownHostException;
-
-import javax.annotation.PreDestroy;
-
+import com.mongodb.Mongo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -28,11 +25,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.mongodb.Mongo;
+import javax.annotation.PreDestroy;
+import java.net.UnknownHostException;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Mongo.
- * 
+ *
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Phillip Webb
@@ -42,23 +40,23 @@ import com.mongodb.Mongo;
 @EnableConfigurationProperties(MongoProperties.class)
 public class MongoAutoConfiguration {
 
-	@Autowired
-	private MongoProperties properties;
+    @Autowired
+    private MongoProperties properties;
 
-	private Mongo mongo;
+    private Mongo mongo;
 
-	@PreDestroy
-	public void close() throws UnknownHostException {
-		if (this.mongo != null) {
-			this.mongo.close();
-		}
-	}
+    @PreDestroy
+    public void close() throws UnknownHostException {
+        if (this.mongo != null) {
+            this.mongo.close();
+        }
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public Mongo mongo() throws UnknownHostException {
-		this.mongo = this.properties.createMongoClient();
-		return this.mongo;
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public Mongo mongo() throws UnknownHostException {
+        this.mongo = this.properties.createMongoClient();
+        return this.mongo;
+    }
 
 }

@@ -26,43 +26,43 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ExtendedGroovyClassLoader}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ExtendedGroovyClassLoaderTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	private ClassLoader contextClassLoader;
+    private ClassLoader contextClassLoader;
 
-	private ExtendedGroovyClassLoader defaultScopeGroovyClassLoader;
+    private ExtendedGroovyClassLoader defaultScopeGroovyClassLoader;
 
-	@Before
-	public void setup() {
-		this.contextClassLoader = Thread.currentThread().getContextClassLoader();
-		this.defaultScopeGroovyClassLoader = new ExtendedGroovyClassLoader(
-				GroovyCompilerScope.DEFAULT);
-	}
+    @Before
+    public void setup() {
+        this.contextClassLoader = Thread.currentThread().getContextClassLoader();
+        this.defaultScopeGroovyClassLoader = new ExtendedGroovyClassLoader(
+                GroovyCompilerScope.DEFAULT);
+    }
 
-	@Test
-	public void loadsGroovyFromSameClassLoader() throws Exception {
-		Class<?> c1 = this.contextClassLoader.loadClass("groovy.lang.Script");
-		Class<?> c2 = this.defaultScopeGroovyClassLoader.loadClass("groovy.lang.Script");
-		assertThat(c1.getClassLoader(), sameInstance(c2.getClassLoader()));
-	}
+    @Test
+    public void loadsGroovyFromSameClassLoader() throws Exception {
+        Class<?> c1 = this.contextClassLoader.loadClass("groovy.lang.Script");
+        Class<?> c2 = this.defaultScopeGroovyClassLoader.loadClass("groovy.lang.Script");
+        assertThat(c1.getClassLoader(), sameInstance(c2.getClassLoader()));
+    }
 
-	@Test
-	public void filteresNonGroovy() throws Exception {
-		this.contextClassLoader.loadClass("org.springframework.util.StringUtils");
-		this.thrown.expect(ClassNotFoundException.class);
-		this.defaultScopeGroovyClassLoader
-				.loadClass("org.springframework.util.StringUtils");
-	}
+    @Test
+    public void filteresNonGroovy() throws Exception {
+        this.contextClassLoader.loadClass("org.springframework.util.StringUtils");
+        this.thrown.expect(ClassNotFoundException.class);
+        this.defaultScopeGroovyClassLoader
+                .loadClass("org.springframework.util.StringUtils");
+    }
 
-	@Test
-	public void loadsJavaTypes() throws Exception {
-		this.defaultScopeGroovyClassLoader.loadClass("java.lang.Boolean");
-	}
+    @Test
+    public void loadsJavaTypes() throws Exception {
+        this.defaultScopeGroovyClassLoader.loadClass("java.lang.Boolean");
+    }
 
 }

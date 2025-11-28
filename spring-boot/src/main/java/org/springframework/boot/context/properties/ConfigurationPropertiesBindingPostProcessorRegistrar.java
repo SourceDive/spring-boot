@@ -25,24 +25,24 @@ import org.springframework.core.type.AnnotationMetadata;
 /**
  * {@link ImportBeanDefinitionRegistrar} for binding externalized application properties
  * to {@link ConfigurationProperties} beans.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
 public class ConfigurationPropertiesBindingPostProcessorRegistrar implements
-		ImportBeanDefinitionRegistrar {
+        ImportBeanDefinitionRegistrar {
 
-	public static final String BINDER_BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.class
-			.getName();
+    public static final String BINDER_BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.class
+            .getName();
 
-	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-			BeanDefinitionRegistry registry) {
-		if (!registry.containsBeanDefinition(BINDER_BEAN_NAME)) {
-			BeanDefinition beanDefinition = new RootBeanDefinition(
-					ConfigurationPropertiesBindingPostProcessor.class);
-			registry.registerBeanDefinition(BINDER_BEAN_NAME, beanDefinition);
-		}
-	}
+    @Override
+    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+                                        BeanDefinitionRegistry registry) {
+        if (!registry.containsBeanDefinition(BINDER_BEAN_NAME)) {
+            BeanDefinition beanDefinition = new RootBeanDefinition(
+                    ConfigurationPropertiesBindingPostProcessor.class);
+            registry.registerBeanDefinition(BINDER_BEAN_NAME, beanDefinition);
+        }
+    }
 
 }

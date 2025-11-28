@@ -32,25 +32,25 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class SampleTomcatApplication {
 
-	private static Log logger = LogFactory.getLog(SampleTomcatApplication.class);
+    private static Log logger = LogFactory.getLog(SampleTomcatApplication.class);
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleTomcatApplication.class, args);
-	}
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(SampleTomcatApplication.class, args);
+    }
 
-	@Bean
-	protected ServletContextListener listener() {
-		return new ServletContextListener() {
-			@Override
-			public void contextInitialized(ServletContextEvent sce) {
-				logger.info("ServletContext initialized");
-			}
+    @Bean
+    protected ServletContextListener listener() {
+        return new ServletContextListener() {
+            @Override
+            public void contextInitialized(ServletContextEvent sce) {
+                logger.info("ServletContext initialized");
+            }
 
-			@Override
-			public void contextDestroyed(ServletContextEvent sce) {
-				logger.info("ServletContext destroyed");
-			}
-		};
-	}
+            @Override
+            public void contextDestroyed(ServletContextEvent sce) {
+                logger.info("ServletContext destroyed");
+            }
+        };
+    }
 
 }

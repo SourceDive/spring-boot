@@ -45,35 +45,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class DefaultErrorViewIntegrationTests {
 
-	@Autowired
-	private WebApplicationContext wac;
+    @Autowired
+    private WebApplicationContext wac;
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	@Before
-	public void setup() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-	}
+    @Before
+    public void setup() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+    }
 
-	@Test
-	public void testErrorForBrowserClient() throws Exception {
-		MvcResult response = this.mockMvc
-				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("<html>"));
-		assertTrue("Wrong content: " + content, content.contains("999"));
-	}
+    @Test
+    public void testErrorForBrowserClient() throws Exception {
+        MvcResult response = this.mockMvc
+                .perform(get("/error").accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk()).andReturn();
+        String content = response.getResponse().getContentAsString();
+        assertTrue("Wrong content: " + content, content.contains("<html>"));
+        assertTrue("Wrong content: " + content, content.contains("999"));
+    }
 
-	@Configuration
-	@EnableAutoConfiguration
-	public static class TestConfiguration {
+    @Configuration
+    @EnableAutoConfiguration
+    public static class TestConfiguration {
 
-		// For manual testing
-		public static void main(String[] args) {
-			SpringApplication.run(TestConfiguration.class, args);
-		}
+        // For manual testing
+        public static void main(String[] args) {
+            SpringApplication.run(TestConfiguration.class, args);
+        }
 
-	}
+    }
 
 }

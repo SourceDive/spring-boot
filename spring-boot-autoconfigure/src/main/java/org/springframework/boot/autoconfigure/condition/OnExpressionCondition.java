@@ -26,41 +26,41 @@ import org.springframework.core.type.ClassMetadata;
 
 /**
  * A Condition that evaluates a SpEL expression.
- * 
+ *
  * @author Dave Syer
  * @see ConditionalOnExpression
  */
 public class OnExpressionCondition extends SpringBootCondition {
 
-	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
+    @Override
+    public ConditionOutcome getMatchOutcome(ConditionContext context,
+                                            AnnotatedTypeMetadata metadata) {
 
-		String expression = (String) metadata.getAnnotationAttributes(
-				ConditionalOnExpression.class.getName()).get("value");
-		String rawExpression = expression;
-		if (!expression.startsWith("#{")) {
-			// For convenience allow user to provide bare expression with no #{} wrapper
-			expression = "#{" + expression + "}";
-		}
+        String expression = (String) metadata.getAnnotationAttributes(
+                ConditionalOnExpression.class.getName()).get("value");
+        String rawExpression = expression;
+        if (!expression.startsWith("#{")) {
+            // For convenience allow user to provide bare expression with no #{} wrapper
+            expression = "#{" + expression + "}";
+        }
 
-		// Explicitly allow environment placeholders inside the expression
-		expression = context.getEnvironment().resolvePlaceholders(expression);
-		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		BeanExpressionResolver resolver = beanFactory.getBeanExpressionResolver();
-		BeanExpressionContext expressionContext = (beanFactory != null) ? new BeanExpressionContext(
-				beanFactory, null) : null;
-		if (resolver == null) {
-			resolver = new StandardBeanExpressionResolver();
-		}
-		boolean result = (Boolean) resolver.evaluate(expression, expressionContext);
+        // Explicitly allow environment placeholders inside the expression
+        expression = context.getEnvironment().resolvePlaceholders(expression);
+        ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+        BeanExpressionResolver resolver = beanFactory.getBeanExpressionResolver();
+        BeanExpressionContext expressionContext = (beanFactory != null) ? new BeanExpressionContext(
+                beanFactory, null) : null;
+        if (resolver == null) {
+            resolver = new StandardBeanExpressionResolver();
+        }
+        boolean result = (Boolean) resolver.evaluate(expression, expressionContext);
 
-		StringBuilder message = new StringBuilder("SpEL expression");
-		if (metadata instanceof ClassMetadata) {
-			message.append(" on " + ((ClassMetadata) metadata).getClassName());
-		}
-		message.append(": " + rawExpression);
-		return new ConditionOutcome(result, message.toString());
-	}
+        StringBuilder message = new StringBuilder("SpEL expression");
+        if (metadata instanceof ClassMetadata) {
+            message.append(" on " + ((ClassMetadata) metadata).getClassName());
+        }
+        message.append(": " + rawExpression);
+        return new ConditionOutcome(result, message.toString());
+    }
 
 }

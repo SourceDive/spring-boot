@@ -29,16 +29,16 @@ import static org.junit.Assert.assertEquals;
  */
 public class RichGaugeExporterTests {
 
-	private final InMemoryRichGaugeRepository reader = new InMemoryRichGaugeRepository();
-	private final InMemoryMetricRepository writer = new InMemoryMetricRepository();
-	private final RichGaugeExporter exporter = new RichGaugeExporter(this.reader,
-			this.writer);
+    private final InMemoryRichGaugeRepository reader = new InMemoryRichGaugeRepository();
+    private final InMemoryMetricRepository writer = new InMemoryMetricRepository();
+    private final RichGaugeExporter exporter = new RichGaugeExporter(this.reader,
+            this.writer);
 
-	@Test
-	public void prefixedMetricsCopied() {
-		this.reader.set(new Metric<Number>("foo", 2.3));
-		this.exporter.export();
-		assertEquals(1, Iterables.collection(this.writer.groups()).size());
-	}
+    @Test
+    public void prefixedMetricsCopied() {
+        this.reader.set(new Metric<Number>("foo", 2.3));
+        this.exporter.export();
+        assertEquals(1, Iterables.collection(this.writer.groups()).size());
+    }
 
 }

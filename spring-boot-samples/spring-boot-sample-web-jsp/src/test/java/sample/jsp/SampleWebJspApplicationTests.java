@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for JSP application.
- * 
+ *
  * @author Phillip Webb
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -42,13 +42,13 @@ import static org.junit.Assert.assertTrue;
 @DirtiesContext
 public class SampleWebJspApplicationTests {
 
-	@Test
-	public void testJspWithEl() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(),
-				entity.getBody().contains("/resources/text.txt"));
-	}
+    @Test
+    public void testJspWithEl() throws Exception {
+        ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:8080", String.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        assertTrue("Wrong body:\n" + entity.getBody(),
+                entity.getBody().contains("/resources/text.txt"));
+    }
 
 }

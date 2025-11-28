@@ -16,10 +16,10 @@
 
 package org.springframework.boot.yaml;
 
+import org.springframework.beans.factory.FactoryBean;
+
 import java.util.Map;
 import java.util.Properties;
-
-import org.springframework.beans.factory.FactoryBean;
 
 /**
  * Factory for Java Properties that reads from a YAML source. YAML is a nice
@@ -27,7 +27,7 @@ import org.springframework.beans.factory.FactoryBean;
  * properties. It's more or less a superset of JSON, so it has a lot of similar features.
  * The Properties created by this factory have nested paths for hierarchical objects, so
  * for instance this YAML
- * 
+ *
  * <pre class="code">
  * environments:
  *   dev:
@@ -37,73 +37,73 @@ import org.springframework.beans.factory.FactoryBean;
  *     url: http://foo.bar.com
  *     name: My Cool App
  * </pre>
- * 
+ * <p>
  * is transformed into these Properties:
- * 
+ *
  * <pre class="code">
  * environments.dev.url=http://dev.bar.com
  * environments.dev.name=Developer Setup
  * environments.prod.url=http://foo.bar.com
  * environments.prod.name=My Cool App
  * </pre>
- * 
+ * <p>
  * Lists are represented as comma-separated values (useful for simple String values) and
  * also as property keys with <code>[]</code> dereferencers, for example this YAML:
- * 
+ *
  * <pre class="code">
  * servers:
  * - dev.bar.com
  * - foo.bar.com
  * </pre>
- * 
+ * <p>
  * becomes java Properties like this:
- * 
+ *
  * <pre class="code">
  * servers=dev.bar.com,foo.bar.com
  * servers[0]=dev.bar.com
  * servers[1]=foo.bar.com
  * </pre>
- * 
+ *
  * @author Dave Syer
  */
 public class YamlPropertiesFactoryBean extends YamlProcessor implements
-		FactoryBean<Properties> {
+        FactoryBean<Properties> {
 
-	private boolean singleton = true;
+    private boolean singleton = true;
 
-	private Properties instance;
+    private Properties instance;
 
-	@Override
-	public Properties getObject() {
-		if (!this.singleton || this.instance == null) {
-			final Properties result = new Properties();
-			process(new MatchCallback() {
-				@Override
-				public void process(Properties properties, Map<String, Object> map) {
-					result.putAll(properties);
-				}
-			});
-			this.instance = result;
-		}
-		return this.instance;
-	}
+    @Override
+    public Properties getObject() {
+        if (!this.singleton || this.instance == null) {
+            final Properties result = new Properties();
+            process(new MatchCallback() {
+                @Override
+                public void process(Properties properties, Map<String, Object> map) {
+                    result.putAll(properties);
+                }
+            });
+            this.instance = result;
+        }
+        return this.instance;
+    }
 
-	@Override
-	public Class<?> getObjectType() {
-		return Properties.class;
-	}
+    @Override
+    public Class<?> getObjectType() {
+        return Properties.class;
+    }
 
-	/**
-	 * Set if a singleton should be created, or a new object on each request otherwise.
-	 * Default is <code>true</code> (a singleton).
-	 */
-	public void setSingleton(boolean singleton) {
-		this.singleton = singleton;
-	}
+    /**
+     * Set if a singleton should be created, or a new object on each request otherwise.
+     * Default is <code>true</code> (a singleton).
+     */
+    public void setSingleton(boolean singleton) {
+        this.singleton = singleton;
+    }
 
-	@Override
-	public boolean isSingleton() {
-		return this.singleton;
-	}
+    @Override
+    public boolean isSingleton() {
+        return this.singleton;
+    }
 
 }

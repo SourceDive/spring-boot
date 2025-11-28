@@ -32,28 +32,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class SampleActuatorUiApplication {
 
-	@RequestMapping("/")
-	public String home(Map<String, Object> model) {
-		model.put("message", "Hello World");
-		model.put("title", "Hello Home");
-		model.put("date", new Date());
-		return "home";
-	}
+    @RequestMapping("/")
+    public String home(Map<String, Object> model) {
+        model.put("message", "Hello World");
+        model.put("title", "Hello Home");
+        model.put("date", new Date());
+        return "home";
+    }
 
-	@RequestMapping("/foo")
-	public String foo() {
-		throw new RuntimeException("Expected exception in controller");
-	}
+    @RequestMapping("/foo")
+    public String foo() {
+        throw new RuntimeException("Expected exception in controller");
+    }
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleActuatorUiApplication.class, args);
-	}
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(SampleActuatorUiApplication.class, args);
+    }
 
-	@Bean
-	public SecurityProperties securityProperties() {
-		SecurityProperties security = new SecurityProperties();
-		security.getBasic().setPath(""); // empty so home page is unsecured
-		return security;
-	}
+    @Bean
+    public SecurityProperties securityProperties() {
+        SecurityProperties security = new SecurityProperties();
+        security.getBasic().setPath(""); // empty so home page is unsecured
+        return security;
+    }
 
 }

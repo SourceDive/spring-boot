@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SampleController {
 
-	@RequestMapping("/hello")
-	public String helloWorld() {
-		return "hello";
-	}
+    @RequestMapping("/hello")
+    public String helloWorld() {
+        return "hello";
+    }
 }

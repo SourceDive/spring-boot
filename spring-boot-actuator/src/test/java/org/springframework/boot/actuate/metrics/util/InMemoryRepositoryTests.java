@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.metrics.util;
 
+import org.junit.Test;
+import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository.Callback;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,107 +28,102 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository.Callback;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Dave Syer
  */
 public class InMemoryRepositoryTests {
 
-	private final SimpleInMemoryRepository<String> repository = new SimpleInMemoryRepository<String>();
+    private final SimpleInMemoryRepository<String> repository = new SimpleInMemoryRepository<String>();
 
-	@Test
-	public void setAndGet() {
-		this.repository.set("foo", "bar");
-		assertEquals("bar", this.repository.findOne("foo"));
-	}
+    @Test
+    public void setAndGet() {
+        this.repository.set("foo", "bar");
+        assertEquals("bar", this.repository.findOne("foo"));
+    }
 
-	@Test
-	public void updateExisting() {
-		this.repository.set("foo", "spam");
-		this.repository.update("foo", new Callback<String>() {
-			@Override
-			public String modify(String current) {
-				return "bar";
-			}
-		});
-		assertEquals("bar", this.repository.findOne("foo"));
-	}
+    @Test
+    public void updateExisting() {
+        this.repository.set("foo", "spam");
+        this.repository.update("foo", new Callback<String>() {
+            @Override
+            public String modify(String current) {
+                return "bar";
+            }
+        });
+        assertEquals("bar", this.repository.findOne("foo"));
+    }
 
-	@Test
-	public void updateNonexistent() {
-		this.repository.update("foo", new Callback<String>() {
-			@Override
-			public String modify(String current) {
-				return "bar";
-			}
-		});
-		assertEquals("bar", this.repository.findOne("foo"));
-	}
+    @Test
+    public void updateNonexistent() {
+        this.repository.update("foo", new Callback<String>() {
+            @Override
+            public String modify(String current) {
+                return "bar";
+            }
+        });
+        assertEquals("bar", this.repository.findOne("foo"));
+    }
 
-	@Test
-	public void findWithPrefix() {
-		this.repository.set("foo", "bar");
-		this.repository.set("foo.bar", "one");
-		this.repository.set("foo.min", "two");
-		this.repository.set("foo.max", "three");
-		assertEquals(3, ((Collection<?>) this.repository.findAllWithPrefix("foo")).size());
-	}
+    @Test
+    public void findWithPrefix() {
+        this.repository.set("foo", "bar");
+        this.repository.set("foo.bar", "one");
+        this.repository.set("foo.min", "two");
+        this.repository.set("foo.max", "three");
+        assertEquals(3, ((Collection<?>) this.repository.findAllWithPrefix("foo")).size());
+    }
 
-	@Test
-	public void patternsAcceptedForRegisteredPrefix() {
-		this.repository.set("foo.bar", "spam");
-		Iterator<String> iterator = this.repository.findAllWithPrefix("foo.*").iterator();
-		assertEquals("spam", iterator.next());
-		assertFalse(iterator.hasNext());
-	}
+    @Test
+    public void patternsAcceptedForRegisteredPrefix() {
+        this.repository.set("foo.bar", "spam");
+        Iterator<String> iterator = this.repository.findAllWithPrefix("foo.*").iterator();
+        assertEquals("spam", iterator.next());
+        assertFalse(iterator.hasNext());
+    }
 
-	@Test
-	public void updateConcurrent() throws Exception {
-		final SimpleInMemoryRepository<Integer> repository = new SimpleInMemoryRepository<Integer>();
-		Collection<Callable<Boolean>> tasks = new ArrayList<Callable<Boolean>>();
-		for (int i = 0; i < 1000; i++) {
-			tasks.add(new Callable<Boolean>() {
-				@Override
-				public Boolean call() throws Exception {
-					repository.update("foo", new Callback<Integer>() {
-						@Override
-						public Integer modify(Integer current) {
-							if (current == null) {
-								return 1;
-							}
-							return current + 1;
-						}
-					});
-					return true;
-				}
-			});
-			tasks.add(new Callable<Boolean>() {
-				@Override
-				public Boolean call() throws Exception {
-					repository.update("foo", new Callback<Integer>() {
-						@Override
-						public Integer modify(Integer current) {
-							if (current == null) {
-								return -1;
-							}
-							return current - 1;
-						}
-					});
-					return true;
-				}
-			});
-		}
-		List<Future<Boolean>> all = Executors.newFixedThreadPool(10).invokeAll(tasks);
-		for (Future<Boolean> future : all) {
-			assertTrue(future.get(1, TimeUnit.SECONDS));
-		}
-		assertEquals(new Integer(0), repository.findOne("foo"));
-	}
+    @Test
+    public void updateConcurrent() throws Exception {
+        final SimpleInMemoryRepository<Integer> repository = new SimpleInMemoryRepository<Integer>();
+        Collection<Callable<Boolean>> tasks = new ArrayList<Callable<Boolean>>();
+        for (int i = 0; i < 1000; i++) {
+            tasks.add(new Callable<Boolean>() {
+                @Override
+                public Boolean call() throws Exception {
+                    repository.update("foo", new Callback<Integer>() {
+                        @Override
+                        public Integer modify(Integer current) {
+                            if (current == null) {
+                                return 1;
+                            }
+                            return current + 1;
+                        }
+                    });
+                    return true;
+                }
+            });
+            tasks.add(new Callable<Boolean>() {
+                @Override
+                public Boolean call() throws Exception {
+                    repository.update("foo", new Callback<Integer>() {
+                        @Override
+                        public Integer modify(Integer current) {
+                            if (current == null) {
+                                return -1;
+                            }
+                            return current - 1;
+                        }
+                    });
+                    return true;
+                }
+            });
+        }
+        List<Future<Boolean>> all = Executors.newFixedThreadPool(10).invokeAll(tasks);
+        for (Future<Boolean> future : all) {
+            assertTrue(future.get(1, TimeUnit.SECONDS));
+        }
+        assertEquals(new Integer(0), repository.findOne("foo"));
+    }
 
 }

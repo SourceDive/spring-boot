@@ -16,64 +16,62 @@
 
 package org.springframework.boot.loader;
 
-import java.net.URL;
-
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import java.net.URL;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link LaunchedURLClassLoader}.
- * 
+ *
  * @author Dave Syer
  */
 public class LaunchedURLClassLoaderTests {
 
-	@Test
-	public void resolveResourceFromWindowsFilesystem() throws Exception {
-		// This path is invalid - it should return null even on Windows.
-		// A regular URLClassLoader will deal with it gracefully.
-		assertNull(getClass().getClassLoader().getResource(
-				"c:\\Users\\user\\bar.properties"));
-		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { new URL(
-				"jar:file:src/test/resources/jars/app.jar!/") }, getClass()
-				.getClassLoader());
-		// So we should too...
-		assertNull(loader.getResource("c:\\Users\\user\\bar.properties"));
-	}
+    @Test
+    public void resolveResourceFromWindowsFilesystem() throws Exception {
+        // This path is invalid - it should return null even on Windows.
+        // A regular URLClassLoader will deal with it gracefully.
+        assertNull(getClass().getClassLoader().getResource(
+                "c:\\Users\\user\\bar.properties"));
+        LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[]{new URL(
+                "jar:file:src/test/resources/jars/app.jar!/")}, getClass()
+                .getClassLoader());
+        // So we should too...
+        assertNull(loader.getResource("c:\\Users\\user\\bar.properties"));
+    }
 
-	@Test
-	public void resolveResourceFromArchive() throws Exception {
-		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { new URL(
-				"jar:file:src/test/resources/jars/app.jar!/") }, getClass()
-				.getClassLoader());
-		assertNotNull(loader.getResource("demo/Application.java"));
-	}
+    @Test
+    public void resolveResourceFromArchive() throws Exception {
+        LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[]{new URL(
+                "jar:file:src/test/resources/jars/app.jar!/")}, getClass()
+                .getClassLoader());
+        assertNotNull(loader.getResource("demo/Application.java"));
+    }
 
-	@Test
-	public void resolveResourcesFromArchive() throws Exception {
-		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { new URL(
-				"jar:file:src/test/resources/jars/app.jar!/") }, getClass()
-				.getClassLoader());
-		assertTrue(loader.getResources("demo/Application.java").hasMoreElements());
-	}
+    @Test
+    public void resolveResourcesFromArchive() throws Exception {
+        LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[]{new URL(
+                "jar:file:src/test/resources/jars/app.jar!/")}, getClass()
+                .getClassLoader());
+        assertTrue(loader.getResources("demo/Application.java").hasMoreElements());
+    }
 
-	@Test
-	public void resolveRootPathFromArchive() throws Exception {
-		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { new URL(
-				"jar:file:src/test/resources/jars/app.jar!/") }, getClass()
-				.getClassLoader());
-		assertNotNull(loader.getResource(""));
-	}
+    @Test
+    public void resolveRootPathFromArchive() throws Exception {
+        LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[]{new URL(
+                "jar:file:src/test/resources/jars/app.jar!/")}, getClass()
+                .getClassLoader());
+        assertNotNull(loader.getResource(""));
+    }
 
-	@Test
-	public void resolveRootResourcesFromArchive() throws Exception {
-		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { new URL(
-				"jar:file:src/test/resources/jars/app.jar!/") }, getClass()
-				.getClassLoader());
-		assertTrue(loader.getResources("").hasMoreElements());
-	}
+    @Test
+    public void resolveRootResourcesFromArchive() throws Exception {
+        LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[]{new URL(
+                "jar:file:src/test/resources/jars/app.jar!/")}, getClass()
+                .getClassLoader());
+        assertTrue(loader.getResources("").hasMoreElements());
+    }
 
 }

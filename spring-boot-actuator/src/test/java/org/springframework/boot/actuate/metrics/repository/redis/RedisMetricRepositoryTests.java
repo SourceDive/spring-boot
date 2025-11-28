@@ -25,70 +25,68 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
  * @author Dave Syer
  */
 public class RedisMetricRepositoryTests {
 
-	@Rule
-	public RedisServer redis = RedisServer.running();
-	private RedisMetricRepository repository;
-	private String prefix;
+    @Rule
+    public RedisServer redis = RedisServer.running();
+    private RedisMetricRepository repository;
+    private String prefix;
 
-	@Before
-	public void init() {
-		this.repository = new RedisMetricRepository(this.redis.getResource());
-		this.prefix = "spring.test." + System.currentTimeMillis();
-		this.repository.setPrefix(this.prefix);
-	}
+    @Before
+    public void init() {
+        this.repository = new RedisMetricRepository(this.redis.getResource());
+        this.prefix = "spring.test." + System.currentTimeMillis();
+        this.repository.setPrefix(this.prefix);
+    }
 
-	@After
-	public void clear() {
-		assertNotNull(new StringRedisTemplate(this.redis.getResource()).opsForValue()
-				.get(this.prefix + ".foo"));
-		this.repository.reset("foo");
-		this.repository.reset("bar");
-		assertNull(new StringRedisTemplate(this.redis.getResource()).opsForValue().get(
-				this.prefix + ".foo"));
-	}
+    @After
+    public void clear() {
+        assertNotNull(new StringRedisTemplate(this.redis.getResource()).opsForValue()
+                .get(this.prefix + ".foo"));
+        this.repository.reset("foo");
+        this.repository.reset("bar");
+        assertNull(new StringRedisTemplate(this.redis.getResource()).opsForValue().get(
+                this.prefix + ".foo"));
+    }
 
-	@Test
-	public void setAndGet() {
-		this.repository.set(new Metric<Number>("foo", 12.3));
-		Metric<?> metric = this.repository.findOne("foo");
-		assertEquals("foo", metric.getName());
-		assertEquals(12.3, metric.getValue().doubleValue(), 0.01);
-	}
+    @Test
+    public void setAndGet() {
+        this.repository.set(new Metric<Number>("foo", 12.3));
+        Metric<?> metric = this.repository.findOne("foo");
+        assertEquals("foo", metric.getName());
+        assertEquals(12.3, metric.getValue().doubleValue(), 0.01);
+    }
 
-	@Test
-	public void incrementAndGet() {
-		this.repository.increment(new Delta<Long>("foo", 3L));
-		assertEquals(3, this.repository.findOne("foo").getValue().longValue());
-	}
+    @Test
+    public void incrementAndGet() {
+        this.repository.increment(new Delta<Long>("foo", 3L));
+        assertEquals(3, this.repository.findOne("foo").getValue().longValue());
+    }
 
-	@Test
-	public void findAll() {
-		this.repository.increment(new Delta<Long>("foo", 3L));
-		this.repository.set(new Metric<Number>("bar", 12.3));
-		assertEquals(2, Iterables.collection(this.repository.findAll()).size());
-	}
+    @Test
+    public void findAll() {
+        this.repository.increment(new Delta<Long>("foo", 3L));
+        this.repository.set(new Metric<Number>("bar", 12.3));
+        assertEquals(2, Iterables.collection(this.repository.findAll()).size());
+    }
 
-	@Test
-	public void findOneWithAll() {
-		this.repository.increment(new Delta<Long>("foo", 3L));
-		Metric<?> metric = this.repository.findAll().iterator().next();
-		assertEquals("foo", metric.getName());
-	}
+    @Test
+    public void findOneWithAll() {
+        this.repository.increment(new Delta<Long>("foo", 3L));
+        Metric<?> metric = this.repository.findAll().iterator().next();
+        assertEquals("foo", metric.getName());
+    }
 
-	@Test
-	public void count() {
-		this.repository.increment(new Delta<Long>("foo", 3L));
-		this.repository.set(new Metric<Number>("bar", 12.3));
-		assertEquals(2, this.repository.count());
-	}
+    @Test
+    public void count() {
+        this.repository.increment(new Delta<Long>("foo", 3L));
+        this.repository.set(new Metric<Number>("bar", 12.3));
+        assertEquals(2, this.repository.count());
+    }
 
 }

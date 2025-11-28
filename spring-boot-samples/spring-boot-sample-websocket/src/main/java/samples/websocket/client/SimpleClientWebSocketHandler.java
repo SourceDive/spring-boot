@@ -27,31 +27,31 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 public class SimpleClientWebSocketHandler extends TextWebSocketHandler {
 
-	protected Log logger = LogFactory.getLog(SimpleClientWebSocketHandler.class);
+    protected Log logger = LogFactory.getLog(SimpleClientWebSocketHandler.class);
 
-	private final GreetingService greetingService;
+    private final GreetingService greetingService;
 
-	private final CountDownLatch latch;
+    private final CountDownLatch latch;
 
-	@Autowired
-	public SimpleClientWebSocketHandler(GreetingService greetingService,
-			CountDownLatch latch) {
-		this.greetingService = greetingService;
-		this.latch = latch;
-	}
+    @Autowired
+    public SimpleClientWebSocketHandler(GreetingService greetingService,
+                                        CountDownLatch latch) {
+        this.greetingService = greetingService;
+        this.latch = latch;
+    }
 
-	@Override
-	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-		TextMessage message = new TextMessage(this.greetingService.getGreeting());
-		session.sendMessage(message);
-	}
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        TextMessage message = new TextMessage(this.greetingService.getGreeting());
+        session.sendMessage(message);
+    }
 
-	@Override
-	public void handleTextMessage(WebSocketSession session, TextMessage message)
-			throws Exception {
-		this.logger.info("Received: " + message + " (" + this.latch.getCount() + ")");
-		session.close();
-		this.latch.countDown();
-	}
+    @Override
+    public void handleTextMessage(WebSocketSession session, TextMessage message)
+            throws Exception {
+        this.logger.info("Received: " + message + " (" + this.latch.getCount() + ")");
+        session.close();
+        this.latch.countDown();
+    }
 
 }

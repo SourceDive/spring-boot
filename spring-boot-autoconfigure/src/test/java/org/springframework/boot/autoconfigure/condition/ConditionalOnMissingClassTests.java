@@ -21,59 +21,57 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link ConditionalOnMissingClass}.
- * 
+ *
  * @author Dave Syer
  */
 public class ConditionalOnMissingClassTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@Test
-	public void testVanillaOnClassCondition() {
-		this.context.register(BasicConfiguration.class, FooConfiguration.class);
-		this.context.refresh();
-		assertFalse(this.context.containsBean("bar"));
-		assertEquals("foo", this.context.getBean("foo"));
-	}
+    @Test
+    public void testVanillaOnClassCondition() {
+        this.context.register(BasicConfiguration.class, FooConfiguration.class);
+        this.context.refresh();
+        assertFalse(this.context.containsBean("bar"));
+        assertEquals("foo", this.context.getBean("foo"));
+    }
 
-	@Test
-	public void testMissingOnClassCondition() {
-		this.context.register(MissingConfiguration.class, FooConfiguration.class);
-		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("foo", this.context.getBean("foo"));
-	}
+    @Test
+    public void testMissingOnClassCondition() {
+        this.context.register(MissingConfiguration.class, FooConfiguration.class);
+        this.context.refresh();
+        assertTrue(this.context.containsBean("bar"));
+        assertEquals("foo", this.context.getBean("foo"));
+    }
 
-	@Configuration
-	@ConditionalOnMissingClass(ConditionalOnMissingClassTests.class)
-	protected static class BasicConfiguration {
-		@Bean
-		public String bar() {
-			return "bar";
-		}
-	}
+    @Configuration
+    @ConditionalOnMissingClass(ConditionalOnMissingClassTests.class)
+    protected static class BasicConfiguration {
+        @Bean
+        public String bar() {
+            return "bar";
+        }
+    }
 
-	@Configuration
-	@ConditionalOnMissingClass(name = "FOO")
-	protected static class MissingConfiguration {
-		@Bean
-		public String bar() {
-			return "bar";
-		}
-	}
+    @Configuration
+    @ConditionalOnMissingClass(name = "FOO")
+    protected static class MissingConfiguration {
+        @Bean
+        public String bar() {
+            return "bar";
+        }
+    }
 
-	@Configuration
-	protected static class FooConfiguration {
-		@Bean
-		public String foo() {
-			return "foo";
-		}
-	}
+    @Configuration
+    protected static class FooConfiguration {
+        @Bean
+        public String foo() {
+            return "foo";
+        }
+    }
 
 }

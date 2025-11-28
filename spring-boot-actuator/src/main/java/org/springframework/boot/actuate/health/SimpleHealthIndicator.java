@@ -16,97 +16,94 @@
 
 package org.springframework.boot.actuate.health;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.util.StringUtils;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ConnectionCallback;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.util.StringUtils;
-
 /**
  * Simple implementation of {@link HealthIndicator} that returns a status and also
  * attempts a simple database test.
- * 
+ *
  * @author Dave Syer
  */
 public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object>> {
 
-	private DataSource dataSource;
+    private DataSource dataSource;
 
-	private JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
-	private static Map<String, String> queries = new HashMap<String, String>();
+    private static Map<String, String> queries = new HashMap<String, String>();
 
-	static {
-		queries.put("HSQL Database Engine",
-				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SYSTEM_USERS");
-		queries.put("Oracle", "SELECT 'Hello' from DUAL");
-		queries.put("Apache Derby", "SELECT 1 FROM SYSIBM.SYSDUMMY1");
-	}
+    static {
+        queries.put("HSQL Database Engine",
+                "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SYSTEM_USERS");
+        queries.put("Oracle", "SELECT 'Hello' from DUAL");
+        queries.put("Apache Derby", "SELECT 1 FROM SYSIBM.SYSDUMMY1");
+    }
 
-	private static String DEFAULT_QUERY = "SELECT 1";
+    private static String DEFAULT_QUERY = "SELECT 1";
 
-	private String query = null;
+    private String query = null;
 
-	@Override
-	public Map<String, Object> health() {
-		LinkedHashMap<String, Object> health = new LinkedHashMap<String, Object>();
-		health.put("status", "ok");
-		String product = "unknown";
-		if (this.dataSource != null) {
-			try {
-				product = this.jdbcTemplate.execute(new ConnectionCallback<String>() {
-					@Override
-					public String doInConnection(Connection connection)
-							throws SQLException, DataAccessException {
-						return connection.getMetaData().getDatabaseProductName();
-					}
-				});
-				health.put("database", product);
-			}
-			catch (DataAccessException ex) {
-				health.put("status", "error");
-				health.put("error", ex.getClass().getName() + ": " + ex.getMessage());
-			}
-			String query = detectQuery(product);
-			if (StringUtils.hasText(query)) {
-				try {
-					health.put("hello",
-							this.jdbcTemplate.queryForObject(query, Object.class));
-				}
-				catch (Exception ex) {
-					health.put("status", "error");
-					health.put("error", ex.getClass().getName() + ": " + ex.getMessage());
-				}
-			}
-		}
-		return health;
-	}
+    @Override
+    public Map<String, Object> health() {
+        LinkedHashMap<String, Object> health = new LinkedHashMap<String, Object>();
+        health.put("status", "ok");
+        String product = "unknown";
+        if (this.dataSource != null) {
+            try {
+                product = this.jdbcTemplate.execute(new ConnectionCallback<String>() {
+                    @Override
+                    public String doInConnection(Connection connection)
+                            throws SQLException, DataAccessException {
+                        return connection.getMetaData().getDatabaseProductName();
+                    }
+                });
+                health.put("database", product);
+            } catch (DataAccessException ex) {
+                health.put("status", "error");
+                health.put("error", ex.getClass().getName() + ": " + ex.getMessage());
+            }
+            String query = detectQuery(product);
+            if (StringUtils.hasText(query)) {
+                try {
+                    health.put("hello",
+                            this.jdbcTemplate.queryForObject(query, Object.class));
+                } catch (Exception ex) {
+                    health.put("status", "error");
+                    health.put("error", ex.getClass().getName() + ": " + ex.getMessage());
+                }
+            }
+        }
+        return health;
+    }
 
-	protected String detectQuery(String product) {
-		String query = this.query;
-		if (!StringUtils.hasText(query)) {
-			query = queries.get(product);
-		}
-		if (!StringUtils.hasText(query)) {
-			query = DEFAULT_QUERY;
-		}
-		return query;
-	}
+    protected String detectQuery(String product) {
+        String query = this.query;
+        if (!StringUtils.hasText(query)) {
+            query = queries.get(product);
+        }
+        if (!StringUtils.hasText(query)) {
+            query = DEFAULT_QUERY;
+        }
+        return query;
+    }
 
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
 
-	public void setQuery(String query) {
-		this.query = query;
-	}
+    public void setQuery(String query) {
+        this.query = query;
+    }
 
 }

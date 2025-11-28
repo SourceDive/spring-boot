@@ -16,23 +16,18 @@
 
 package org.springframework.boot.test;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.lang.annotation.*;
 
 /**
  * Class-level annotation that is used to determine how to load and configure an
  * ApplicationContext for integration tests. Similar to the standard
  * {@link ContextConfiguration} but uses Spring Boot's
  * {@link SpringApplicationContextLoader}.
- * 
+ *
  * @author Dave Syer
  * @see SpringApplicationContextLoader
  */
@@ -43,34 +38,34 @@ import org.springframework.test.context.ContextConfiguration;
 @Target(ElementType.TYPE)
 public @interface SpringApplicationConfiguration {
 
-	/**
-	 * @see ContextConfiguration#locations()
-	 */
-	String[] locations() default {};
+    /**
+     * @see ContextConfiguration#locations()
+     */
+    String[] locations() default {};
 
-	/**
-	 * @see ContextConfiguration#classes()
-	 */
-	Class<?>[] classes() default {};
+    /**
+     * @see ContextConfiguration#classes()
+     */
+    Class<?>[] classes() default {};
 
-	/**
-	 * @see ContextConfiguration#initializers()
-	 */
-	Class<? extends ApplicationContextInitializer<? extends ConfigurableApplicationContext>>[] initializers() default {};
+    /**
+     * @see ContextConfiguration#initializers()
+     */
+    Class<? extends ApplicationContextInitializer<? extends ConfigurableApplicationContext>>[] initializers() default {};
 
-	/**
-	 * @see ContextConfiguration#inheritLocations()
-	 */
-	boolean inheritLocations() default true;
+    /**
+     * @see ContextConfiguration#inheritLocations()
+     */
+    boolean inheritLocations() default true;
 
-	/**
-	 * @see ContextConfiguration#inheritInitializers()
-	 */
-	boolean inheritInitializers() default true;
+    /**
+     * @see ContextConfiguration#inheritInitializers()
+     */
+    boolean inheritInitializers() default true;
 
-	/**
-	 * @see ContextConfiguration#name()
-	 */
-	String name() default "";
+    /**
+     * @see ContextConfiguration#name()
+     */
+    String name() default "";
 
 }

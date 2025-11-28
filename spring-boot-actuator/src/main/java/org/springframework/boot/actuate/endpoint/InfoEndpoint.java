@@ -16,43 +16,43 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.Assert;
-
 /**
  * {@link Endpoint} to expose arbitrary application information.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.info", ignoreUnknownFields = false)
 public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
-	private final Map<String, ? extends Object> info;
+    private final Map<String, ? extends Object> info;
 
-	/**
-	 * Create a new {@link InfoEndpoint} instance.
-	 * 
-	 * @param info the info to expose
-	 */
-	public InfoEndpoint(Map<String, ? extends Object> info) {
-		super("info", false, true);
-		Assert.notNull(info, "Info must not be null");
-		this.info = info;
-	}
+    /**
+     * Create a new {@link InfoEndpoint} instance.
+     *
+     * @param info the info to expose
+     */
+    public InfoEndpoint(Map<String, ? extends Object> info) {
+        super("info", false, true);
+        Assert.notNull(info, "Info must not be null");
+        this.info = info;
+    }
 
-	@Override
-	public Map<String, Object> invoke() {
-		Map<String, Object> info = new LinkedHashMap<String, Object>(this.info);
-		info.putAll(getAdditionalInfo());
-		return info;
-	}
+    @Override
+    public Map<String, Object> invoke() {
+        Map<String, Object> info = new LinkedHashMap<String, Object>(this.info);
+        info.putAll(getAdditionalInfo());
+        return info;
+    }
 
-	protected Map<String, Object> getAdditionalInfo() {
-		return Collections.emptyMap();
-	}
+    protected Map<String, Object> getAdditionalInfo() {
+        return Collections.emptyMap();
+    }
 
 }

@@ -27,33 +27,33 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link HealthEndpoint}.
- * 
+ *
  * @author Phillip Webb
  */
 public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint<String>> {
 
-	public HealthEndpointTests() {
-		super(Config.class, HealthEndpoint.class, "health", false, "endpoints.health");
-	}
+    public HealthEndpointTests() {
+        super(Config.class, HealthEndpoint.class, "health", false, "endpoints.health");
+    }
 
-	@Test
-	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke(), equalTo("fine"));
-	}
+    @Test
+    public void invoke() throws Exception {
+        assertThat(getEndpointBean().invoke(), equalTo("fine"));
+    }
 
-	@Configuration
-	@EnableConfigurationProperties
-	public static class Config {
+    @Configuration
+    @EnableConfigurationProperties
+    public static class Config {
 
-		@Bean
-		public HealthEndpoint<String> endpoint() {
-			return new HealthEndpoint<String>(new HealthIndicator<String>() {
-				@Override
-				public String health() {
-					return "fine";
-				}
-			});
-		}
+        @Bean
+        public HealthEndpoint<String> endpoint() {
+            return new HealthEndpoint<String>(new HealthIndicator<String>() {
+                @Override
+                public String health() {
+                    return "fine";
+                }
+            });
+        }
 
-	}
+    }
 }

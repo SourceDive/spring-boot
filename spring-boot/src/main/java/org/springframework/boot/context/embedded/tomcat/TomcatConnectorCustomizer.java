@@ -20,15 +20,15 @@ import org.apache.catalina.connector.Connector;
 
 /**
  * Callback interface that can be used to customize a Tomcat {@link Connector}.
- * 
+ *
  * @author Dave Syer
  * @see TomcatEmbeddedServletContainerFactory
  */
 public interface TomcatConnectorCustomizer {
 
-	/**
-	 * @param connector the connector to customize
-	 */
-	void customize(Connector connector);
+    /**
+     * @param connector the connector to customize
+     */
+    void customize(Connector connector);
 
 }

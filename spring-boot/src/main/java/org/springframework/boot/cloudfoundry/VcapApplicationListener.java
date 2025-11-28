@@ -16,14 +16,6 @@
 
 package org.springframework.boot.cloudfoundry;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
@@ -32,12 +24,11 @@ import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.CommandLinePropertySource;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.core.env.*;
 import org.springframework.util.StringUtils;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * An {@link ApplicationListener} that knows where to find VCAP (a.k.a. Cloud Foundry)
@@ -48,7 +39,7 @@ import org.springframework.util.StringUtils;
  * shallow hash with basic information about the application (name, instance id, instance
  * index, etc.), and VCAP_SERVICES is a hash of lists where the keys are service labels
  * and the values are lists of hashes of service instance meta data. Examples are:
- * 
+ *
  * <pre class="code">
  * VCAP_APPLICATION: {"instance_id":"2ce0ac627a6c8e47e936d829a3a47b5b","instance_index":0,
  *   "version":"0138c4a6-2a73-416b-aca0-572c09f7ca53","name":"foo",
@@ -59,19 +50,19 @@ import org.springframework.util.StringUtils;
  *   "username":"urpRuqTf8Cpe6","password":"pxLsGVpsC9A5S"}
  * }]}
  * </pre>
- * 
+ * <p>
  * These objects are flattened into properties. The VCAP_APPLICATION object goes straight
  * to <code>vcap.application.*</code> in a fairly obvious way, and the VCAP_SERVICES
  * object is unwrapped so that it is a hash of objects with key equal to the service
  * instance name (e.g. "mysql" in the example above), and value equal to that instances
  * properties, and then flattened in the same way. E.g.
- * 
+ *
  * <pre class="code">
  * vcap.application.instance_id: 2ce0ac627a6c8e47e936d829a3a47b5b
  * vcap.application.version: 0138c4a6-2a73-416b-aca0-572c09f7ca53
  * vcap.application.name: foo
  * vcap.application.uris[0]: foo.cfapps.io
- * 
+ *
  * vcap.services.mysql.name: mysql
  * vcap.services.mysql.label: rds-mysql-1.0
  * vcap.services.mysql.credentials.name: d04fb13d27d964c62b267bbba1cffb9da
@@ -81,160 +72,154 @@ import org.springframework.util.StringUtils;
  * vcap.services.mysql.credentials.password: pxLsGVpsC9A5S
  * ...
  * </pre>
- * 
+ * <p>
  * N.B. this initializer is mainly intended for informational use (the application and
  * instance ids are particularly useful). For service binding you might find that Spring
  * Cloud is more convenient and more robust against potential changes in Cloud Foundry.
- * 
+ *
  * @author Dave Syer
  */
 public class VcapApplicationListener implements
-		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
+        ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
-	private static final Log logger = LogFactory.getLog(VcapApplicationListener.class);
+    private static final Log logger = LogFactory.getLog(VcapApplicationListener.class);
 
-	private static final String VCAP_APPLICATION = "VCAP_APPLICATION";
+    private static final String VCAP_APPLICATION = "VCAP_APPLICATION";
 
-	private static final String VCAP_SERVICES = "VCAP_SERVICES";
+    private static final String VCAP_SERVICES = "VCAP_SERVICES";
 
-	// Before ConfigFileApplicationListener so values there can use these ones
-	private int order = ConfigFileApplicationListener.DEFAULT_ORDER - 1;;
+    // Before ConfigFileApplicationListener so values there can use these ones
+    private int order = ConfigFileApplicationListener.DEFAULT_ORDER - 1;
+    ;
 
-	private final JsonParser parser = JsonParserFactory.getJsonParser();
+    private final JsonParser parser = JsonParserFactory.getJsonParser();
 
-	public void setOrder(int order) {
-		this.order = order;
-	}
+    public void setOrder(int order) {
+        this.order = order;
+    }
 
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
+    @Override
+    public int getOrder() {
+        return this.order;
+    }
 
-	@Override
-	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
+    @Override
+    public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 
-		ConfigurableEnvironment environment = event.getEnvironment();
-		if (!environment.containsProperty(VCAP_APPLICATION)
-				&& !environment.containsProperty(VCAP_SERVICES)) {
-			return;
-		}
+        ConfigurableEnvironment environment = event.getEnvironment();
+        if (!environment.containsProperty(VCAP_APPLICATION)
+                && !environment.containsProperty(VCAP_SERVICES)) {
+            return;
+        }
 
-		Properties properties = new Properties();
-		addWithPrefix(properties, getPropertiesFromApplication(environment),
-				"vcap.application.");
-		addWithPrefix(properties, getPropertiesFromServices(environment),
-				"vcap.services.");
-		MutablePropertySources propertySources = environment.getPropertySources();
-		if (propertySources
-				.contains(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
-			propertySources.addAfter(
-					CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
-					new PropertiesPropertySource("vcap", properties));
+        Properties properties = new Properties();
+        addWithPrefix(properties, getPropertiesFromApplication(environment),
+                "vcap.application.");
+        addWithPrefix(properties, getPropertiesFromServices(environment),
+                "vcap.services.");
+        MutablePropertySources propertySources = environment.getPropertySources();
+        if (propertySources
+                .contains(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
+            propertySources.addAfter(
+                    CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
+                    new PropertiesPropertySource("vcap", properties));
 
-		}
-		else {
-			propertySources.addFirst(new PropertiesPropertySource("vcap", properties));
-		}
+        } else {
+            propertySources.addFirst(new PropertiesPropertySource("vcap", properties));
+        }
 
-	}
+    }
 
-	private void addWithPrefix(Properties properties, Properties other, String prefix) {
-		for (String key : other.stringPropertyNames()) {
-			String prefixed = prefix + key;
-			properties.setProperty(prefixed, other.getProperty(key));
-		}
-	}
+    private void addWithPrefix(Properties properties, Properties other, String prefix) {
+        for (String key : other.stringPropertyNames()) {
+            String prefixed = prefix + key;
+            properties.setProperty(prefixed, other.getProperty(key));
+        }
+    }
 
-	private Properties getPropertiesFromApplication(Environment environment) {
-		Properties properties = new Properties();
-		try {
-			Map<String, Object> map = this.parser.parseMap(environment.getProperty(
-					VCAP_APPLICATION, "{}"));
-			if (map != null) {
-				map = new LinkedHashMap<String, Object>(map);
-				for (String key : map.keySet()) {
-					Object value = map.get(key);
-					if (!(value instanceof String)) {
-						if (value == null) {
-							value = "";
-						}
-						map.put(key, value.toString());
-					}
-				}
-				properties.putAll(map);
-			}
-		}
-		catch (Exception ex) {
-			logger.error("Could not parse VCAP_APPLICATION", ex);
-		}
-		return properties;
-	}
+    private Properties getPropertiesFromApplication(Environment environment) {
+        Properties properties = new Properties();
+        try {
+            Map<String, Object> map = this.parser.parseMap(environment.getProperty(
+                    VCAP_APPLICATION, "{}"));
+            if (map != null) {
+                map = new LinkedHashMap<String, Object>(map);
+                for (String key : map.keySet()) {
+                    Object value = map.get(key);
+                    if (!(value instanceof String)) {
+                        if (value == null) {
+                            value = "";
+                        }
+                        map.put(key, value.toString());
+                    }
+                }
+                properties.putAll(map);
+            }
+        } catch (Exception ex) {
+            logger.error("Could not parse VCAP_APPLICATION", ex);
+        }
+        return properties;
+    }
 
-	private Properties getPropertiesFromServices(Environment environment) {
-		Properties properties = new Properties();
-		try {
-			Map<String, Object> map = this.parser.parseMap(environment.getProperty(
-					VCAP_SERVICES, "{}"));
-			if (map != null) {
-				for (Object services : map.values()) {
-					@SuppressWarnings("unchecked")
-					List<Object> list = (List<Object>) services;
-					for (Object object : list) {
-						@SuppressWarnings("unchecked")
-						Map<String, Object> service = (Map<String, Object>) object;
-						String key = (String) service.get("name");
-						if (key == null) {
-							key = (String) service.get("label");
-						}
-						flatten(properties, service, key);
-					}
-				}
-			}
-		}
-		catch (Exception ex) {
-			logger.error("Could not parse VCAP_SERVICES", ex);
-		}
-		return properties;
-	}
+    private Properties getPropertiesFromServices(Environment environment) {
+        Properties properties = new Properties();
+        try {
+            Map<String, Object> map = this.parser.parseMap(environment.getProperty(
+                    VCAP_SERVICES, "{}"));
+            if (map != null) {
+                for (Object services : map.values()) {
+                    @SuppressWarnings("unchecked")
+                    List<Object> list = (List<Object>) services;
+                    for (Object object : list) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> service = (Map<String, Object>) object;
+                        String key = (String) service.get("name");
+                        if (key == null) {
+                            key = (String) service.get("label");
+                        }
+                        flatten(properties, service, key);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            logger.error("Could not parse VCAP_SERVICES", ex);
+        }
+        return properties;
+    }
 
-	private void flatten(Properties properties, Map<String, Object> input, String path) {
-		for (Entry<String, Object> entry : input.entrySet()) {
-			String key = entry.getKey();
-			if (StringUtils.hasText(path)) {
-				if (key.startsWith("[")) {
-					key = path + key;
-				}
-				else {
-					key = path + "." + key;
-				}
-			}
-			Object value = entry.getValue();
-			if (value instanceof String) {
-				properties.put(key, value);
-			}
-			else if (value instanceof Map) {
-				// Need a compound key
-				@SuppressWarnings("unchecked")
-				Map<String, Object> map = (Map<String, Object>) value;
-				flatten(properties, map, key);
-			}
-			else if (value instanceof Collection) {
-				// Need a compound key
-				@SuppressWarnings("unchecked")
-				Collection<Object> collection = (Collection<Object>) value;
-				properties.put(key,
-						StringUtils.collectionToCommaDelimitedString(collection));
-				int count = 0;
-				for (Object object : collection) {
-					flatten(properties,
-							Collections.singletonMap("[" + (count++) + "]", object), key);
-				}
-			}
-			else {
-				properties.put(key, value == null ? "" : value);
-			}
-		}
-	}
+    private void flatten(Properties properties, Map<String, Object> input, String path) {
+        for (Entry<String, Object> entry : input.entrySet()) {
+            String key = entry.getKey();
+            if (StringUtils.hasText(path)) {
+                if (key.startsWith("[")) {
+                    key = path + key;
+                } else {
+                    key = path + "." + key;
+                }
+            }
+            Object value = entry.getValue();
+            if (value instanceof String) {
+                properties.put(key, value);
+            } else if (value instanceof Map) {
+                // Need a compound key
+                @SuppressWarnings("unchecked")
+                Map<String, Object> map = (Map<String, Object>) value;
+                flatten(properties, map, key);
+            } else if (value instanceof Collection) {
+                // Need a compound key
+                @SuppressWarnings("unchecked")
+                Collection<Object> collection = (Collection<Object>) value;
+                properties.put(key,
+                        StringUtils.collectionToCommaDelimitedString(collection));
+                int count = 0;
+                for (Object object : collection) {
+                    flatten(properties,
+                            Collections.singletonMap("[" + (count++) + "]", object), key);
+                }
+            } else {
+                properties.put(key, value == null ? "" : value);
+            }
+        }
+    }
 
 }

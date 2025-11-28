@@ -16,54 +16,54 @@
 
 package org.springframework.boot.context.embedded;
 
-import javax.servlet.MultipartConfigElement;
-
 import org.junit.Test;
+
+import javax.servlet.MultipartConfigElement;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link MultiPartConfigFactory}.
- * 
+ *
  * @author Phillip Webb
  */
 public class MultiPartConfigFactoryTests {
 
-	@Test
-	public void sensibleDefaults() {
-		MultiPartConfigFactory factory = new MultiPartConfigFactory();
-		MultipartConfigElement config = factory.createMultipartConfig();
-		assertThat(config.getLocation(), equalTo(""));
-		assertThat(config.getMaxFileSize(), equalTo(-1L));
-		assertThat(config.getMaxRequestSize(), equalTo(-1L));
-		assertThat(config.getFileSizeThreshold(), equalTo(0));
-	}
+    @Test
+    public void sensibleDefaults() {
+        MultiPartConfigFactory factory = new MultiPartConfigFactory();
+        MultipartConfigElement config = factory.createMultipartConfig();
+        assertThat(config.getLocation(), equalTo(""));
+        assertThat(config.getMaxFileSize(), equalTo(-1L));
+        assertThat(config.getMaxRequestSize(), equalTo(-1L));
+        assertThat(config.getFileSizeThreshold(), equalTo(0));
+    }
 
-	@Test
-	public void create() throws Exception {
-		MultiPartConfigFactory factory = new MultiPartConfigFactory();
-		factory.setLocation("loc");
-		factory.setMaxFileSize(1);
-		factory.setMaxRequestSize(2);
-		factory.setFileSizeThreshold(3);
-		MultipartConfigElement config = factory.createMultipartConfig();
-		assertThat(config.getLocation(), equalTo("loc"));
-		assertThat(config.getMaxFileSize(), equalTo(1L));
-		assertThat(config.getMaxRequestSize(), equalTo(2L));
-		assertThat(config.getFileSizeThreshold(), equalTo(3));
-	}
+    @Test
+    public void create() throws Exception {
+        MultiPartConfigFactory factory = new MultiPartConfigFactory();
+        factory.setLocation("loc");
+        factory.setMaxFileSize(1);
+        factory.setMaxRequestSize(2);
+        factory.setFileSizeThreshold(3);
+        MultipartConfigElement config = factory.createMultipartConfig();
+        assertThat(config.getLocation(), equalTo("loc"));
+        assertThat(config.getMaxFileSize(), equalTo(1L));
+        assertThat(config.getMaxRequestSize(), equalTo(2L));
+        assertThat(config.getFileSizeThreshold(), equalTo(3));
+    }
 
-	@Test
-	public void createWithStringSizes() throws Exception {
-		MultiPartConfigFactory factory = new MultiPartConfigFactory();
-		factory.setMaxFileSize("1");
-		factory.setMaxRequestSize("2kB");
-		factory.setFileSizeThreshold("3Mb");
-		MultipartConfigElement config = factory.createMultipartConfig();
-		assertThat(config.getMaxFileSize(), equalTo(1L));
-		assertThat(config.getMaxRequestSize(), equalTo(2 * 1024L));
-		assertThat(config.getFileSizeThreshold(), equalTo(3 * 1024 * 1024));
-	}
+    @Test
+    public void createWithStringSizes() throws Exception {
+        MultiPartConfigFactory factory = new MultiPartConfigFactory();
+        factory.setMaxFileSize("1");
+        factory.setMaxRequestSize("2kB");
+        factory.setFileSizeThreshold("3Mb");
+        MultipartConfigElement config = factory.createMultipartConfig();
+        assertThat(config.getMaxFileSize(), equalTo(1L));
+        assertThat(config.getMaxRequestSize(), equalTo(2 * 1024L));
+        assertThat(config.getFileSizeThreshold(), equalTo(3 * 1024 * 1024));
+    }
 
 }

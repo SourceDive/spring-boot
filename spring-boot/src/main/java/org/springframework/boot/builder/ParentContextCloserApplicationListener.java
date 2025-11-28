@@ -16,72 +16,72 @@
 
 package org.springframework.boot.builder;
 
-import java.lang.ref.WeakReference;
-
 import org.springframework.boot.builder.ParentContextApplicationContextInitializer.ParentContextAvailableEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.core.Ordered;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Listener that closes the application context if its parent is closed. It listens for
  * refresh events and grabs the current context from there, and then listens for closed
  * events and propagates it down the hierarchy.
- * 
+ *
  * @author Dave Syer
  * @author Eric Bottard
  */
 public class ParentContextCloserApplicationListener implements
-		ApplicationListener<ParentContextAvailableEvent>, Ordered {
+        ApplicationListener<ParentContextAvailableEvent>, Ordered {
 
-	@Override
-	public int getOrder() {
-		return Ordered.LOWEST_PRECEDENCE - 10;
-	}
+    @Override
+    public int getOrder() {
+        return Ordered.LOWEST_PRECEDENCE - 10;
+    }
 
-	@Override
-	public void onApplicationEvent(ParentContextAvailableEvent event) {
-		maybeInstallListenerInParent(event.getApplicationContext());
-	}
+    @Override
+    public void onApplicationEvent(ParentContextAvailableEvent event) {
+        maybeInstallListenerInParent(event.getApplicationContext());
+    }
 
-	private void maybeInstallListenerInParent(ConfigurableApplicationContext child) {
-		if (child.getParent() instanceof ConfigurableApplicationContext) {
-			ConfigurableApplicationContext parent = (ConfigurableApplicationContext) child
-					.getParent();
-			parent.addApplicationListener(createContextCloserListener(child));
-		}
-	}
+    private void maybeInstallListenerInParent(ConfigurableApplicationContext child) {
+        if (child.getParent() instanceof ConfigurableApplicationContext) {
+            ConfigurableApplicationContext parent = (ConfigurableApplicationContext) child
+                    .getParent();
+            parent.addApplicationListener(createContextCloserListener(child));
+        }
+    }
 
-	/**
-	 * Subclasses may override to create their own subclass of ContextCloserListener. This
-	 * still enforces the use of a weak reference.
-	 */
-	protected ContextCloserListener createContextCloserListener(
-			ConfigurableApplicationContext child) {
-		return new ContextCloserListener(child);
-	}
+    /**
+     * Subclasses may override to create their own subclass of ContextCloserListener. This
+     * still enforces the use of a weak reference.
+     */
+    protected ContextCloserListener createContextCloserListener(
+            ConfigurableApplicationContext child) {
+        return new ContextCloserListener(child);
+    }
 
-	protected static class ContextCloserListener implements
-			ApplicationListener<ContextClosedEvent> {
+    protected static class ContextCloserListener implements
+            ApplicationListener<ContextClosedEvent> {
 
-		private WeakReference<ConfigurableApplicationContext> childContext;
+        private WeakReference<ConfigurableApplicationContext> childContext;
 
-		public ContextCloserListener(ConfigurableApplicationContext childContext) {
-			this.childContext = new WeakReference<ConfigurableApplicationContext>(
-					childContext);
-		}
+        public ContextCloserListener(ConfigurableApplicationContext childContext) {
+            this.childContext = new WeakReference<ConfigurableApplicationContext>(
+                    childContext);
+        }
 
-		@Override
-		public void onApplicationEvent(ContextClosedEvent event) {
-			ConfigurableApplicationContext context = this.childContext.get();
-			if ((context != null)
-					&& (event.getApplicationContext() == context.getParent())
-					&& context.isActive()) {
-				context.close();
-			}
-		}
+        @Override
+        public void onApplicationEvent(ContextClosedEvent event) {
+            ConfigurableApplicationContext context = this.childContext.get();
+            if ((context != null)
+                    && (event.getApplicationContext() == context.getParent())
+                    && context.isActive()) {
+                context.close();
+            }
+        }
 
-	}
+    }
 
 }

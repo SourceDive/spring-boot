@@ -16,10 +16,6 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import java.util.Map;
-
-import javax.persistence.EntityManager;
-
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -42,81 +38,84 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.ClassUtils;
 
+import javax.persistence.EntityManager;
+import java.util.Map;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Hibernate JPA.
- * 
+ *
  * @author Phillip Webb
  */
 @Configuration
-@ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
-		EnableTransactionManagement.class, EntityManager.class })
+@ConditionalOnClass({LocalContainerEntityManagerFactoryBean.class,
+        EnableTransactionManagement.class, EntityManager.class})
 @Conditional(HibernateEntityManagerCondition.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration implements
-		BeanClassLoaderAware {
+        BeanClassLoaderAware {
 
-	private RelaxedPropertyResolver environment;
+    private RelaxedPropertyResolver environment;
 
-	private ClassLoader classLoader;
+    private ClassLoader classLoader;
 
-	public HibernateJpaAutoConfiguration() {
-		this.environment = null;
-	}
+    public HibernateJpaAutoConfiguration() {
+        this.environment = null;
+    }
 
-	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
-	}
+    @Override
+    public void setBeanClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
 
-	@Override
-	public void setEnvironment(Environment environment) {
-		super.setEnvironment(environment);
-		this.environment = new RelaxedPropertyResolver(environment,
-				"spring.jpa.hibernate.");
-	}
+    @Override
+    public void setEnvironment(Environment environment) {
+        super.setEnvironment(environment);
+        this.environment = new RelaxedPropertyResolver(environment,
+                "spring.jpa.hibernate.");
+    }
 
-	@Override
-	protected AbstractJpaVendorAdapter createJpaVendorAdapter() {
-		return new HibernateJpaVendorAdapter();
-	}
+    @Override
+    protected AbstractJpaVendorAdapter createJpaVendorAdapter() {
+        return new HibernateJpaVendorAdapter();
+    }
 
-	@Override
-	protected void configure(
-			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
-		Map<String, Object> properties = entityManagerFactoryBean.getJpaPropertyMap();
-		properties.put("hibernate.ejb.naming_strategy", this.environment.getProperty(
-				"naming-strategy", SpringNamingStrategy.class.getName()));
-		String ddlAuto = this.environment.getProperty("ddl-auto", getDefaultDdlAuto());
-		if (!"none".equals(ddlAuto)) {
-			properties.put("hibernate.hbm2ddl.auto", ddlAuto);
-		}
-	}
+    @Override
+    protected void configure(
+            LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
+        Map<String, Object> properties = entityManagerFactoryBean.getJpaPropertyMap();
+        properties.put("hibernate.ejb.naming_strategy", this.environment.getProperty(
+                "naming-strategy", SpringNamingStrategy.class.getName()));
+        String ddlAuto = this.environment.getProperty("ddl-auto", getDefaultDdlAuto());
+        if (!"none".equals(ddlAuto)) {
+            properties.put("hibernate.hbm2ddl.auto", ddlAuto);
+        }
+    }
 
-	private String getDefaultDdlAuto() {
-		EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection
-				.get(this.classLoader);
-		if (embeddedDatabaseConnection == EmbeddedDatabaseConnection.NONE) {
-			return "none";
-		}
-		return "create-drop";
-	}
+    private String getDefaultDdlAuto() {
+        EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection
+                .get(this.classLoader);
+        if (embeddedDatabaseConnection == EmbeddedDatabaseConnection.NONE) {
+            return "none";
+        }
+        return "create-drop";
+    }
 
-	static class HibernateEntityManagerCondition extends SpringBootCondition {
+    static class HibernateEntityManagerCondition extends SpringBootCondition {
 
-		private static String[] CLASS_NAMES = {
-				"org.hibernate.ejb.HibernateEntityManager",
-				"org.hibernate.jpa.HibernateEntityManager" };
+        private static String[] CLASS_NAMES = {
+                "org.hibernate.ejb.HibernateEntityManager",
+                "org.hibernate.jpa.HibernateEntityManager"};
 
-		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			for (String className : CLASS_NAMES) {
-				if (ClassUtils.isPresent(className, context.getClassLoader())) {
-					return ConditionOutcome.match("found HibernateEntityManager class");
-				}
-			}
-			return ConditionOutcome.noMatch("did not find HibernateEntityManager class");
-		}
-	}
+        @Override
+        public ConditionOutcome getMatchOutcome(ConditionContext context,
+                                                AnnotatedTypeMetadata metadata) {
+            for (String className : CLASS_NAMES) {
+                if (ClassUtils.isPresent(className, context.getClassLoader())) {
+                    return ConditionOutcome.match("found HibernateEntityManager class");
+                }
+            }
+            return ConditionOutcome.noMatch("did not find HibernateEntityManager class");
+        }
+    }
 
 }

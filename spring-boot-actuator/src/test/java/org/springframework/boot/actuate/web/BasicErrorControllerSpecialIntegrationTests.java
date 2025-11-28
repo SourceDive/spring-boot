@@ -41,87 +41,87 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class BasicErrorControllerSpecialIntegrationTests {
 
-	private ConfigurableWebApplicationContext wac;
+    private ConfigurableWebApplicationContext wac;
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	@After
-	public void close() {
-		if (this.wac != null) {
-			this.wac.close();
-		}
-	}
+    @After
+    public void close() {
+        if (this.wac != null) {
+            this.wac.close();
+        }
+    }
 
-	public void setup(ConfigurableWebApplicationContext context) {
-		this.wac = context;
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-	}
+    public void setup(ConfigurableWebApplicationContext context) {
+        this.wac = context;
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+    }
 
-	@Test
-	public void errorPageAvailableWithParentContext() throws Exception {
-		setup((ConfigurableWebApplicationContext) new SpringApplicationBuilder(
-				ParentConfiguration.class).child(ChildConfiguration.class).run());
-		MvcResult response = this.mockMvc
-				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("status=999"));
-	}
+    @Test
+    public void errorPageAvailableWithParentContext() throws Exception {
+        setup((ConfigurableWebApplicationContext) new SpringApplicationBuilder(
+                ParentConfiguration.class).child(ChildConfiguration.class).run());
+        MvcResult response = this.mockMvc
+                .perform(get("/error").accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk()).andReturn();
+        String content = response.getResponse().getContentAsString();
+        assertTrue("Wrong content: " + content, content.contains("status=999"));
+    }
 
-	@Test
-	public void errorPageAvailableWithMvcIncluded() throws Exception {
-		setup((ConfigurableWebApplicationContext) SpringApplication
-				.run(WebMvcIncludedConfiguration.class));
-		MvcResult response = this.mockMvc
-				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("status=999"));
-	}
+    @Test
+    public void errorPageAvailableWithMvcIncluded() throws Exception {
+        setup((ConfigurableWebApplicationContext) SpringApplication
+                .run(WebMvcIncludedConfiguration.class));
+        MvcResult response = this.mockMvc
+                .perform(get("/error").accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk()).andReturn();
+        String content = response.getResponse().getContentAsString();
+        assertTrue("Wrong content: " + content, content.contains("status=999"));
+    }
 
-	@Configuration
-	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class })
-	protected static class ParentConfiguration {
+    @Configuration
+    @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class,
+            ManagementSecurityAutoConfiguration.class,
+            EndpointMBeanExportAutoConfiguration.class})
+    protected static class ParentConfiguration {
 
-	}
+    }
 
-	@Configuration
-	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class })
-	@EnableWebMvc
-	protected static class WebMvcIncludedConfiguration {
-		// For manual testing
-		public static void main(String[] args) {
-			SpringApplication.run(WebMvcIncludedConfiguration.class, args);
-		}
+    @Configuration
+    @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class,
+            ManagementSecurityAutoConfiguration.class,
+            EndpointMBeanExportAutoConfiguration.class})
+    @EnableWebMvc
+    protected static class WebMvcIncludedConfiguration {
+        // For manual testing
+        public static void main(String[] args) {
+            SpringApplication.run(WebMvcIncludedConfiguration.class, args);
+        }
 
-	}
+    }
 
-	@Configuration
-	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class })
-	protected static class VanillaConfiguration {
-		// For manual testing
-		public static void main(String[] args) {
-			SpringApplication.run(VanillaConfiguration.class, args);
-		}
+    @Configuration
+    @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class,
+            ManagementSecurityAutoConfiguration.class,
+            EndpointMBeanExportAutoConfiguration.class})
+    protected static class VanillaConfiguration {
+        // For manual testing
+        public static void main(String[] args) {
+            SpringApplication.run(VanillaConfiguration.class, args);
+        }
 
-	}
+    }
 
-	@Configuration
-	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class })
-	protected static class ChildConfiguration {
-		// For manual testing
-		public static void main(String[] args) {
-			new SpringApplicationBuilder(ParentConfiguration.class).child(
-					ChildConfiguration.class).run(args);
-		}
-	}
+    @Configuration
+    @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class,
+            ManagementSecurityAutoConfiguration.class,
+            EndpointMBeanExportAutoConfiguration.class})
+    protected static class ChildConfiguration {
+        // For manual testing
+        public static void main(String[] args) {
+            new SpringApplicationBuilder(ParentConfiguration.class).child(
+                    ChildConfiguration.class).run(args);
+        }
+    }
 
 }

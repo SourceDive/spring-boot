@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,25 +23,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Adapter to expose {@link ShutdownEndpoint} as an {@link MvcEndpoint}.
- * 
+ *
  * @author Dave Syer
  */
 public class ShutdownMvcEndpoint extends EndpointMvcAdapter {
 
-	public ShutdownMvcEndpoint(ShutdownEndpoint delegate) {
-		super(delegate);
-	}
+    public ShutdownMvcEndpoint(ShutdownEndpoint delegate) {
+        super(delegate);
+    }
 
-	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
-	@Override
-	public Object invoke() {
-		if (!getDelegate().isEnabled()) {
-			return new ResponseEntity<Map<String, String>>(Collections.singletonMap(
-					"message", "This endpoint is disabled"), HttpStatus.NOT_FOUND);
-		}
-		return super.invoke();
-	}
+    @RequestMapping(method = RequestMethod.POST)
+    @ResponseBody
+    @Override
+    public Object invoke() {
+        if (!getDelegate().isEnabled()) {
+            return new ResponseEntity<Map<String, String>>(Collections.singletonMap(
+                    "message", "This endpoint is disabled"), HttpStatus.NOT_FOUND);
+        }
+        return super.invoke();
+    }
 }

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
-import javax.servlet.ServletException;
-
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
@@ -25,39 +23,41 @@ import org.apache.catalina.core.StandardContext;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.util.Assert;
 
+import javax.servlet.ServletException;
+
 /**
  * Tomcat {@link LifecycleListener} that calls {@link ServletContextInitializer}s.
- * 
+ *
  * @author Phillip Webb
  */
 public class ServletContextInitializerLifecycleListener implements LifecycleListener {
 
-	private final ServletContextInitializer[] initializers;
+    private final ServletContextInitializer[] initializers;
 
-	/**
-	 * Create a new {@link ServletContextInitializerLifecycleListener} instance with the
-	 * specified initializers.
-	 * @param initializers the initializers to call
-	 */
-	public ServletContextInitializerLifecycleListener(
-			ServletContextInitializer... initializers) {
-		this.initializers = initializers;
-	}
+    /**
+     * Create a new {@link ServletContextInitializerLifecycleListener} instance with the
+     * specified initializers.
+     *
+     * @param initializers the initializers to call
+     */
+    public ServletContextInitializerLifecycleListener(
+            ServletContextInitializer... initializers) {
+        this.initializers = initializers;
+    }
 
-	@Override
-	public void lifecycleEvent(LifecycleEvent event) {
-		if (Lifecycle.CONFIGURE_START_EVENT.equals(event.getType())) {
-			Assert.isInstanceOf(StandardContext.class, event.getSource());
-			StandardContext standardContext = (StandardContext) event.getSource();
-			for (ServletContextInitializer initializer : this.initializers) {
-				try {
-					initializer.onStartup(standardContext.getServletContext());
-				}
-				catch (ServletException ex) {
-					throw new IllegalStateException(ex);
-				}
-			}
-		}
-	}
+    @Override
+    public void lifecycleEvent(LifecycleEvent event) {
+        if (Lifecycle.CONFIGURE_START_EVENT.equals(event.getType())) {
+            Assert.isInstanceOf(StandardContext.class, event.getSource());
+            StandardContext standardContext = (StandardContext) event.getSource();
+            for (ServletContextInitializer initializer : this.initializers) {
+                try {
+                    initializer.onStartup(standardContext.getServletContext());
+                } catch (ServletException ex) {
+                    throw new IllegalStateException(ex);
+                }
+            }
+        }
+    }
 
 }

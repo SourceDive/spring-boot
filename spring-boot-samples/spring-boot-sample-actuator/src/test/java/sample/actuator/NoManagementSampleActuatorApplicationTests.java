@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for switching off management endpoints.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -47,31 +47,31 @@ import static org.junit.Assert.assertEquals;
 @ActiveProfiles("nomanagement")
 public class NoManagementSampleActuatorApplicationTests {
 
-	@Autowired
-	private SecurityProperties security;
+    @Autowired
+    private SecurityProperties security;
 
-	@Test
-	public void testHome() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:8080", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals("Hello Phil", body.get("message"));
-	}
+    @Test
+    public void testHome() throws Exception {
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+                .getForEntity("http://localhost:8080", Map.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = entity.getBody();
+        assertEquals("Hello Phil", body.get("message"));
+    }
 
-	@Test
-	public void testMetricsNotAvailable() throws Exception {
-		testHome(); // makes sure some requests have been made
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:8080/metrics", Map.class);
-		assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
-	}
+    @Test
+    public void testMetricsNotAvailable() throws Exception {
+        testHome(); // makes sure some requests have been made
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+                .getForEntity("http://localhost:8080/metrics", Map.class);
+        assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
+    }
 
-	private String getPassword() {
-		return this.security.getUser().getPassword();
-	}
+    private String getPassword() {
+        return this.security.getUser().getPassword();
+    }
 
 }

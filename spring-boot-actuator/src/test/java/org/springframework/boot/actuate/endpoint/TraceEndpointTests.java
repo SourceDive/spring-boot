@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Collections;
-
 import org.junit.Test;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.Trace;
@@ -26,35 +24,37 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Collections;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link TraceEndpoint}.
- * 
+ *
  * @author Phillip Webb
  */
 public class TraceEndpointTests extends AbstractEndpointTests<TraceEndpoint> {
 
-	public TraceEndpointTests() {
-		super(Config.class, TraceEndpoint.class, "trace", true, "endpoints.trace");
-	}
+    public TraceEndpointTests() {
+        super(Config.class, TraceEndpoint.class, "trace", true, "endpoints.trace");
+    }
 
-	@Test
-	public void invoke() throws Exception {
-		Trace trace = getEndpointBean().invoke().get(0);
-		assertThat(trace.getInfo().get("a"), equalTo((Object) "b"));
-	}
+    @Test
+    public void invoke() throws Exception {
+        Trace trace = getEndpointBean().invoke().get(0);
+        assertThat(trace.getInfo().get("a"), equalTo((Object) "b"));
+    }
 
-	@Configuration
-	@EnableConfigurationProperties
-	public static class Config {
+    @Configuration
+    @EnableConfigurationProperties
+    public static class Config {
 
-		@Bean
-		public TraceEndpoint endpoint() {
-			TraceRepository repository = new InMemoryTraceRepository();
-			repository.add(Collections.<String, Object> singletonMap("a", "b"));
-			return new TraceEndpoint(repository);
-		}
-	}
+        @Bean
+        public TraceEndpoint endpoint() {
+            TraceRepository repository = new InMemoryTraceRepository();
+            repository.add(Collections.<String, Object>singletonMap("a", "b"));
+            return new TraceEndpoint(repository);
+        }
+    }
 }

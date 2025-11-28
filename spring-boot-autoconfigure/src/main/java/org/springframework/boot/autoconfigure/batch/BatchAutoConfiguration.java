@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-
 import org.springframework.batch.core.configuration.ListableJobLocator;
 import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.batch.core.converter.JobParametersConverter;
@@ -43,6 +40,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Batch. By default a
  * Runner will be created and all jobs in the context will be executed on startup.
@@ -53,93 +53,93 @@ import org.springframework.util.StringUtils;
  * with a comma-delimited list: {@literal spring.batch.job.names=job1,job2}. In this case
  * the Runner will first find jobs registered as Beans, then those in the existing
  * JobRegistry.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
-@ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
+@ConditionalOnClass({JobLauncher.class, DataSource.class, JdbcOperations.class})
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 @ConditionalOnBean(JobLauncher.class)
 public class BatchAutoConfiguration {
 
-	@Value("${spring.batch.job.names:}")
-	private String jobNames;
+    @Value("${spring.batch.job.names:}")
+    private String jobNames;
 
-	@Autowired(required = false)
-	private JobParametersConverter jobParametersConverter;
+    @Autowired(required = false)
+    private JobParametersConverter jobParametersConverter;
 
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnBean(DataSource.class)
-	public BatchDatabaseInitializer batchDatabaseInitializer() {
-		return new BatchDatabaseInitializer();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnBean(DataSource.class)
+    public BatchDatabaseInitializer batchDatabaseInitializer() {
+        return new BatchDatabaseInitializer();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnExpression("${spring.batch.job.enabled:true}")
-	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(
-			JobLauncher jobLauncher, JobExplorer jobExplorer) {
-		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner(
-				jobLauncher, jobExplorer);
-		if (StringUtils.hasText(this.jobNames)) {
-			runner.setJobNames(this.jobNames);
-		}
-		return runner;
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnExpression("${spring.batch.job.enabled:true}")
+    public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(
+            JobLauncher jobLauncher, JobExplorer jobExplorer) {
+        JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner(
+                jobLauncher, jobExplorer);
+        if (StringUtils.hasText(this.jobNames)) {
+            runner.setJobNames(this.jobNames);
+        }
+        return runner;
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public ExitCodeGenerator jobExecutionExitCodeGenerator() {
-		return new JobExecutionExitCodeGenerator();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public ExitCodeGenerator jobExecutionExitCodeGenerator() {
+        return new JobExecutionExitCodeGenerator();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnBean(DataSource.class)
-	public JobExplorer jobExplorer(DataSource dataSource) throws Exception {
-		JobExplorerFactoryBean factory = new JobExplorerFactoryBean();
-		factory.setDataSource(dataSource);
-		factory.afterPropertiesSet();
-		return (JobExplorer) factory.getObject();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnBean(DataSource.class)
+    public JobExplorer jobExplorer(DataSource dataSource) throws Exception {
+        JobExplorerFactoryBean factory = new JobExplorerFactoryBean();
+        factory.setDataSource(dataSource);
+        factory.afterPropertiesSet();
+        return (JobExplorer) factory.getObject();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public JobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
-			ListableJobLocator jobRegistry, JobRepository jobRepository) throws Exception {
-		SimpleJobOperator factory = new SimpleJobOperator();
-		factory.setJobExplorer(jobExplorer);
-		factory.setJobLauncher(jobLauncher);
-		factory.setJobRegistry(jobRegistry);
-		factory.setJobRepository(jobRepository);
-		if (this.jobParametersConverter != null) {
-			factory.setJobParametersConverter(this.jobParametersConverter);
-		}
-		return factory;
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public JobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
+                                   ListableJobLocator jobRegistry, JobRepository jobRepository) throws Exception {
+        SimpleJobOperator factory = new SimpleJobOperator();
+        factory.setJobExplorer(jobExplorer);
+        factory.setJobLauncher(jobLauncher);
+        factory.setJobRegistry(jobRegistry);
+        factory.setJobRepository(jobRepository);
+        if (this.jobParametersConverter != null) {
+            factory.setJobParametersConverter(this.jobParametersConverter);
+        }
+        return factory;
+    }
 
-	@ConditionalOnClass(name = "javax.persistence.EntityManagerFactory")
-	@ConditionalOnMissingBean(BatchConfigurer.class)
-	@Configuration
-	protected static class JpaBatchConfiguration {
+    @ConditionalOnClass(name = "javax.persistence.EntityManagerFactory")
+    @ConditionalOnMissingBean(BatchConfigurer.class)
+    @Configuration
+    protected static class JpaBatchConfiguration {
 
-		// The EntityManagerFactory may not be discoverable by type when this condition
-		// is evaluated, so we need a well-known bean name. This is the one used by Spring
-		// Boot in the JPA auto configuration.
-		@Bean
-		@ConditionalOnBean(name = "entityManagerFactory")
-		public BatchConfigurer jpaBatchConfigurer(DataSource dataSource,
-				EntityManagerFactory entityManagerFactory) {
-			return new BasicBatchConfigurer(dataSource, entityManagerFactory);
-		}
+        // The EntityManagerFactory may not be discoverable by type when this condition
+        // is evaluated, so we need a well-known bean name. This is the one used by Spring
+        // Boot in the JPA auto configuration.
+        @Bean
+        @ConditionalOnBean(name = "entityManagerFactory")
+        public BatchConfigurer jpaBatchConfigurer(DataSource dataSource,
+                                                  EntityManagerFactory entityManagerFactory) {
+            return new BasicBatchConfigurer(dataSource, entityManagerFactory);
+        }
 
-		@Bean
-		@ConditionalOnMissingBean(name = "entityManagerFactory")
-		public BatchConfigurer basicBatchConfigurer(DataSource dataSource) {
-			return new BasicBatchConfigurer(dataSource);
-		}
+        @Bean
+        @ConditionalOnMissingBean(name = "entityManagerFactory")
+        public BatchConfigurer basicBatchConfigurer(DataSource dataSource) {
+            return new BasicBatchConfigurer(dataSource);
+        }
 
-	}
+    }
 
 }

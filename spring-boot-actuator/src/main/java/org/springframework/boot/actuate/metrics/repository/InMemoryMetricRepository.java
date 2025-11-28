@@ -16,96 +16,95 @@
 
 package org.springframework.boot.actuate.metrics.repository;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.concurrent.ConcurrentNavigableMap;
-
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
 import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository;
 import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository.Callback;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.concurrent.ConcurrentNavigableMap;
+
 /**
  * {@link MetricRepository} and {@link MultiMetricRepository} implementation that stores
  * metrics in memory.
- * 
+ *
  * @author Dave Syer
  */
 public class InMemoryMetricRepository implements MetricRepository, MultiMetricRepository,
-		PrefixMetricReader {
+        PrefixMetricReader {
 
-	private final SimpleInMemoryRepository<Metric<?>> metrics = new SimpleInMemoryRepository<Metric<?>>();
+    private final SimpleInMemoryRepository<Metric<?>> metrics = new SimpleInMemoryRepository<Metric<?>>();
 
-	private final Collection<String> groups = new HashSet<String>();
+    private final Collection<String> groups = new HashSet<String>();
 
-	public void setValues(ConcurrentNavigableMap<String, Metric<?>> values) {
-		this.metrics.setValues(values);
-	}
+    public void setValues(ConcurrentNavigableMap<String, Metric<?>> values) {
+        this.metrics.setValues(values);
+    }
 
-	@Override
-	public void increment(Delta<?> delta) {
-		final String metricName = delta.getName();
-		final int amount = delta.getValue().intValue();
-		final Date timestamp = delta.getTimestamp();
-		this.metrics.update(metricName, new Callback<Metric<?>>() {
-			@Override
-			public Metric<?> modify(Metric<?> current) {
-				if (current != null) {
-					Metric<? extends Number> metric = current;
-					return new Metric<Long>(metricName, metric.increment(amount)
-							.getValue(), timestamp);
-				}
-				else {
-					return new Metric<Long>(metricName, new Long(amount), timestamp);
-				}
-			}
-		});
-	}
+    @Override
+    public void increment(Delta<?> delta) {
+        final String metricName = delta.getName();
+        final int amount = delta.getValue().intValue();
+        final Date timestamp = delta.getTimestamp();
+        this.metrics.update(metricName, new Callback<Metric<?>>() {
+            @Override
+            public Metric<?> modify(Metric<?> current) {
+                if (current != null) {
+                    Metric<? extends Number> metric = current;
+                    return new Metric<Long>(metricName, metric.increment(amount)
+                            .getValue(), timestamp);
+                } else {
+                    return new Metric<Long>(metricName, new Long(amount), timestamp);
+                }
+            }
+        });
+    }
 
-	@Override
-	public void set(Metric<?> value) {
-		this.metrics.set(value.getName(), value);
-	}
+    @Override
+    public void set(Metric<?> value) {
+        this.metrics.set(value.getName(), value);
+    }
 
-	@Override
-	public void save(String group, Collection<Metric<?>> values) {
-		for (Metric<?> metric : values) {
-			set(metric);
-		}
-		this.groups.add(group);
-	}
+    @Override
+    public void save(String group, Collection<Metric<?>> values) {
+        for (Metric<?> metric : values) {
+            set(metric);
+        }
+        this.groups.add(group);
+    }
 
-	@Override
-	public Iterable<String> groups() {
-		return Collections.unmodifiableCollection(this.groups);
-	}
+    @Override
+    public Iterable<String> groups() {
+        return Collections.unmodifiableCollection(this.groups);
+    }
 
-	@Override
-	public long count() {
-		return this.metrics.count();
-	}
+    @Override
+    public long count() {
+        return this.metrics.count();
+    }
 
-	@Override
-	public void reset(String metricName) {
-		this.metrics.remove(metricName);
-	}
+    @Override
+    public void reset(String metricName) {
+        this.metrics.remove(metricName);
+    }
 
-	@Override
-	public Metric<?> findOne(String metricName) {
-		return this.metrics.findOne(metricName);
-	}
+    @Override
+    public Metric<?> findOne(String metricName) {
+        return this.metrics.findOne(metricName);
+    }
 
-	@Override
-	public Iterable<Metric<?>> findAll() {
-		return this.metrics.findAll();
-	}
+    @Override
+    public Iterable<Metric<?>> findAll() {
+        return this.metrics.findAll();
+    }
 
-	@Override
-	public Iterable<Metric<?>> findAll(String metricNamePrefix) {
-		return this.metrics.findAllWithPrefix(metricNamePrefix);
-	}
+    @Override
+    public Iterable<Metric<?>> findAll(String metricNamePrefix) {
+        return this.metrics.findAllWithPrefix(metricNamePrefix);
+    }
 
 }

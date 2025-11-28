@@ -16,69 +16,69 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.util.Locale;
-
 import org.junit.Test;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link MessageSourceAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class MessageSourceAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
-	@Test
-	public void testDefaultMessageSource() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(MessageSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertEquals("Foo message",
-				this.context.getMessage("foo", null, "Foo message", Locale.UK));
-	}
+    @Test
+    public void testDefaultMessageSource() throws Exception {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(MessageSourceAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        this.context.refresh();
+        assertEquals("Foo message",
+                this.context.getMessage("foo", null, "Foo message", Locale.UK));
+    }
 
-	@Test
-	public void testMessageSourceCreated() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(MessageSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.messages.basename:test/messages");
-		this.context.refresh();
-		assertEquals("bar",
-				this.context.getMessage("foo", null, "Foo message", Locale.UK));
-	}
+    @Test
+    public void testMessageSourceCreated() throws Exception {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(MessageSourceAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        EnvironmentTestUtils.addEnvironment(this.context,
+                "spring.messages.basename:test/messages");
+        this.context.refresh();
+        assertEquals("bar",
+                this.context.getMessage("foo", null, "Foo message", Locale.UK));
+    }
 
-	@Test
-	public void testMultipleMessageSourceCreated() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(MessageSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.messages.basename:test/messages,test/messages2");
-		this.context.refresh();
-		assertEquals("bar",
-				this.context.getMessage("foo", null, "Foo message", Locale.UK));
-		assertEquals("bar-bar",
-				this.context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK));
-	}
+    @Test
+    public void testMultipleMessageSourceCreated() throws Exception {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(MessageSourceAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        EnvironmentTestUtils.addEnvironment(this.context,
+                "spring.messages.basename:test/messages,test/messages2");
+        this.context.refresh();
+        assertEquals("bar",
+                this.context.getMessage("foo", null, "Foo message", Locale.UK));
+        assertEquals("bar-bar",
+                this.context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK));
+    }
 
-	@Test
-	public void testBadEncoding() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(MessageSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.messages.encoding:rubbish");
-		this.context.refresh();
-		// Bad encoding just means the messages are ignored
-		assertEquals("blah", this.context.getMessage("foo", null, "blah", Locale.UK));
-	}
+    @Test
+    public void testBadEncoding() throws Exception {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(MessageSourceAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        EnvironmentTestUtils.addEnvironment(this.context,
+                "spring.messages.encoding:rubbish");
+        this.context.refresh();
+        // Bad encoding just means the messages are ignored
+        assertEquals("blah", this.context.getMessage("foo", null, "blah", Locale.UK));
+    }
 
 }

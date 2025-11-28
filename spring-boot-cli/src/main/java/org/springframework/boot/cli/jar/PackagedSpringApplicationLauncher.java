@@ -23,42 +23,42 @@ import java.util.jar.Manifest;
 
 /**
  * A launcher for a CLI application that has been compiled and packaged as a jar file.
- * 
+ *
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
 public class PackagedSpringApplicationLauncher {
 
-	public static final String SOURCE_MANIFEST_ENTRY = "Spring-Application-Source-Classes";
+    public static final String SOURCE_MANIFEST_ENTRY = "Spring-Application-Source-Classes";
 
-	private static final String SPRING_APPLICATION_CLASS = "org.springframework.boot.SpringApplication";
+    private static final String SPRING_APPLICATION_CLASS = "org.springframework.boot.SpringApplication";
 
-	private void run(String[] args) throws Exception {
-		URLClassLoader classLoader = (URLClassLoader) Thread.currentThread()
-				.getContextClassLoader();
-		Class<?> application = classLoader.loadClass(SPRING_APPLICATION_CLASS);
-		Method method = application.getMethod("run", Object[].class, String[].class);
-		method.invoke(null, getSources(classLoader), args);
-	}
+    private void run(String[] args) throws Exception {
+        URLClassLoader classLoader = (URLClassLoader) Thread.currentThread()
+                .getContextClassLoader();
+        Class<?> application = classLoader.loadClass(SPRING_APPLICATION_CLASS);
+        Method method = application.getMethod("run", Object[].class, String[].class);
+        method.invoke(null, getSources(classLoader), args);
+    }
 
-	private Object[] getSources(URLClassLoader classLoader) throws Exception {
-		URL url = classLoader.findResource("META-INF/MANIFEST.MF");
-		Manifest manifest = new Manifest(url.openStream());
-		String attribute = manifest.getMainAttributes().getValue(SOURCE_MANIFEST_ENTRY);
-		return loadClasses(classLoader, attribute.split(","));
-	}
+    private Object[] getSources(URLClassLoader classLoader) throws Exception {
+        URL url = classLoader.findResource("META-INF/MANIFEST.MF");
+        Manifest manifest = new Manifest(url.openStream());
+        String attribute = manifest.getMainAttributes().getValue(SOURCE_MANIFEST_ENTRY);
+        return loadClasses(classLoader, attribute.split(","));
+    }
 
-	private Class<?>[] loadClasses(ClassLoader classLoader, String[] names)
-			throws ClassNotFoundException {
-		Class<?>[] classes = new Class<?>[names.length];
-		for (int i = 0; i < names.length; i++) {
-			classes[i] = classLoader.loadClass(names[i]);
-		}
-		return classes;
-	}
+    private Class<?>[] loadClasses(ClassLoader classLoader, String[] names)
+            throws ClassNotFoundException {
+        Class<?>[] classes = new Class<?>[names.length];
+        for (int i = 0; i < names.length; i++) {
+            classes[i] = classLoader.loadClass(names[i]);
+        }
+        return classes;
+    }
 
-	public static void main(String[] args) throws Exception {
-		new PackagedSpringApplicationLauncher().run(args);
-	}
+    public static void main(String[] args) throws Exception {
+        new PackagedSpringApplicationLauncher().run(args);
+    }
 
 }

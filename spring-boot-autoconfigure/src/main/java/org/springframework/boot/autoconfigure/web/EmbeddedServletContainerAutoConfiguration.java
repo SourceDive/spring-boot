@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import javax.servlet.Servlet;
-
 import org.apache.catalina.startup.Tomcat;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Loader;
@@ -46,9 +44,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ObjectUtils;
 
+import javax.servlet.Servlet;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for an embedded servlet containers.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -58,69 +58,69 @@ import org.springframework.util.ObjectUtils;
 @Import(EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar.class)
 public class EmbeddedServletContainerAutoConfiguration {
 
-	/**
-	 * Nested configuration for if Tomcat is being used.
-	 */
-	@Configuration
-	@ConditionalOnClass({ Servlet.class, Tomcat.class })
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
-	public static class EmbeddedTomcat {
+    /**
+     * Nested configuration for if Tomcat is being used.
+     */
+    @Configuration
+    @ConditionalOnClass({Servlet.class, Tomcat.class})
+    @ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
+    public static class EmbeddedTomcat {
 
-		@Bean
-		public TomcatEmbeddedServletContainerFactory tomcatEmbeddedServletContainerFactory() {
-			return new TomcatEmbeddedServletContainerFactory();
-		}
+        @Bean
+        public TomcatEmbeddedServletContainerFactory tomcatEmbeddedServletContainerFactory() {
+            return new TomcatEmbeddedServletContainerFactory();
+        }
 
-	}
+    }
 
-	/**
-	 * Nested configuration if Jetty is being used.
-	 */
-	@Configuration
-	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class })
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
-	public static class EmbeddedJetty {
+    /**
+     * Nested configuration if Jetty is being used.
+     */
+    @Configuration
+    @ConditionalOnClass({Servlet.class, Server.class, Loader.class})
+    @ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
+    public static class EmbeddedJetty {
 
-		@Bean
-		public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory() {
-			return new JettyEmbeddedServletContainerFactory();
-		}
+        @Bean
+        public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory() {
+            return new JettyEmbeddedServletContainerFactory();
+        }
 
-	}
+    }
 
-	/**
-	 * Registers a {@link EmbeddedServletContainerCustomizerBeanPostProcessor}. Registered
-	 * via {@link ImportBeanDefinitionRegistrar} for early registration.
-	 */
-	public static class EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar
-			implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
+    /**
+     * Registers a {@link EmbeddedServletContainerCustomizerBeanPostProcessor}. Registered
+     * via {@link ImportBeanDefinitionRegistrar} for early registration.
+     */
+    public static class EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar
+            implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
-		private ConfigurableListableBeanFactory beanFactory;
+        private ConfigurableListableBeanFactory beanFactory;
 
-		@Override
-		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-			if (beanFactory instanceof ConfigurableListableBeanFactory) {
-				this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
-			}
-		}
+        @Override
+        public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+            if (beanFactory instanceof ConfigurableListableBeanFactory) {
+                this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
+            }
+        }
 
-		@Override
-		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-				BeanDefinitionRegistry registry) {
-			if (this.beanFactory == null) {
-				return;
-			}
-			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(
-					EmbeddedServletContainerCustomizerBeanPostProcessor.class, true,
-					false))) {
-				registry.registerBeanDefinition(
-						"embeddedServletContainerCustomizerBeanPostProcessor",
-						new RootBeanDefinition(
-								EmbeddedServletContainerCustomizerBeanPostProcessor.class));
+        @Override
+        public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+                                            BeanDefinitionRegistry registry) {
+            if (this.beanFactory == null) {
+                return;
+            }
+            if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(
+                    EmbeddedServletContainerCustomizerBeanPostProcessor.class, true,
+                    false))) {
+                registry.registerBeanDefinition(
+                        "embeddedServletContainerCustomizerBeanPostProcessor",
+                        new RootBeanDefinition(
+                                EmbeddedServletContainerCustomizerBeanPostProcessor.class));
 
-			}
-		}
+            }
+        }
 
-	}
+    }
 
 }

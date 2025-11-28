@@ -24,12 +24,12 @@ import org.springframework.boot.test.SpringApplicationConfigurationJmxTests;
 
 /**
  * A test suite for probing weird ordering problems in the tests.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(Suite.class)
-@SuiteClasses({ SpringApplicationConfigurationJmxTests.class,
-		SpringApplicationConfigurationDefaultConfigurationTests.class })
+@SuiteClasses({SpringApplicationConfigurationJmxTests.class,
+        SpringApplicationConfigurationDefaultConfigurationTests.class})
 // @Ignore
 public class AdhocTestSuite {
 

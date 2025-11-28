@@ -16,41 +16,41 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * {@link Endpoint} to expose {@link PublicMetrics}.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.metrics", ignoreUnknownFields = false)
 public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
-	private final PublicMetrics metrics;
+    private final PublicMetrics metrics;
 
-	/**
-	 * Create a new {@link MetricsEndpoint} instance.
-	 * 
-	 * @param metrics the metrics to expose
-	 */
-	public MetricsEndpoint(PublicMetrics metrics) {
-		super("metrics");
-		Assert.notNull(metrics, "Metrics must not be null");
-		this.metrics = metrics;
-	}
+    /**
+     * Create a new {@link MetricsEndpoint} instance.
+     *
+     * @param metrics the metrics to expose
+     */
+    public MetricsEndpoint(PublicMetrics metrics) {
+        super("metrics");
+        Assert.notNull(metrics, "Metrics must not be null");
+        this.metrics = metrics;
+    }
 
-	@Override
-	public Map<String, Object> invoke() {
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		for (Metric<?> metric : this.metrics.metrics()) {
-			result.put(metric.getName(), metric.getValue());
-		}
-		return result;
-	}
+    @Override
+    public Map<String, Object> invoke() {
+        Map<String, Object> result = new LinkedHashMap<String, Object>();
+        for (Metric<?> metric : this.metrics.metrics()) {
+            result.put(metric.getName(), metric.getValue());
+        }
+        return result;
+    }
 
 }

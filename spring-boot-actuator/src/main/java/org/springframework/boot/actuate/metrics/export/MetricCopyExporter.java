@@ -16,44 +16,44 @@
 
 package org.springframework.boot.actuate.metrics.export;
 
-import java.util.Collection;
-
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 
+import java.util.Collection;
+
 /**
  * {@link Exporter} that "exports" by copying metric data from a source
  * {@link MetricReader} to a destination {@link MetricWriter}.
- * 
+ *
  * @author Dave Syer
  */
 public class MetricCopyExporter extends AbstractMetricExporter {
 
-	private final MetricReader reader;
+    private final MetricReader reader;
 
-	private final MetricWriter writer;
+    private final MetricWriter writer;
 
-	public MetricCopyExporter(MetricReader reader, MetricWriter writer) {
-		this(reader, writer, "");
-	}
+    public MetricCopyExporter(MetricReader reader, MetricWriter writer) {
+        this(reader, writer, "");
+    }
 
-	public MetricCopyExporter(MetricReader reader, MetricWriter writer, String prefix) {
-		super(prefix);
-		this.reader = reader;
-		this.writer = writer;
-	}
+    public MetricCopyExporter(MetricReader reader, MetricWriter writer, String prefix) {
+        super(prefix);
+        this.reader = reader;
+        this.writer = writer;
+    }
 
-	@Override
-	protected Iterable<Metric<?>> next(String group) {
-		return this.reader.findAll();
-	}
+    @Override
+    protected Iterable<Metric<?>> next(String group) {
+        return this.reader.findAll();
+    }
 
-	@Override
-	protected void write(String group, Collection<Metric<?>> values) {
-		for (Metric<?> value : values) {
-			this.writer.set(value);
-		}
-	}
+    @Override
+    protected void write(String group, Collection<Metric<?>> values) {
+        for (Metric<?> value : values) {
+            this.writer.set(value);
+        }
+    }
 
 }

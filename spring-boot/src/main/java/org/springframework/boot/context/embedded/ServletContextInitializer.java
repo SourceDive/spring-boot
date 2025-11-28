@@ -16,11 +16,11 @@
 
 package org.springframework.boot.context.embedded;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-
 import org.springframework.web.SpringServletContainerInitializer;
 import org.springframework.web.WebApplicationInitializer;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 /**
  * Interface used to configure a Servlet 3.0+ {@link ServletContext context}
@@ -33,19 +33,20 @@ import org.springframework.web.WebApplicationInitializer;
  * managed by Spring and not the Servlet container.
  * <p>
  * For configuration examples see {@link WebApplicationInitializer}.
- * 
+ *
  * @author Phillip Webb
  * @see WebApplicationInitializer
  */
 public interface ServletContextInitializer {
 
-	/**
-	 * Configure the given {@link ServletContext} with any servlets, filters, listeners
-	 * context-params and attributes necessary for initialization.
-	 * @param servletContext the {@code ServletContext} to initialize
-	 * @throws ServletException if any call against the given {@code ServletContext}
-	 * throws a {@code ServletException}
-	 */
-	void onStartup(ServletContext servletContext) throws ServletException;
+    /**
+     * Configure the given {@link ServletContext} with any servlets, filters, listeners
+     * context-params and attributes necessary for initialization.
+     *
+     * @param servletContext the {@code ServletContext} to initialize
+     * @throws ServletException if any call against the given {@code ServletContext}
+     *                          throws a {@code ServletException}
+     */
+    void onStartup(ServletContext servletContext) throws ServletException;
 
 }

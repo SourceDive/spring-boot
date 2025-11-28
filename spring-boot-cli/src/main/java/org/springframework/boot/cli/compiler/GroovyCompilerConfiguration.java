@@ -16,52 +16,52 @@
 
 package org.springframework.boot.cli.compiler;
 
-import java.util.List;
-
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
+
+import java.util.List;
 
 /**
  * Configuration for the {@link GroovyCompiler}.
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
 public interface GroovyCompilerConfiguration {
 
-	/**
-	 * Constant to be used when there is no {@link #getClasspath() classpath}.
-	 */
-	public static final String[] DEFAULT_CLASSPATH = { "." };
+    /**
+     * Constant to be used when there is no {@link #getClasspath() classpath}.
+     */
+    public static final String[] DEFAULT_CLASSPATH = {"."};
 
-	/**
-	 * Returns the scope in which the compiler operates.
-	 */
-	GroovyCompilerScope getScope();
+    /**
+     * Returns the scope in which the compiler operates.
+     */
+    GroovyCompilerScope getScope();
 
-	/**
-	 * Returns if import declarations should be guessed.
-	 */
-	boolean isGuessImports();
+    /**
+     * Returns if import declarations should be guessed.
+     */
+    boolean isGuessImports();
 
-	/**
-	 * Returns if jar dependencies should be guessed.
-	 */
-	boolean isGuessDependencies();
+    /**
+     * Returns if jar dependencies should be guessed.
+     */
+    boolean isGuessDependencies();
 
-	/**
-	 * Returns true if autoconfiguration transformations should be applied.
-	 */
-	boolean isAutoconfigure();
+    /**
+     * Returns true if autoconfiguration transformations should be applied.
+     */
+    boolean isAutoconfigure();
 
-	/**
-	 * @return a path for local resources
-	 */
-	String[] getClasspath();
+    /**
+     * @return a path for local resources
+     */
+    String[] getClasspath();
 
-	/**
-	 * @return the configuration for the repositories that will be used by the compiler to
-	 * resolve dependencies.
-	 */
-	List<RepositoryConfiguration> getRepositoryConfiguration();
+    /**
+     * @return the configuration for the repositories that will be used by the compiler to
+     * resolve dependencies.
+     */
+    List<RepositoryConfiguration> getRepositoryConfiguration();
 
 }

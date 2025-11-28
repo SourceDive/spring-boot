@@ -37,97 +37,97 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link JmxAutoConfiguration}
- * 
+ *
  * @author Christian Dupuis
  */
 public class JmxAutoConfigurationTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	private AnnotationConfigApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
-	@After
-	public void tearDown() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+    @After
+    public void tearDown() {
+        if (this.context != null) {
+            this.context.close();
+        }
+    }
 
-	@Test
-	public void testDefaultMBeanExport() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(JmxAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(MBeanExporter.class));
-	}
+    @Test
+    public void testDefaultMBeanExport() {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(JmxAutoConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context.getBean(MBeanExporter.class));
+    }
 
-	@Test
-	public void testEnabledMBeanExport() {
-		MockEnvironment env = new MockEnvironment();
-		env.setProperty("spring.jmx.enabled", "true");
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.setEnvironment(env);
-		this.context.register(JmxAutoConfiguration.class);
-		this.context.refresh();
+    @Test
+    public void testEnabledMBeanExport() {
+        MockEnvironment env = new MockEnvironment();
+        env.setProperty("spring.jmx.enabled", "true");
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.setEnvironment(env);
+        this.context.register(JmxAutoConfiguration.class);
+        this.context.refresh();
 
-		assertNotNull(this.context.getBean(MBeanExporter.class));
-	}
+        assertNotNull(this.context.getBean(MBeanExporter.class));
+    }
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
-	public void testDisabledMBeanExport() {
-		MockEnvironment env = new MockEnvironment();
-		env.setProperty("spring.jmx.enabled", "false");
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.setEnvironment(env);
-		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class);
-		this.context.refresh();
+    @Test(expected = NoSuchBeanDefinitionException.class)
+    public void testDisabledMBeanExport() {
+        MockEnvironment env = new MockEnvironment();
+        env.setProperty("spring.jmx.enabled", "false");
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.setEnvironment(env);
+        this.context.register(TestConfiguration.class, JmxAutoConfiguration.class);
+        this.context.refresh();
 
-		this.context.getBean(MBeanExporter.class);
-	}
+        this.context.getBean(MBeanExporter.class);
+    }
 
-	@Test
-	public void testDefaultDomainConfiguredOnMBeanExport() {
-		MockEnvironment env = new MockEnvironment();
-		env.setProperty("spring.jmx.enabled", "true");
-		env.setProperty("spring.jmx.default_domain", "my-test-domain");
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.setEnvironment(env);
-		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class);
-		this.context.refresh();
+    @Test
+    public void testDefaultDomainConfiguredOnMBeanExport() {
+        MockEnvironment env = new MockEnvironment();
+        env.setProperty("spring.jmx.enabled", "true");
+        env.setProperty("spring.jmx.default_domain", "my-test-domain");
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.setEnvironment(env);
+        this.context.register(TestConfiguration.class, JmxAutoConfiguration.class);
+        this.context.refresh();
 
-		MBeanExporter mBeanExporter = this.context.getBean(MBeanExporter.class);
-		assertNotNull(mBeanExporter);
-		MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils
-				.getField(mBeanExporter, "metadataNamingStrategy");
-		assertEquals("my-test-domain",
-				ReflectionTestUtils.getField(naming, "defaultDomain"));
-	}
+        MBeanExporter mBeanExporter = this.context.getBean(MBeanExporter.class);
+        assertNotNull(mBeanExporter);
+        MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils
+                .getField(mBeanExporter, "metadataNamingStrategy");
+        assertEquals("my-test-domain",
+                ReflectionTestUtils.getField(naming, "defaultDomain"));
+    }
 
-	@Configuration
-	public static class TestConfiguration {
+    @Configuration
+    public static class TestConfiguration {
 
-		@Bean
-		public Counter counter() {
-			return new Counter();
-		}
+        @Bean
+        public Counter counter() {
+            return new Counter();
+        }
 
-		@ManagedResource
-		public static class Counter {
+        @ManagedResource
+        public static class Counter {
 
-			private int counter = 0;
+            private int counter = 0;
 
-			@ManagedAttribute
-			public int get() {
-				return this.counter;
-			}
+            @ManagedAttribute
+            public int get() {
+                return this.counter;
+            }
 
-			@ManagedOperation
-			public void increment() {
-				this.counter++;
-			}
+            @ManagedOperation
+            public void increment() {
+                this.counter++;
+            }
 
-		}
+        }
 
-	}
+    }
 }

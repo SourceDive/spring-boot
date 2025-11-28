@@ -29,18 +29,18 @@ import org.springframework.boot.load.it.war.SpringInitializer;
  */
 public final class EmbeddedWarStarter {
 
-	public static void main(String[] args) throws Exception {
-		Server server = new Server(8080);
+    public static void main(String[] args) throws Exception {
+        Server server = new Server(8080);
 
-		WebAppContext webAppContext = new WebAppContext();
-		webAppContext.setContextPath("/");
-		webAppContext.setConfigurations(new Configuration[] {
-				new WebApplicationInitializersConfiguration(SpringInitializer.class) });
+        WebAppContext webAppContext = new WebAppContext();
+        webAppContext.setContextPath("/");
+        webAppContext.setConfigurations(new Configuration[]{
+                new WebApplicationInitializersConfiguration(SpringInitializer.class)});
 
-		webAppContext.setParentLoaderPriority(true);
-		server.setHandler(webAppContext);
-		server.start();
+        webAppContext.setParentLoaderPriority(true);
+        server.setHandler(webAppContext);
+        server.start();
 
-		server.join();
-	}
+        server.join();
+    }
 }

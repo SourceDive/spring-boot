@@ -20,47 +20,43 @@ import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Adapter to expose {@link EnvironmentEndpoint} as an {@link MvcEndpoint}.
- * 
+ *
  * @author Dave Syer
  */
 public class EnvironmentMvcEndpoint extends EndpointMvcAdapter implements
-		EnvironmentAware {
+        EnvironmentAware {
 
-	private Environment environment;
+    private Environment environment;
 
-	public EnvironmentMvcEndpoint(EnvironmentEndpoint delegate) {
-		super(delegate);
-	}
+    public EnvironmentMvcEndpoint(EnvironmentEndpoint delegate) {
+        super(delegate);
+    }
 
-	@RequestMapping(value = "/{name:.*}", method = RequestMethod.GET)
-	@ResponseBody
-	public Object value(@PathVariable String name) {
-		String result = this.environment.getProperty(name);
-		if (result == null) {
-			throw new NoSuchPropertyException("No such property: " + name);
-		}
-		return EnvironmentEndpoint.sanitize(name, result);
-	}
+    @RequestMapping(value = "/{name:.*}", method = RequestMethod.GET)
+    @ResponseBody
+    public Object value(@PathVariable String name) {
+        String result = this.environment.getProperty(name);
+        if (result == null) {
+            throw new NoSuchPropertyException("No such property: " + name);
+        }
+        return EnvironmentEndpoint.sanitize(name, result);
+    }
 
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
-	}
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
 
-	@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No such property")
-	public static class NoSuchPropertyException extends RuntimeException {
+    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No such property")
+    public static class NoSuchPropertyException extends RuntimeException {
 
-		public NoSuchPropertyException(String string) {
-			super(string);
-		}
+        public NoSuchPropertyException(String string) {
+            super(string);
+        }
 
-	}
+    }
 }

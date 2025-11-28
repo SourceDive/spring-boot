@@ -18,25 +18,25 @@ package org.springframework.boot.cli.util;
 
 /**
  * Simple logger used by the CLI.
- * 
+ *
  * @author Phillip Webb
  */
 public abstract class Log {
 
-	public static void info(String message) {
-		System.out.println(message);
-	}
+    public static void info(String message) {
+        System.out.println(message);
+    }
 
-	public static void infoPrint(String message) {
-		System.out.print(message);
-	}
+    public static void infoPrint(String message) {
+        System.out.print(message);
+    }
 
-	public static void error(String message) {
-		System.err.println(message);
-	}
+    public static void error(String message) {
+        System.err.println(message);
+    }
 
-	public static void error(Exception ex) {
-		ex.printStackTrace(System.err);
-	}
+    public static void error(Exception ex) {
+        ex.printStackTrace(System.err);
+    }
 
 }

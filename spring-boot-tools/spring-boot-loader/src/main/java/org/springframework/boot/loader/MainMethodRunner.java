@@ -21,41 +21,41 @@ import java.lang.reflect.Method;
 /**
  * Utility class that used by {@link Launcher}s to call a main method. This class allows
  * methods to be executed within a thread configured with a specific context class loader.
- * 
+ *
  * @author Phillip Webb
  */
 public class MainMethodRunner implements Runnable {
 
-	private final String mainClassName;
+    private final String mainClassName;
 
-	private final String[] args;
+    private final String[] args;
 
-	/**
-	 * Create a new {@link MainMethodRunner} instance.
-	 * @param mainClass the main class
-	 * @param args incoming arguments
-	 */
-	public MainMethodRunner(String mainClass, String[] args) {
-		this.mainClassName = mainClass;
-		this.args = (args == null ? null : args.clone());
-	}
+    /**
+     * Create a new {@link MainMethodRunner} instance.
+     *
+     * @param mainClass the main class
+     * @param args      incoming arguments
+     */
+    public MainMethodRunner(String mainClass, String[] args) {
+        this.mainClassName = mainClass;
+        this.args = (args == null ? null : args.clone());
+    }
 
-	@Override
-	public void run() {
-		try {
-			Class<?> mainClass = Thread.currentThread().getContextClassLoader()
-					.loadClass(this.mainClassName);
-			Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
-			if (mainMethod == null) {
-				throw new IllegalStateException(this.mainClassName
-						+ " does not have a main method");
-			}
-			mainMethod.invoke(null, new Object[] { this.args });
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-			System.exit(1);
-		}
-	}
+    @Override
+    public void run() {
+        try {
+            Class<?> mainClass = Thread.currentThread().getContextClassLoader()
+                    .loadClass(this.mainClassName);
+            Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
+            if (mainMethod == null) {
+                throw new IllegalStateException(this.mainClassName
+                        + " does not have a main method");
+            }
+            mainMethod.invoke(null, new Object[]{this.args});
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.exit(1);
+        }
+    }
 
 }

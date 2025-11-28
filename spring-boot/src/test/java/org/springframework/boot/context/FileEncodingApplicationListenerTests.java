@@ -26,34 +26,34 @@ import org.springframework.core.env.StandardEnvironment;
 
 /**
  * Tests for {@link FileEncodingApplicationListener}.
- * 
+ *
  * @author Dave Syer
  */
 public class FileEncodingApplicationListenerTests {
 
-	private final FileEncodingApplicationListener initializer = new FileEncodingApplicationListener();
-	private final ConfigurableEnvironment environment = new StandardEnvironment();
-	private final ApplicationEnvironmentPreparedEvent event = new ApplicationEnvironmentPreparedEvent(
-			new SpringApplication(), new String[0], this.environment);
+    private final FileEncodingApplicationListener initializer = new FileEncodingApplicationListener();
+    private final ConfigurableEnvironment environment = new StandardEnvironment();
+    private final ApplicationEnvironmentPreparedEvent event = new ApplicationEnvironmentPreparedEvent(
+            new SpringApplication(), new String[0], this.environment);
 
-	@Test(expected = IllegalStateException.class)
-	public void testIllegalState() {
-		EnvironmentTestUtils.addEnvironment(this.environment,
-				"spring.mandatory_file_encoding:FOO");
-		this.initializer.onApplicationEvent(this.event);
-	}
+    @Test(expected = IllegalStateException.class)
+    public void testIllegalState() {
+        EnvironmentTestUtils.addEnvironment(this.environment,
+                "spring.mandatory_file_encoding:FOO");
+        this.initializer.onApplicationEvent(this.event);
+    }
 
-	@Test
-	public void testSunnyDayNothingMandated() {
-		this.initializer.onApplicationEvent(this.event);
-	}
+    @Test
+    public void testSunnyDayNothingMandated() {
+        this.initializer.onApplicationEvent(this.event);
+    }
 
-	@Test
-	public void testSunnyDayMandated() {
-		Assume.assumeNotNull(System.getProperty("file.encoding"));
-		EnvironmentTestUtils.addEnvironment(this.environment,
-				"spring.mandatory_file_encoding:" + System.getProperty("file.encoding"));
-		this.initializer.onApplicationEvent(this.event);
-	}
+    @Test
+    public void testSunnyDayMandated() {
+        Assume.assumeNotNull(System.getProperty("file.encoding"));
+        EnvironmentTestUtils.addEnvironment(this.environment,
+                "spring.mandatory_file_encoding:" + System.getProperty("file.encoding"));
+        this.initializer.onApplicationEvent(this.event);
+    }
 
 }

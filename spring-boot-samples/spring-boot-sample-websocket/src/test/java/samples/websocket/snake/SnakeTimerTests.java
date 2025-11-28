@@ -28,13 +28,13 @@ import static org.mockito.Mockito.mock;
 
 public class SnakeTimerTests {
 
-	@Test
-	public void removeDysfunctionalSnakes() throws Exception {
-		Snake snake = mock(Snake.class);
-		doThrow(new IOException()).when(snake).sendMessage(anyString());
-		SnakeTimer.addSnake(snake);
+    @Test
+    public void removeDysfunctionalSnakes() throws Exception {
+        Snake snake = mock(Snake.class);
+        doThrow(new IOException()).when(snake).sendMessage(anyString());
+        SnakeTimer.addSnake(snake);
 
-		SnakeTimer.broadcast("");
-		assertThat(SnakeTimer.getSnakes().size(), is(0));
-	}
+        SnakeTimer.broadcast("");
+        assertThat(SnakeTimer.getSnakes().size(), is(0));
+    }
 }

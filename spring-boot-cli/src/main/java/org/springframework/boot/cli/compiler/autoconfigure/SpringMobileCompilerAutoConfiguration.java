@@ -26,27 +26,27 @@ import org.springframework.boot.groovy.EnableDeviceResolver;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Mobile.
- * 
+ *
  * @author Roy Clarkson
  * @author Dave Syer
  */
 public class SpringMobileCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
-	@Override
-	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableDeviceResolver");
-	}
+    @Override
+    public boolean matches(ClassNode classNode) {
+        return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableDeviceResolver");
+    }
 
-	@Override
-	public void applyDependencies(DependencyCustomizer dependencies)
-			throws CompilationFailedException {
-		dependencies.add("spring-boot-starter-mobile");
-	}
+    @Override
+    public void applyDependencies(DependencyCustomizer dependencies)
+            throws CompilationFailedException {
+        dependencies.add("spring-boot-starter-mobile");
+    }
 
-	@Override
-	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addStarImports("org.springframework.mobile.device");
-		imports.addImports(EnableDeviceResolver.class.getCanonicalName());
-	}
+    @Override
+    public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
+        imports.addStarImports("org.springframework.mobile.device");
+        imports.addImports(EnableDeviceResolver.class.getCanonicalName());
+    }
 
 }

@@ -37,26 +37,26 @@ import static org.junit.Assert.assertNotNull;
 @SpringApplicationConfiguration(classes = TestConfiguration.class)
 public class SpringJUnitTests {
 
-	@Autowired
-	private ApplicationContext context;
+    @Autowired
+    private ApplicationContext context;
 
-	@Value("${foo:spam}")
-	private String foo = "bar";
+    @Value("${foo:spam}")
+    private String foo = "bar";
 
-	@Test
-	public void testContextCreated() {
-		assertNotNull(this.context);
-	}
+    @Test
+    public void testContextCreated() {
+        assertNotNull(this.context);
+    }
 
-	@Test
-	public void testContextInitialized() {
-		assertEquals("bucket", this.foo);
-	}
+    @Test
+    public void testContextInitialized() {
+        assertEquals("bucket", this.foo);
+    }
 
-	@Configuration
-	@Import({ PropertyPlaceholderAutoConfiguration.class })
-	public static class TestConfiguration {
+    @Configuration
+    @Import({PropertyPlaceholderAutoConfiguration.class})
+    public static class TestConfiguration {
 
-	}
+    }
 
 }

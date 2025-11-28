@@ -20,15 +20,15 @@ import org.eclipse.jetty.server.Server;
 
 /**
  * Callback interface that can be used to customize a Jetty {@link Server}.
- * 
+ *
  * @author Dave Syer
  * @see JettyEmbeddedServletContainerFactory
  */
 public interface JettyServerCustomizer {
 
-	/**
-	 * @param server the server to customize
-	 */
-	void customize(Server server);
+    /**
+     * @param server the server to customize
+     */
+    void customize(Server server);
 
 }

@@ -16,13 +16,13 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -30,22 +30,22 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link VanillaPublicMetrics}.
- * 
+ *
  * @author Phillip Webb
  */
 public class VanillaPublicMetricsTests {
 
-	@Test
-	public void testMetrics() throws Exception {
-		InMemoryMetricRepository repository = new InMemoryMetricRepository();
-		repository.set(new Metric<Double>("a", 0.5, new Date()));
-		VanillaPublicMetrics publicMetrics = new VanillaPublicMetrics(repository);
-		Map<String, Metric<?>> results = new HashMap<String, Metric<?>>();
-		for (Metric<?> metric : publicMetrics.metrics()) {
-			results.put(metric.getName(), metric);
-		}
-		assertTrue(results.containsKey("mem"));
-		assertTrue(results.containsKey("mem.free"));
-		assertThat(results.get("a").getValue().doubleValue(), equalTo(0.5));
-	}
+    @Test
+    public void testMetrics() throws Exception {
+        InMemoryMetricRepository repository = new InMemoryMetricRepository();
+        repository.set(new Metric<Double>("a", 0.5, new Date()));
+        VanillaPublicMetrics publicMetrics = new VanillaPublicMetrics(repository);
+        Map<String, Metric<?>> results = new HashMap<String, Metric<?>>();
+        for (Metric<?> metric : publicMetrics.metrics()) {
+            results.put(metric.getName(), metric);
+        }
+        assertTrue(results.containsKey("mem"));
+        assertTrue(results.containsKey("mem.free"));
+        assertThat(results.get("a").getValue().doubleValue(), equalTo(0.5));
+    }
 }

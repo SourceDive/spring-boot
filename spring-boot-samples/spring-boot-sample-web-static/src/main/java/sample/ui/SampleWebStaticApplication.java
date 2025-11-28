@@ -26,13 +26,13 @@ import org.springframework.context.annotation.Configuration;
 @EnableAutoConfiguration
 public class SampleWebStaticApplication extends SpringBootServletInitializer {
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleWebStaticApplication.class, args);
-	}
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(SampleWebStaticApplication.class, args);
+    }
 
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(SampleWebStaticApplication.class);
-	}
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(SampleWebStaticApplication.class);
+    }
 
 }

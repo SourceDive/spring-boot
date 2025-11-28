@@ -28,100 +28,100 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link BeanDefinitionLoader}.
- * 
+ *
  * @author Phillip Webb
  */
 public class BeanDefinitionLoaderTests {
 
-	private StaticApplicationContext registry;
+    private StaticApplicationContext registry;
 
-	@Before
-	public void setup() {
-		this.registry = new StaticApplicationContext();
-	}
+    @Before
+    public void setup() {
+        this.registry = new StaticApplicationContext();
+    }
 
-	@Test
-	public void loadClass() throws Exception {
-		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
-				MyComponent.class);
-		int loaded = loader.load();
-		assertThat(loaded, equalTo(1));
-		assertTrue(this.registry.containsBean("myComponent"));
-	}
+    @Test
+    public void loadClass() throws Exception {
+        BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
+                MyComponent.class);
+        int loaded = loader.load();
+        assertThat(loaded, equalTo(1));
+        assertTrue(this.registry.containsBean("myComponent"));
+    }
 
-	@Test
-	public void loadXmlResource() throws Exception {
-		ClassPathResource resource = new ClassPathResource("sample-beans.xml", getClass());
-		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
-		int loaded = loader.load();
-		assertThat(loaded, equalTo(1));
-		assertTrue(this.registry.containsBean("myXmlComponent"));
+    @Test
+    public void loadXmlResource() throws Exception {
+        ClassPathResource resource = new ClassPathResource("sample-beans.xml", getClass());
+        BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
+        int loaded = loader.load();
+        assertThat(loaded, equalTo(1));
+        assertTrue(this.registry.containsBean("myXmlComponent"));
 
-	}
+    }
 
-	@Test
-	public void loadGroovyResource() throws Exception {
-		ClassPathResource resource = new ClassPathResource("sample-beans.groovy",
-				getClass());
-		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
-		int loaded = loader.load();
-		assertThat(loaded, equalTo(1));
-		assertTrue(this.registry.containsBean("myGroovyComponent"));
+    @Test
+    public void loadGroovyResource() throws Exception {
+        ClassPathResource resource = new ClassPathResource("sample-beans.groovy",
+                getClass());
+        BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
+        int loaded = loader.load();
+        assertThat(loaded, equalTo(1));
+        assertTrue(this.registry.containsBean("myGroovyComponent"));
 
-	}
+    }
 
-	@Test
-	public void loadPackage() throws Exception {
-		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
-				MyComponent.class.getPackage());
-		int loaded = loader.load();
-		assertThat(loaded, equalTo(1));
-		assertTrue(this.registry.containsBean("myComponent"));
-	}
+    @Test
+    public void loadPackage() throws Exception {
+        BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
+                MyComponent.class.getPackage());
+        int loaded = loader.load();
+        assertThat(loaded, equalTo(1));
+        assertTrue(this.registry.containsBean("myComponent"));
+    }
 
-	@Test
-	public void loadClassName() throws Exception {
-		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
-				MyComponent.class.getName());
-		int loaded = loader.load();
-		assertThat(loaded, equalTo(1));
-		assertTrue(this.registry.containsBean("myComponent"));
-	}
+    @Test
+    public void loadClassName() throws Exception {
+        BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
+                MyComponent.class.getName());
+        int loaded = loader.load();
+        assertThat(loaded, equalTo(1));
+        assertTrue(this.registry.containsBean("myComponent"));
+    }
 
-	@Test
-	public void loadResourceName() throws Exception {
-		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
-				"classpath:org/springframework/boot/sample-beans.xml");
-		int loaded = loader.load();
-		assertThat(loaded, equalTo(1));
-		assertTrue(this.registry.containsBean("myXmlComponent"));
-	}
+    @Test
+    public void loadResourceName() throws Exception {
+        BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
+                "classpath:org/springframework/boot/sample-beans.xml");
+        int loaded = loader.load();
+        assertThat(loaded, equalTo(1));
+        assertTrue(this.registry.containsBean("myXmlComponent"));
+    }
 
-	@Test
-	public void loadGroovyName() throws Exception {
-		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
-				"classpath:org/springframework/boot/sample-beans.groovy");
-		int loaded = loader.load();
-		assertThat(loaded, equalTo(1));
-		assertTrue(this.registry.containsBean("myGroovyComponent"));
-	}
+    @Test
+    public void loadGroovyName() throws Exception {
+        BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
+                "classpath:org/springframework/boot/sample-beans.groovy");
+        int loaded = loader.load();
+        assertThat(loaded, equalTo(1));
+        assertTrue(this.registry.containsBean("myGroovyComponent"));
+    }
 
-	@Test
-	public void loadPackageName() throws Exception {
-		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
-				MyComponent.class.getPackage().getName());
-		int loaded = loader.load();
-		assertThat(loaded, equalTo(1));
-		assertTrue(this.registry.containsBean("myComponent"));
-	}
+    @Test
+    public void loadPackageName() throws Exception {
+        BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
+                MyComponent.class.getPackage().getName());
+        int loaded = loader.load();
+        assertThat(loaded, equalTo(1));
+        assertTrue(this.registry.containsBean("myComponent"));
+    }
 
-	@Test
-	public void loadPackageAndClassDoesNotDoubleAdd() throws Exception {
-		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
-				MyComponent.class.getPackage(), MyComponent.class);
-		int loaded = loader.load();
-		assertThat(loaded, equalTo(1));
-		assertTrue(this.registry.containsBean("myComponent"));
-	}
+    @Test
+    public void loadPackageAndClassDoesNotDoubleAdd() throws Exception {
+        BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
+                MyComponent.class.getPackage(), MyComponent.class);
+        int loaded = loader.load();
+        assertThat(loaded, equalTo(1));
+        assertTrue(this.registry.containsBean("myComponent"));
+    }
 
 }

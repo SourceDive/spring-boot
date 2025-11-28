@@ -16,8 +16,8 @@
 
 package org.springframework.boot.logging.logback;
 
-import java.io.File;
-
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.impl.SLF4JLogFactory;
 import org.junit.After;
@@ -30,89 +30,85 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.util.StringUtils;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
+import java.io.File;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link LogbackLoggingSystem}.
- * 
+ *
  * @author Dave Syer
  */
 public class LogbackLoggingSystemTests {
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
+    @Rule
+    public OutputCapture output = new OutputCapture();
 
-	private final LogbackLoggingSystem loggingSystem = new LogbackLoggingSystem(
-			getClass().getClassLoader());
+    private final LogbackLoggingSystem loggingSystem = new LogbackLoggingSystem(
+            getClass().getClassLoader());
 
-	private Log logger;
+    private Log logger;
 
-	@Before
-	public void setup() {
-		this.logger = new SLF4JLogFactory().getInstance(getClass().getName());
-		new File(tmpDir() + "/spring.log").delete();
-	}
+    @Before
+    public void setup() {
+        this.logger = new SLF4JLogFactory().getInstance(getClass().getName());
+        new File(tmpDir() + "/spring.log").delete();
+    }
 
-	private String tmpDir() {
-		return System.getProperty("java.io.tmpdir");
-	}
+    private String tmpDir() {
+        return System.getProperty("java.io.tmpdir");
+    }
 
-	@After
-	public void clear() {
-		System.clearProperty("LOG_FILE");
-		System.clearProperty("LOG_PATH");
-		System.clearProperty("PID");
-	}
+    @After
+    public void clear() {
+        System.clearProperty("LOG_FILE");
+        System.clearProperty("LOG_PATH");
+        System.clearProperty("PID");
+    }
 
-	@Test
-	public void testBasicConfigLocation() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
-		LoggerContext context = (LoggerContext) factory;
-		Logger root = context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-		assertNotNull(root.getAppender("CONSOLE"));
-	}
+    @Test
+    public void testBasicConfigLocation() throws Exception {
+        this.loggingSystem.beforeInitialize();
+        ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
+        LoggerContext context = (LoggerContext) factory;
+        Logger root = context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+        assertNotNull(root.getAppender("CONSOLE"));
+    }
 
-	@Test
-	public void testNonDefaultConfigLocation() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize("classpath:logback-nondefault.xml");
-		this.logger.info("Hello world");
-		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertTrue("Wrong output (not " + tmpDir() + " :\n" + output,
-				output.contains(tmpDir() + "/tmp.log"));
-		assertFalse(new File(tmpDir() + "/tmp.log").exists());
-	}
+    @Test
+    public void testNonDefaultConfigLocation() throws Exception {
+        this.loggingSystem.beforeInitialize();
+        this.loggingSystem.initialize("classpath:logback-nondefault.xml");
+        this.logger.info("Hello world");
+        String output = this.output.toString().trim();
+        assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
+        assertTrue("Wrong output (not " + tmpDir() + " :\n" + output,
+                output.contains(tmpDir() + "/tmp.log"));
+        assertFalse(new File(tmpDir() + "/tmp.log").exists());
+    }
 
-	@Test(expected = IllegalStateException.class)
-	public void testNonexistentConfigLocation() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize("classpath:logback-nonexistent.xml");
-	}
+    @Test(expected = IllegalStateException.class)
+    public void testNonexistentConfigLocation() throws Exception {
+        this.loggingSystem.beforeInitialize();
+        this.loggingSystem.initialize("classpath:logback-nonexistent.xml");
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testNullConfigLocation() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null);
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullConfigLocation() throws Exception {
+        this.loggingSystem.beforeInitialize();
+        this.loggingSystem.initialize(null);
+    }
 
-	@Test
-	public void setLevel() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize();
-		this.logger.debug("Hello");
-		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
-		this.logger.debug("Hello");
-		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"),
-				equalTo(1));
-	}
+    @Test
+    public void setLevel() throws Exception {
+        this.loggingSystem.beforeInitialize();
+        this.loggingSystem.initialize();
+        this.logger.debug("Hello");
+        this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
+        this.logger.debug("Hello");
+        assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"),
+                equalTo(1));
+    }
 
 }

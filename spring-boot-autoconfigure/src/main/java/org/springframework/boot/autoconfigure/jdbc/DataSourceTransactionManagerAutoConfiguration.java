@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -32,36 +30,38 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.sql.DataSource;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
  * {@link DataSourceTransactionManager}.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
-@ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
+@ConditionalOnClass({JdbcTemplate.class, PlatformTransactionManager.class})
 public class DataSourceTransactionManagerAutoConfiguration implements Ordered {
 
-	@Override
-	public int getOrder() {
-		return Integer.MAX_VALUE;
-	}
+    @Override
+    public int getOrder() {
+        return Integer.MAX_VALUE;
+    }
 
-	@Autowired(required = false)
-	private DataSource dataSource;
+    @Autowired(required = false)
+    private DataSource dataSource;
 
-	@Bean
-	@ConditionalOnMissingBean(name = "transactionManager")
-	@ConditionalOnBean(DataSource.class)
-	public PlatformTransactionManager transactionManager() {
-		return new DataSourceTransactionManager(this.dataSource);
-	}
+    @Bean
+    @ConditionalOnMissingBean(name = "transactionManager")
+    @ConditionalOnBean(DataSource.class)
+    public PlatformTransactionManager transactionManager() {
+        return new DataSourceTransactionManager(this.dataSource);
+    }
 
-	@ConditionalOnMissingBean(AbstractTransactionManagementConfiguration.class)
-	@Configuration
-	@EnableTransactionManagement
-	protected static class TransactionManagementConfiguration {
+    @ConditionalOnMissingBean(AbstractTransactionManagementConfiguration.class)
+    @Configuration
+    @EnableTransactionManagement
+    protected static class TransactionManagementConfiguration {
 
-	}
+    }
 
 }

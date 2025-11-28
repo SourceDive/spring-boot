@@ -16,12 +16,12 @@
 
 package org.springframework.boot.yaml;
 
+import org.springframework.beans.factory.FactoryBean;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-
-import org.springframework.beans.factory.FactoryBean;
 
 /**
  * Factory for Map that reads from a YAML source. YAML is a nice human-readable format for
@@ -30,97 +30,96 @@ import org.springframework.beans.factory.FactoryBean;
  * provided the later ones will override entries in the earlier ones hierarchically - that
  * is all entries with the same nested key of type Map at any depth are merged. For
  * example:
- * 
+ *
  * <pre class="code">
  * foo:
  *   bar:
  *    one: two
  * three: four
- * 
+ *
  * </pre>
- * 
+ * <p>
  * plus (later in the list)
- * 
+ *
  * <pre class="code">
  * foo:
  *   bar:
  *    one: 2
  * five: six
- * 
+ *
  * </pre>
- * 
+ * <p>
  * results in an effecive input of
- * 
+ *
  * <pre class="code">
  * foo:
  *   bar:
  *    one: 2
  *    three: four
  * five: six
- * 
+ *
  * </pre>
- * 
+ * <p>
  * Note that the value of "foo" in the first document is not simply replaced with the
  * value in the second, but its nested values are merged.
- * 
+ *
  * @author Dave Syer
  */
 public class YamlMapFactoryBean extends YamlProcessor implements
-		FactoryBean<Map<String, Object>> {
+        FactoryBean<Map<String, Object>> {
 
-	private boolean singleton = true;
+    private boolean singleton = true;
 
-	private Map<String, Object> instance;
+    private Map<String, Object> instance;
 
-	@Override
-	public Map<String, Object> getObject() {
-		if (!this.singleton || this.instance == null) {
-			final Map<String, Object> result = new LinkedHashMap<String, Object>();
-			process(new MatchCallback() {
-				@Override
-				public void process(Properties properties, Map<String, Object> map) {
-					merge(result, map);
-				}
-			});
-			this.instance = result;
-		}
-		return this.instance;
-	}
+    @Override
+    public Map<String, Object> getObject() {
+        if (!this.singleton || this.instance == null) {
+            final Map<String, Object> result = new LinkedHashMap<String, Object>();
+            process(new MatchCallback() {
+                @Override
+                public void process(Properties properties, Map<String, Object> map) {
+                    merge(result, map);
+                }
+            });
+            this.instance = result;
+        }
+        return this.instance;
+    }
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void merge(Map<String, Object> output, Map<String, Object> map) {
-		for (Entry<String, Object> entry : map.entrySet()) {
-			String key = entry.getKey();
-			Object value = entry.getValue();
-			Object existing = output.get(key);
-			if (value instanceof Map && existing instanceof Map) {
-				Map<String, Object> result = new LinkedHashMap<String, Object>(
-						(Map) existing);
-				merge(result, (Map) value);
-				output.put(key, result);
-			}
-			else {
-				output.put(key, value);
-			}
-		}
-	}
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void merge(Map<String, Object> output, Map<String, Object> map) {
+        for (Entry<String, Object> entry : map.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            Object existing = output.get(key);
+            if (value instanceof Map && existing instanceof Map) {
+                Map<String, Object> result = new LinkedHashMap<String, Object>(
+                        (Map) existing);
+                merge(result, (Map) value);
+                output.put(key, result);
+            } else {
+                output.put(key, value);
+            }
+        }
+    }
 
-	@Override
-	public Class<?> getObjectType() {
-		return Map.class;
-	}
+    @Override
+    public Class<?> getObjectType() {
+        return Map.class;
+    }
 
-	/**
-	 * Set if a singleton should be created, or a new object on each request otherwise.
-	 * Default is <code>true</code> (a singleton).
-	 */
-	public void setSingleton(boolean singleton) {
-		this.singleton = singleton;
-	}
+    /**
+     * Set if a singleton should be created, or a new object on each request otherwise.
+     * Default is <code>true</code> (a singleton).
+     */
+    public void setSingleton(boolean singleton) {
+        this.singleton = singleton;
+    }
 
-	@Override
-	public boolean isSingleton() {
-		return this.singleton;
-	}
+    @Override
+    public boolean isSingleton() {
+        return this.singleton;
+    }
 
 }

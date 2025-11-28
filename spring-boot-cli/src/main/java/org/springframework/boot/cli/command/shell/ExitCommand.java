@@ -21,18 +21,18 @@ import org.springframework.boot.cli.command.Command;
 
 /**
  * {@link Command} to quit the {@link Shell}.
- * 
+ *
  * @author Phillip Webb
  */
 class ExitCommand extends AbstractCommand {
 
-	public ExitCommand() {
-		super("exit", "Quit the embedded shell");
-	}
+    public ExitCommand() {
+        super("exit", "Quit the embedded shell");
+    }
 
-	@Override
-	public void run(String... args) throws Exception {
-		throw new ShellExitException();
-	}
+    @Override
+    public void run(String... args) throws Exception {
+        throw new ShellExitException();
+    }
 
 }

@@ -21,14 +21,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "service", ignoreUnknownFields = false)
 public class ServiceProperties {
 
-	private String greeting = "Hello";
+    private String greeting = "Hello";
 
-	public String getGreeting() {
-		return this.greeting;
-	}
+    public String getGreeting() {
+        return this.greeting;
+    }
 
-	public void setGreeting(String greeting) {
-		this.greeting = greeting;
-	}
+    public void setGreeting(String greeting) {
+        this.greeting = greeting;
+    }
 
 }

@@ -21,55 +21,55 @@ import javax.validation.constraints.Pattern;
 
 /**
  * Abstract base for {@link Endpoint} implementations.
- * 
+ *
  * @author Phillip Webb
  * @author Christian Dupuis
  */
 public abstract class AbstractEndpoint<T> implements Endpoint<T> {
 
-	@NotNull
-	@Pattern(regexp = "\\w+", message = "ID must only contains letters, numbers and '_'")
-	private String id;
+    @NotNull
+    @Pattern(regexp = "\\w+", message = "ID must only contains letters, numbers and '_'")
+    private String id;
 
-	private boolean sensitive;
+    private boolean sensitive;
 
-	private boolean enabled = true;
+    private boolean enabled = true;
 
-	public AbstractEndpoint(String id) {
-		this(id, true, true);
-	}
+    public AbstractEndpoint(String id) {
+        this(id, true, true);
+    }
 
-	public AbstractEndpoint(String id, boolean sensitive, boolean enabled) {
-		this.id = id;
-		this.sensitive = sensitive;
-		this.enabled = enabled;
-	}
+    public AbstractEndpoint(String id, boolean sensitive, boolean enabled) {
+        this.id = id;
+        this.sensitive = sensitive;
+        this.enabled = enabled;
+    }
 
-	@Override
-	public String getId() {
-		return this.id;
-	}
+    @Override
+    public String getId() {
+        return this.id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	@Override
-	public boolean isEnabled() {
-		return this.enabled;
-	}
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
+    }
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
-	@Override
-	public boolean isSensitive() {
-		return this.sensitive;
-	}
+    @Override
+    public boolean isSensitive() {
+        return this.sensitive;
+    }
 
-	public void setSensitive(boolean sensitive) {
-		this.sensitive = sensitive;
-	}
+    public void setSensitive(boolean sensitive) {
+        this.sensitive = sensitive;
+    }
 
 }

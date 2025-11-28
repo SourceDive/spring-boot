@@ -25,22 +25,22 @@ import org.springframework.test.context.ContextConfiguration;
  * {@link ApplicationContextInitializer} that can be used with the
  * {@link ContextConfiguration#initializers()} to trigger loading of
  * {@literal application.properties}.
- * 
+ *
  * @author Phillip Webb
  * @see ConfigFileApplicationListener
  */
 public class ConfigFileApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext> {
+        ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-	@Override
-	public void initialize(final ConfigurableApplicationContext applicationContext) {
-		new ConfigFileApplicationListener() {
-			public void apply() {
-				addPropertySources(applicationContext.getEnvironment(),
-						applicationContext);
-				addPostProcessors(applicationContext);
-			}
-		}.apply();
-	}
+    @Override
+    public void initialize(final ConfigurableApplicationContext applicationContext) {
+        new ConfigFileApplicationListener() {
+            public void apply() {
+                addPropertySources(applicationContext.getEnvironment(),
+                        applicationContext);
+                addPostProcessors(applicationContext);
+            }
+        }.apply();
+    }
 
 }

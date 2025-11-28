@@ -16,217 +16,217 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.util.StringUtils;
-
 /**
  * Properties for the security aspects of an application.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "security", ignoreUnknownFields = false)
 public class SecurityProperties implements SecurityPrequisite {
 
-	private boolean requireSsl;
+    private boolean requireSsl;
 
-	// Flip this when session creation is disabled by default
-	private boolean enableCsrf = false;
+    // Flip this when session creation is disabled by default
+    private boolean enableCsrf = false;
 
-	private Basic basic = new Basic();
+    private Basic basic = new Basic();
 
-	private final Headers headers = new Headers();
+    private final Headers headers = new Headers();
 
-	private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
+    private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
 
-	private List<String> ignored = new ArrayList<String>();
+    private List<String> ignored = new ArrayList<String>();
 
-	private final User user = new User();
+    private final User user = new User();
 
-	public Headers getHeaders() {
-		return this.headers;
-	}
+    public Headers getHeaders() {
+        return this.headers;
+    }
 
-	public User getUser() {
-		return this.user;
-	}
+    public User getUser() {
+        return this.user;
+    }
 
-	public SessionCreationPolicy getSessions() {
-		return this.sessions;
-	}
+    public SessionCreationPolicy getSessions() {
+        return this.sessions;
+    }
 
-	public void setSessions(SessionCreationPolicy sessions) {
-		this.sessions = sessions;
-	}
+    public void setSessions(SessionCreationPolicy sessions) {
+        this.sessions = sessions;
+    }
 
-	public Basic getBasic() {
-		return this.basic;
-	}
+    public Basic getBasic() {
+        return this.basic;
+    }
 
-	public void setBasic(Basic basic) {
-		this.basic = basic;
-	}
+    public void setBasic(Basic basic) {
+        this.basic = basic;
+    }
 
-	public boolean isRequireSsl() {
-		return this.requireSsl;
-	}
+    public boolean isRequireSsl() {
+        return this.requireSsl;
+    }
 
-	public void setRequireSsl(boolean requireSsl) {
-		this.requireSsl = requireSsl;
-	}
+    public void setRequireSsl(boolean requireSsl) {
+        this.requireSsl = requireSsl;
+    }
 
-	public boolean isEnableCsrf() {
-		return this.enableCsrf;
-	}
+    public boolean isEnableCsrf() {
+        return this.enableCsrf;
+    }
 
-	public void setEnableCsrf(boolean enableCsrf) {
-		this.enableCsrf = enableCsrf;
-	}
+    public void setEnableCsrf(boolean enableCsrf) {
+        this.enableCsrf = enableCsrf;
+    }
 
-	public void setIgnored(List<String> ignored) {
-		this.ignored = new ArrayList<String>(ignored);
-	}
+    public void setIgnored(List<String> ignored) {
+        this.ignored = new ArrayList<String>(ignored);
+    }
 
-	public List<String> getIgnored() {
-		return this.ignored;
-	}
+    public List<String> getIgnored() {
+        return this.ignored;
+    }
 
-	public static class Headers {
+    public static class Headers {
 
-		public static enum HSTS {
-			none, domain, all
-		}
+        public static enum HSTS {
+            none, domain, all
+        }
 
-		private boolean xss;
+        private boolean xss;
 
-		private boolean cache;
+        private boolean cache;
 
-		private boolean frame;
+        private boolean frame;
 
-		private boolean contentType;
+        private boolean contentType;
 
-		private HSTS hsts = HSTS.all;
+        private HSTS hsts = HSTS.all;
 
-		public boolean isXss() {
-			return this.xss;
-		}
+        public boolean isXss() {
+            return this.xss;
+        }
 
-		public void setXss(boolean xss) {
-			this.xss = xss;
-		}
+        public void setXss(boolean xss) {
+            this.xss = xss;
+        }
 
-		public boolean isCache() {
-			return this.cache;
-		}
+        public boolean isCache() {
+            return this.cache;
+        }
 
-		public void setCache(boolean cache) {
-			this.cache = cache;
-		}
+        public void setCache(boolean cache) {
+            this.cache = cache;
+        }
 
-		public boolean isFrame() {
-			return this.frame;
-		}
+        public boolean isFrame() {
+            return this.frame;
+        }
 
-		public void setFrame(boolean frame) {
-			this.frame = frame;
-		}
+        public void setFrame(boolean frame) {
+            this.frame = frame;
+        }
 
-		public boolean isContentType() {
-			return this.contentType;
-		}
+        public boolean isContentType() {
+            return this.contentType;
+        }
 
-		public void setContentType(boolean contentType) {
-			this.contentType = contentType;
-		}
+        public void setContentType(boolean contentType) {
+            this.contentType = contentType;
+        }
 
-		public HSTS getHsts() {
-			return this.hsts;
-		}
+        public HSTS getHsts() {
+            return this.hsts;
+        }
 
-		public void setHsts(HSTS hsts) {
-			this.hsts = hsts;
-		}
+        public void setHsts(HSTS hsts) {
+            this.hsts = hsts;
+        }
 
-	}
+    }
 
-	public static class Basic {
+    public static class Basic {
 
-		private boolean enabled = true;
+        private boolean enabled = true;
 
-		private String realm = "Spring";
+        private String realm = "Spring";
 
-		private String[] path = new String[] { "/**" };
+        private String[] path = new String[]{"/**"};
 
-		public boolean isEnabled() {
-			return this.enabled;
-		}
+        public boolean isEnabled() {
+            return this.enabled;
+        }
 
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
 
-		public String getRealm() {
-			return this.realm;
-		}
+        public String getRealm() {
+            return this.realm;
+        }
 
-		public void setRealm(String realm) {
-			this.realm = realm;
-		}
+        public void setRealm(String realm) {
+            this.realm = realm;
+        }
 
-		public String[] getPath() {
-			return this.path;
-		}
+        public String[] getPath() {
+            return this.path;
+        }
 
-		public void setPath(String... paths) {
-			this.path = paths;
-		}
+        public void setPath(String... paths) {
+            this.path = paths;
+        }
 
-	}
+    }
 
-	public static class User {
+    public static class User {
 
-		private String name = "user";
+        private String name = "user";
 
-		private String password = UUID.randomUUID().toString();
+        private String password = UUID.randomUUID().toString();
 
-		private List<String> role = new ArrayList<String>(Arrays.asList("USER"));
+        private List<String> role = new ArrayList<String>(Arrays.asList("USER"));
 
-		private boolean defaultPassword = true;
+        private boolean defaultPassword = true;
 
-		public String getName() {
-			return this.name;
-		}
+        public String getName() {
+            return this.name;
+        }
 
-		public void setName(String name) {
-			this.name = name;
-		}
+        public void setName(String name) {
+            this.name = name;
+        }
 
-		public String getPassword() {
-			return this.password;
-		}
+        public String getPassword() {
+            return this.password;
+        }
 
-		public void setPassword(String password) {
-			if (password.startsWith("${") && password.endsWith("}")
-					|| !StringUtils.hasLength(password)) {
-				return;
-			}
-			this.defaultPassword = false;
-			this.password = password;
-		}
+        public void setPassword(String password) {
+            if (password.startsWith("${") && password.endsWith("}")
+                    || !StringUtils.hasLength(password)) {
+                return;
+            }
+            this.defaultPassword = false;
+            this.password = password;
+        }
 
-		public List<String> getRole() {
-			return this.role;
-		}
+        public List<String> getRole() {
+            return this.role;
+        }
 
-		public boolean isDefaultPassword() {
-			return this.defaultPassword;
-		}
+        public boolean isDefaultPassword() {
+            return this.defaultPassword;
+        }
 
-	}
+    }
 
 }

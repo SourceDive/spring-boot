@@ -24,33 +24,33 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link JobExecutionExitCodeGenerator}.
- * 
+ *
  * @author Dave Syer
  */
 public class JobExecutionExitCodeGeneratorTests {
 
-	private final JobExecutionExitCodeGenerator generator = new JobExecutionExitCodeGenerator();
+    private final JobExecutionExitCodeGenerator generator = new JobExecutionExitCodeGenerator();
 
-	@Test
-	public void testExitCodeForRunning() {
-		this.generator.onApplicationEvent(new JobExecutionEvent(new JobExecution(0L)));
-		assertEquals(1, this.generator.getExitCode());
-	}
+    @Test
+    public void testExitCodeForRunning() {
+        this.generator.onApplicationEvent(new JobExecutionEvent(new JobExecution(0L)));
+        assertEquals(1, this.generator.getExitCode());
+    }
 
-	@Test
-	public void testExitCodeForCompleted() {
-		JobExecution execution = new JobExecution(0L);
-		execution.setStatus(BatchStatus.COMPLETED);
-		this.generator.onApplicationEvent(new JobExecutionEvent(execution));
-		assertEquals(0, this.generator.getExitCode());
-	}
+    @Test
+    public void testExitCodeForCompleted() {
+        JobExecution execution = new JobExecution(0L);
+        execution.setStatus(BatchStatus.COMPLETED);
+        this.generator.onApplicationEvent(new JobExecutionEvent(execution));
+        assertEquals(0, this.generator.getExitCode());
+    }
 
-	@Test
-	public void testExitCodeForFailed() {
-		JobExecution execution = new JobExecution(0L);
-		execution.setStatus(BatchStatus.FAILED);
-		this.generator.onApplicationEvent(new JobExecutionEvent(execution));
-		assertEquals(5, this.generator.getExitCode());
-	}
+    @Test
+    public void testExitCodeForFailed() {
+        JobExecution execution = new JobExecution(0L);
+        execution.setStatus(BatchStatus.FAILED);
+        this.generator.onApplicationEvent(new JobExecutionEvent(execution));
+        assertEquals(5, this.generator.getExitCode());
+    }
 
 }

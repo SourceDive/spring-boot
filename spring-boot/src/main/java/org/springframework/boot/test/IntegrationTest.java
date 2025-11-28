@@ -16,22 +16,17 @@
 
 package org.springframework.boot.test;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
+import java.lang.annotation.*;
+
 /**
  * Test class annotation signifying that the tests are integration tests (and therefore
  * require an application to startup "fully leaded" and listening on its normal ports).
- * 
+ *
  * @author Dave Syer
  */
 @Documented
@@ -40,9 +35,9 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @Target(ElementType.TYPE)
 // Leave out the ServletTestExecutionListener because it only deals with Mock* servlet
 // stuff. A real embedded application will not need the mocks.
-@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class,
-		DirtiesContextTestExecutionListener.class,
-		TransactionalTestExecutionListener.class })
+@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class})
 public @interface IntegrationTest {
 
 }

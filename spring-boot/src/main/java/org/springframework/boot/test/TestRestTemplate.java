@@ -16,11 +16,6 @@
 
 package org.springframework.boot.test;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.config.RequestConfig.Builder;
@@ -28,104 +23,104 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.protocol.HttpContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.InterceptingClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.*;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Convenient subclass of {@link RestTemplate} that is suitable for integration tests.
  * They are fault tolerant, and optionally can carry Basic authentication headers. If
  * Apache Http Client 4.3.2 or better is available (recommended) it will be used as the
  * client, and configured to ignore cookies and redirects.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
 public class TestRestTemplate extends RestTemplate {
 
-	/**
-	 * Create a new {@link TestRestTemplate} instance.
-	 */
-	public TestRestTemplate() {
-		this(null, null);
-	}
+    /**
+     * Create a new {@link TestRestTemplate} instance.
+     */
+    public TestRestTemplate() {
+        this(null, null);
+    }
 
-	/**
-	 * Create a new {@link TestRestTemplate} instance with the specified credentials.
-	 * @param username the username to use (or {@code null})
-	 * @param password the password (or {@code null})
-	 */
-	public TestRestTemplate(String username, String password) {
-		super(getRequestFactory(username, password));
-		if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
-			new HttpComponentsCustomizer().customize(this);
-		}
-		setErrorHandler(new DefaultResponseErrorHandler() {
-			@Override
-			public void handleError(ClientHttpResponse response) throws IOException {
-			}
-		});
+    /**
+     * Create a new {@link TestRestTemplate} instance with the specified credentials.
+     *
+     * @param username the username to use (or {@code null})
+     * @param password the password (or {@code null})
+     */
+    public TestRestTemplate(String username, String password) {
+        super(getRequestFactory(username, password));
+        if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
+            new HttpComponentsCustomizer().customize(this);
+        }
+        setErrorHandler(new DefaultResponseErrorHandler() {
+            @Override
+            public void handleError(ClientHttpResponse response) throws IOException {
+            }
+        });
 
-	}
+    }
 
-	private static ClientHttpRequestFactory getRequestFactory(String username,
-			String password) {
-		SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-		if (username == null) {
-			return factory;
-		}
-		List<ClientHttpRequestInterceptor> interceptors = Collections
-				.<ClientHttpRequestInterceptor> singletonList(new BasicAuthorizationInterceptor(
-						username, password));
-		return new InterceptingClientHttpRequestFactory(factory, interceptors);
-	}
+    private static ClientHttpRequestFactory getRequestFactory(String username,
+                                                              String password) {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        if (username == null) {
+            return factory;
+        }
+        List<ClientHttpRequestInterceptor> interceptors = Collections
+                .<ClientHttpRequestInterceptor>singletonList(new BasicAuthorizationInterceptor(
+                        username, password));
+        return new InterceptingClientHttpRequestFactory(factory, interceptors);
+    }
 
-	private static class BasicAuthorizationInterceptor implements
-			ClientHttpRequestInterceptor {
+    private static class BasicAuthorizationInterceptor implements
+            ClientHttpRequestInterceptor {
 
-		private final String username;
+        private final String username;
 
-		private final String password;
+        private final String password;
 
-		public BasicAuthorizationInterceptor(String username, String password) {
-			this.username = username;
-			this.password = (password == null ? "" : password);
-		}
+        public BasicAuthorizationInterceptor(String username, String password) {
+            this.username = username;
+            this.password = (password == null ? "" : password);
+        }
 
-		@Override
-		public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-				ClientHttpRequestExecution execution) throws IOException {
-			byte[] token = Base64
-					.encode((this.username + ":" + this.password).getBytes());
-			request.getHeaders().add("Authorization", "Basic " + new String(token));
-			return execution.execute(request, body);
-		}
+        @Override
+        public ClientHttpResponse intercept(HttpRequest request, byte[] body,
+                                            ClientHttpRequestExecution execution) throws IOException {
+            byte[] token = Base64
+                    .encode((this.username + ":" + this.password).getBytes());
+            request.getHeaders().add("Authorization", "Basic " + new String(token));
+            return execution.execute(request, body);
+        }
 
-	}
+    }
 
-	private static class HttpComponentsCustomizer {
+    private static class HttpComponentsCustomizer {
 
-		public void customize(RestTemplate restTemplate) {
-			restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory() {
-				@Override
-				protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
-					HttpClientContext context = HttpClientContext.create();
-					Builder builder = RequestConfig.custom()
-							.setCookieSpec(CookieSpecs.IGNORE_COOKIES)
-							.setAuthenticationEnabled(false).setRedirectsEnabled(false);
-					context.setRequestConfig(builder.build());
-					return context;
-				}
-			});
-		}
+        public void customize(RestTemplate restTemplate) {
+            restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory() {
+                @Override
+                protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
+                    HttpClientContext context = HttpClientContext.create();
+                    Builder builder = RequestConfig.custom()
+                            .setCookieSpec(CookieSpecs.IGNORE_COOKIES)
+                            .setAuthenticationEnabled(false).setRedirectsEnabled(false);
+                    context.setRequestConfig(builder.build());
+                    return context;
+                }
+            });
+        }
 
-	}
+    }
 
 }

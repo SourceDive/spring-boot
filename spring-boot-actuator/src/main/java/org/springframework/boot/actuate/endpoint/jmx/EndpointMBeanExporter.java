@@ -16,16 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.locks.ReentrantLock;
-
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -47,231 +37,233 @@ import org.springframework.jmx.export.naming.SelfNaming;
 import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.util.ObjectUtils;
 
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * {@link ApplicationListener} that registers all known {@link Endpoint}s with an
  * {@link MBeanServer} using the {@link MBeanExporter} located from the application
  * context.
- * 
+ *
  * @author Christian Dupuis
  */
 public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecycle,
-		BeanFactoryAware, ApplicationContextAware {
+        BeanFactoryAware, ApplicationContextAware {
 
-	public static final String DEFAULT_DOMAIN = "org.springframework.boot";
+    public static final String DEFAULT_DOMAIN = "org.springframework.boot";
 
-	private static Log logger = LogFactory.getLog(EndpointMBeanExporter.class);
+    private static Log logger = LogFactory.getLog(EndpointMBeanExporter.class);
 
-	private final AnnotationJmxAttributeSource attributeSource = new AnnotationJmxAttributeSource();
+    private final AnnotationJmxAttributeSource attributeSource = new AnnotationJmxAttributeSource();
 
-	private final MetadataMBeanInfoAssembler assembler = new MetadataMBeanInfoAssembler(
-			this.attributeSource);
+    private final MetadataMBeanInfoAssembler assembler = new MetadataMBeanInfoAssembler(
+            this.attributeSource);
 
-	private final MetadataNamingStrategy defaultNamingStrategy = new MetadataNamingStrategy(
-			this.attributeSource);
+    private final MetadataNamingStrategy defaultNamingStrategy = new MetadataNamingStrategy(
+            this.attributeSource);
 
-	private final Set<Endpoint<?>> registeredEndpoints = new HashSet<Endpoint<?>>();
+    private final Set<Endpoint<?>> registeredEndpoints = new HashSet<Endpoint<?>>();
 
-	private volatile boolean autoStartup = true;
+    private volatile boolean autoStartup = true;
 
-	private volatile int phase = 0;
+    private volatile int phase = 0;
 
-	private volatile boolean running = false;
+    private volatile boolean running = false;
 
-	private final ReentrantLock lifecycleLock = new ReentrantLock();
+    private final ReentrantLock lifecycleLock = new ReentrantLock();
 
-	private ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
-	private ListableBeanFactory beanFactory;
+    private ListableBeanFactory beanFactory;
 
-	private String domain = DEFAULT_DOMAIN;
+    private String domain = DEFAULT_DOMAIN;
 
-	private boolean ensureUniqueRuntimeObjectNames = false;
+    private boolean ensureUniqueRuntimeObjectNames = false;
 
-	private Properties objectNameStaticProperties = new Properties();
+    private Properties objectNameStaticProperties = new Properties();
 
-	public EndpointMBeanExporter() {
-		super();
-		setAutodetect(false);
-		setNamingStrategy(this.defaultNamingStrategy);
-		setAssembler(this.assembler);
-	}
+    public EndpointMBeanExporter() {
+        super();
+        setAutodetect(false);
+        setNamingStrategy(this.defaultNamingStrategy);
+        setAssembler(this.assembler);
+    }
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.applicationContext = applicationContext;
-	}
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext)
+            throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) {
-		super.setBeanFactory(beanFactory);
-		if (beanFactory instanceof ListableBeanFactory) {
-			this.beanFactory = (ListableBeanFactory) beanFactory;
-		}
-		else {
-			logger.info("EndpointMBeanExporter not running in a ListableBeanFactory: "
-					+ "autodetection of Endpoints not available.");
-		}
-	}
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) {
+        super.setBeanFactory(beanFactory);
+        if (beanFactory instanceof ListableBeanFactory) {
+            this.beanFactory = (ListableBeanFactory) beanFactory;
+        } else {
+            logger.info("EndpointMBeanExporter not running in a ListableBeanFactory: "
+                    + "autodetection of Endpoints not available.");
+        }
+    }
 
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
 
-	@Override
-	public void setEnsureUniqueRuntimeObjectNames(boolean ensureUniqueRuntimeObjectNames) {
-		super.setEnsureUniqueRuntimeObjectNames(ensureUniqueRuntimeObjectNames);
-		this.ensureUniqueRuntimeObjectNames = ensureUniqueRuntimeObjectNames;
-	}
+    @Override
+    public void setEnsureUniqueRuntimeObjectNames(boolean ensureUniqueRuntimeObjectNames) {
+        super.setEnsureUniqueRuntimeObjectNames(ensureUniqueRuntimeObjectNames);
+        this.ensureUniqueRuntimeObjectNames = ensureUniqueRuntimeObjectNames;
+    }
 
-	public void setObjectNameStaticProperties(Properties objectNameStaticProperties) {
-		this.objectNameStaticProperties = objectNameStaticProperties;
-	}
+    public void setObjectNameStaticProperties(Properties objectNameStaticProperties) {
+        this.objectNameStaticProperties = objectNameStaticProperties;
+    }
 
-	protected void doStart() {
-		locateAndRegisterEndpoints();
-	}
+    protected void doStart() {
+        locateAndRegisterEndpoints();
+    }
 
-	@SuppressWarnings({ "rawtypes" })
-	protected void locateAndRegisterEndpoints() {
-		Map<String, Endpoint> endpoints = this.beanFactory.getBeansOfType(Endpoint.class);
-		for (Map.Entry<String, Endpoint> endpointEntry : endpoints.entrySet()) {
-			if (!this.registeredEndpoints.contains(endpointEntry.getValue())) {
-				registerEndpoint(endpointEntry.getKey(), endpointEntry.getValue());
-				this.registeredEndpoints.add(endpointEntry.getValue());
-			}
-		}
-	}
+    @SuppressWarnings({"rawtypes"})
+    protected void locateAndRegisterEndpoints() {
+        Map<String, Endpoint> endpoints = this.beanFactory.getBeansOfType(Endpoint.class);
+        for (Map.Entry<String, Endpoint> endpointEntry : endpoints.entrySet()) {
+            if (!this.registeredEndpoints.contains(endpointEntry.getValue())) {
+                registerEndpoint(endpointEntry.getKey(), endpointEntry.getValue());
+                this.registeredEndpoints.add(endpointEntry.getValue());
+            }
+        }
+    }
 
-	protected void registerEndpoint(String beanName, Endpoint<?> endpoint) {
-		try {
-			registerBeanNameOrInstance(getEndpointMBean(beanName, endpoint), beanName);
-		}
-		catch (MBeanExportException ex) {
-			logger.error("Could not register MBean for endpoint [" + beanName + "]", ex);
-		}
-	}
+    protected void registerEndpoint(String beanName, Endpoint<?> endpoint) {
+        try {
+            registerBeanNameOrInstance(getEndpointMBean(beanName, endpoint), beanName);
+        } catch (MBeanExportException ex) {
+            logger.error("Could not register MBean for endpoint [" + beanName + "]", ex);
+        }
+    }
 
-	protected EndpointMBean getEndpointMBean(String beanName, Endpoint<?> endpoint) {
-		if (endpoint instanceof ShutdownEndpoint) {
-			return new ShutdownEndpointMBean(beanName, endpoint);
-		}
-		return new DataEndpointMBean(beanName, endpoint);
-	}
+    protected EndpointMBean getEndpointMBean(String beanName, Endpoint<?> endpoint) {
+        if (endpoint instanceof ShutdownEndpoint) {
+            return new ShutdownEndpointMBean(beanName, endpoint);
+        }
+        return new DataEndpointMBean(beanName, endpoint);
+    }
 
-	@Override
-	protected ObjectName getObjectName(Object bean, String beanKey)
-			throws MalformedObjectNameException {
-		if (bean instanceof SelfNaming) {
-			return ((SelfNaming) bean).getObjectName();
-		}
+    @Override
+    protected ObjectName getObjectName(Object bean, String beanKey)
+            throws MalformedObjectNameException {
+        if (bean instanceof SelfNaming) {
+            return ((SelfNaming) bean).getObjectName();
+        }
 
-		if (bean instanceof EndpointMBean) {
-			StringBuilder builder = new StringBuilder();
-			builder.append(this.domain);
-			builder.append(":type=Endpoint");
-			builder.append(",name=" + beanKey);
-			if (parentContextContainsSameBean(this.applicationContext, beanKey)) {
-				builder.append(",context="
-						+ ObjectUtils.getIdentityHexString(this.applicationContext));
-			}
-			if (this.ensureUniqueRuntimeObjectNames) {
-				builder.append(",identity="
-						+ ObjectUtils.getIdentityHexString(((EndpointMBean) bean)
-								.getEndpoint()));
-			}
-			builder.append(getStaticNames());
-			return ObjectNameManager.getInstance(builder.toString());
-		}
+        if (bean instanceof EndpointMBean) {
+            StringBuilder builder = new StringBuilder();
+            builder.append(this.domain);
+            builder.append(":type=Endpoint");
+            builder.append(",name=" + beanKey);
+            if (parentContextContainsSameBean(this.applicationContext, beanKey)) {
+                builder.append(",context="
+                        + ObjectUtils.getIdentityHexString(this.applicationContext));
+            }
+            if (this.ensureUniqueRuntimeObjectNames) {
+                builder.append(",identity="
+                        + ObjectUtils.getIdentityHexString(((EndpointMBean) bean)
+                        .getEndpoint()));
+            }
+            builder.append(getStaticNames());
+            return ObjectNameManager.getInstance(builder.toString());
+        }
 
-		return this.defaultNamingStrategy.getObjectName(bean, beanKey);
-	}
+        return this.defaultNamingStrategy.getObjectName(bean, beanKey);
+    }
 
-	private boolean parentContextContainsSameBean(ApplicationContext applicationContext,
-			String beanKey) {
-		if (applicationContext.getParent() != null) {
-			try {
-				this.applicationContext.getParent().getBean(beanKey, Endpoint.class);
-				return true;
-			}
-			catch (BeansException ex) {
-				return parentContextContainsSameBean(applicationContext.getParent(),
-						beanKey);
-			}
-		}
-		return false;
-	}
+    private boolean parentContextContainsSameBean(ApplicationContext applicationContext,
+                                                  String beanKey) {
+        if (applicationContext.getParent() != null) {
+            try {
+                this.applicationContext.getParent().getBean(beanKey, Endpoint.class);
+                return true;
+            } catch (BeansException ex) {
+                return parentContextContainsSameBean(applicationContext.getParent(),
+                        beanKey);
+            }
+        }
+        return false;
+    }
 
-	private String getStaticNames() {
-		if (this.objectNameStaticProperties.isEmpty()) {
-			return "";
-		}
-		StringBuilder builder = new StringBuilder();
+    private String getStaticNames() {
+        if (this.objectNameStaticProperties.isEmpty()) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder();
 
-		for (Object key : this.objectNameStaticProperties.keySet()) {
-			builder.append("," + key + "=" + this.objectNameStaticProperties.get(key));
-		}
-		return builder.toString();
-	}
+        for (Object key : this.objectNameStaticProperties.keySet()) {
+            builder.append("," + key + "=" + this.objectNameStaticProperties.get(key));
+        }
+        return builder.toString();
+    }
 
-	@Override
-	public final int getPhase() {
-		return this.phase;
-	}
+    @Override
+    public final int getPhase() {
+        return this.phase;
+    }
 
-	@Override
-	public final boolean isAutoStartup() {
-		return this.autoStartup;
-	}
+    @Override
+    public final boolean isAutoStartup() {
+        return this.autoStartup;
+    }
 
-	@Override
-	public final boolean isRunning() {
-		this.lifecycleLock.lock();
-		try {
-			return this.running;
-		}
-		finally {
-			this.lifecycleLock.unlock();
-		}
-	}
+    @Override
+    public final boolean isRunning() {
+        this.lifecycleLock.lock();
+        try {
+            return this.running;
+        } finally {
+            this.lifecycleLock.unlock();
+        }
+    }
 
-	@Override
-	public final void start() {
-		this.lifecycleLock.lock();
-		try {
-			if (!this.running) {
-				this.doStart();
-				this.running = true;
-			}
-		}
-		finally {
-			this.lifecycleLock.unlock();
-		}
-	}
+    @Override
+    public final void start() {
+        this.lifecycleLock.lock();
+        try {
+            if (!this.running) {
+                this.doStart();
+                this.running = true;
+            }
+        } finally {
+            this.lifecycleLock.unlock();
+        }
+    }
 
-	@Override
-	public final void stop() {
-		this.lifecycleLock.lock();
-		try {
-			if (this.running) {
-				this.running = false;
-			}
-		}
-		finally {
-			this.lifecycleLock.unlock();
-		}
-	}
+    @Override
+    public final void stop() {
+        this.lifecycleLock.lock();
+        try {
+            if (this.running) {
+                this.running = false;
+            }
+        } finally {
+            this.lifecycleLock.unlock();
+        }
+    }
 
-	@Override
-	public final void stop(Runnable callback) {
-		this.lifecycleLock.lock();
-		try {
-			this.stop();
-			callback.run();
-		}
-		finally {
-			this.lifecycleLock.unlock();
-		}
-	}
+    @Override
+    public final void stop(Runnable callback) {
+        this.lifecycleLock.lock();
+        try {
+            this.stop();
+            callback.run();
+        } finally {
+            this.lifecycleLock.unlock();
+        }
+    }
 
 }

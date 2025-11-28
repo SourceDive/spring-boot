@@ -22,51 +22,49 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link ConditionalOnWebApplication}.
- * 
+ *
  * @author Dave Syer
  */
 public class ConditionalOnWebApplicationTests {
 
-	private final AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+    private final AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
-	@Test
-	public void testWebApplication() {
-		this.context.register(BasicConfiguration.class);
-		this.context.setServletContext(new MockServletContext());
-		this.context.refresh();
-		assertTrue(this.context.containsBean("foo"));
-		assertEquals("foo", this.context.getBean("foo"));
-	}
+    @Test
+    public void testWebApplication() {
+        this.context.register(BasicConfiguration.class);
+        this.context.setServletContext(new MockServletContext());
+        this.context.refresh();
+        assertTrue(this.context.containsBean("foo"));
+        assertEquals("foo", this.context.getBean("foo"));
+    }
 
-	@Test
-	public void testNotWebApplication() {
-		this.context.register(MissingConfiguration.class);
-		this.context.setServletContext(new MockServletContext());
-		this.context.refresh();
-		assertFalse(this.context.containsBean("foo"));
-	}
+    @Test
+    public void testNotWebApplication() {
+        this.context.register(MissingConfiguration.class);
+        this.context.setServletContext(new MockServletContext());
+        this.context.refresh();
+        assertFalse(this.context.containsBean("foo"));
+    }
 
-	@Configuration
-	@ConditionalOnNotWebApplication
-	protected static class MissingConfiguration {
-		@Bean
-		public String bar() {
-			return "bar";
-		}
-	}
+    @Configuration
+    @ConditionalOnNotWebApplication
+    protected static class MissingConfiguration {
+        @Bean
+        public String bar() {
+            return "bar";
+        }
+    }
 
-	@Configuration
-	@ConditionalOnWebApplication
-	protected static class BasicConfiguration {
-		@Bean
-		public String foo() {
-			return "foo";
-		}
-	}
+    @Configuration
+    @ConditionalOnWebApplication
+    protected static class BasicConfiguration {
+        @Bean
+        public String foo() {
+            return "foo";
+        }
+    }
 }

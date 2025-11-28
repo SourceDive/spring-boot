@@ -16,9 +16,6 @@
 
 package org.springframework.boot.context.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationContextException;
@@ -32,75 +29,77 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * {@link ApplicationListener} that delegates to other listeners that are specified under
  * a {@literal context.listener.classes} environment property.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
 public class DelegatingApplicationListener implements
-		ApplicationListener<ApplicationEvent>, Ordered {
+        ApplicationListener<ApplicationEvent>, Ordered {
 
-	// NOTE: Similar to org.springframework.web.context.ContextLoader
+    // NOTE: Similar to org.springframework.web.context.ContextLoader
 
-	private static final String PROPERTY_NAME = "context.listener.classes";
+    private static final String PROPERTY_NAME = "context.listener.classes";
 
-	private int order = 0;
+    private int order = 0;
 
-	private SimpleApplicationEventMulticaster multicaster;
+    private SimpleApplicationEventMulticaster multicaster;
 
-	@Override
-	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			List<ApplicationListener<ApplicationEvent>> delegates = getListeners(((ApplicationEnvironmentPreparedEvent) event)
-					.getEnvironment());
-			if (delegates.isEmpty()) {
-				return;
-			}
-			this.multicaster = new SimpleApplicationEventMulticaster();
-			for (ApplicationListener<ApplicationEvent> listener : delegates) {
-				this.multicaster.addApplicationListener(listener);
-			}
-		}
-		if (this.multicaster != null) {
-			this.multicaster.multicastEvent(event);
-		}
-	}
+    @Override
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (event instanceof ApplicationEnvironmentPreparedEvent) {
+            List<ApplicationListener<ApplicationEvent>> delegates = getListeners(((ApplicationEnvironmentPreparedEvent) event)
+                    .getEnvironment());
+            if (delegates.isEmpty()) {
+                return;
+            }
+            this.multicaster = new SimpleApplicationEventMulticaster();
+            for (ApplicationListener<ApplicationEvent> listener : delegates) {
+                this.multicaster.addApplicationListener(listener);
+            }
+        }
+        if (this.multicaster != null) {
+            this.multicaster.multicastEvent(event);
+        }
+    }
 
-	@SuppressWarnings("unchecked")
-	private List<ApplicationListener<ApplicationEvent>> getListeners(
-			ConfigurableEnvironment env) {
-		String classNames = env.getProperty(PROPERTY_NAME);
-		List<ApplicationListener<ApplicationEvent>> listeners = new ArrayList<ApplicationListener<ApplicationEvent>>();
-		if (StringUtils.hasLength(classNames)) {
-			for (String className : StringUtils.commaDelimitedListToSet(classNames)) {
-				try {
-					Class<?> clazz = ClassUtils.forName(className,
-							ClassUtils.getDefaultClassLoader());
-					Assert.isAssignable(ApplicationListener.class, clazz, "class ["
-							+ className + "] must implement ApplicationListener");
-					listeners.add((ApplicationListener<ApplicationEvent>) BeanUtils
-							.instantiateClass(clazz));
-				}
-				catch (Exception ex) {
-					throw new ApplicationContextException(
-							"Failed to load context listener class [" + className + "]",
-							ex);
-				}
-			}
-		}
-		AnnotationAwareOrderComparator.sort(listeners);
-		return listeners;
-	}
+    @SuppressWarnings("unchecked")
+    private List<ApplicationListener<ApplicationEvent>> getListeners(
+            ConfigurableEnvironment env) {
+        String classNames = env.getProperty(PROPERTY_NAME);
+        List<ApplicationListener<ApplicationEvent>> listeners = new ArrayList<ApplicationListener<ApplicationEvent>>();
+        if (StringUtils.hasLength(classNames)) {
+            for (String className : StringUtils.commaDelimitedListToSet(classNames)) {
+                try {
+                    Class<?> clazz = ClassUtils.forName(className,
+                            ClassUtils.getDefaultClassLoader());
+                    Assert.isAssignable(ApplicationListener.class, clazz, "class ["
+                            + className + "] must implement ApplicationListener");
+                    listeners.add((ApplicationListener<ApplicationEvent>) BeanUtils
+                            .instantiateClass(clazz));
+                } catch (Exception ex) {
+                    throw new ApplicationContextException(
+                            "Failed to load context listener class [" + className + "]",
+                            ex);
+                }
+            }
+        }
+        AnnotationAwareOrderComparator.sort(listeners);
+        return listeners;
+    }
 
-	public void setOrder(int order) {
-		this.order = order;
-	}
+    public void setOrder(int order) {
+        this.order = order;
+    }
 
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
+    @Override
+    public int getOrder() {
+        return this.order;
+    }
 
 }

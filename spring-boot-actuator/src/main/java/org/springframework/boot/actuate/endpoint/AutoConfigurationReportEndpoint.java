@@ -16,9 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint.Report;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
@@ -32,13 +32,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@link Endpoint} to expose the {@link ConditionEvaluationReport}.
- * 
+ *
  * @author Greg Turnquist
  * @author Phillip Webb
  * @author Dave Syer
@@ -46,96 +45,95 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @ConfigurationProperties(prefix = "endpoints.autoconfig", ignoreUnknownFields = false)
 public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
-	@Autowired
-	private ConditionEvaluationReport autoConfigurationReport;
+    @Autowired
+    private ConditionEvaluationReport autoConfigurationReport;
 
-	public AutoConfigurationReportEndpoint() {
-		super("autoconfig");
-	}
+    public AutoConfigurationReportEndpoint() {
+        super("autoconfig");
+    }
 
-	@Override
-	public Report invoke() {
-		return new Report(this.autoConfigurationReport);
-	}
+    @Override
+    public Report invoke() {
+        return new Report(this.autoConfigurationReport);
+    }
 
-	/**
-	 * Adapts {@link ConditionEvaluationReport} to a JSON friendly structure.
-	 */
-	@JsonPropertyOrder({ "positiveMatches", "negativeMatches" })
-	@JsonInclude(Include.NON_EMPTY)
-	public static class Report {
+    /**
+     * Adapts {@link ConditionEvaluationReport} to a JSON friendly structure.
+     */
+    @JsonPropertyOrder({"positiveMatches", "negativeMatches"})
+    @JsonInclude(Include.NON_EMPTY)
+    public static class Report {
 
-		private MultiValueMap<String, MessageAndCondition> positiveMatches;
+        private MultiValueMap<String, MessageAndCondition> positiveMatches;
 
-		private MultiValueMap<String, MessageAndCondition> negativeMatches;
+        private MultiValueMap<String, MessageAndCondition> negativeMatches;
 
-		private Report parent;
+        private Report parent;
 
-		public Report(ConditionEvaluationReport report) {
-			this.positiveMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
-			this.negativeMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
-			for (Map.Entry<String, ConditionAndOutcomes> entry : report
-					.getConditionAndOutcomesBySource().entrySet()) {
-				dunno(entry.getValue().isFullMatch() ? this.positiveMatches
-						: this.negativeMatches, entry.getKey(), entry.getValue());
+        public Report(ConditionEvaluationReport report) {
+            this.positiveMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
+            this.negativeMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
+            for (Map.Entry<String, ConditionAndOutcomes> entry : report
+                    .getConditionAndOutcomesBySource().entrySet()) {
+                dunno(entry.getValue().isFullMatch() ? this.positiveMatches
+                        : this.negativeMatches, entry.getKey(), entry.getValue());
 
-			}
-			if (report.getParent() != null) {
-				this.parent = new Report(report.getParent());
-			}
-		}
+            }
+            if (report.getParent() != null) {
+                this.parent = new Report(report.getParent());
+            }
+        }
 
-		private void dunno(MultiValueMap<String, MessageAndCondition> map, String source,
-				ConditionAndOutcomes conditionAndOutcomes) {
-			String name = ClassUtils.getShortName(source);
-			for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
-				map.add(name, new MessageAndCondition(conditionAndOutcome));
-			}
-		}
+        private void dunno(MultiValueMap<String, MessageAndCondition> map, String source,
+                           ConditionAndOutcomes conditionAndOutcomes) {
+            String name = ClassUtils.getShortName(source);
+            for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
+                map.add(name, new MessageAndCondition(conditionAndOutcome));
+            }
+        }
 
-		public Map<String, List<MessageAndCondition>> getPositiveMatches() {
-			return this.positiveMatches;
-		}
+        public Map<String, List<MessageAndCondition>> getPositiveMatches() {
+            return this.positiveMatches;
+        }
 
-		public Map<String, List<MessageAndCondition>> getNegativeMatches() {
-			return this.negativeMatches;
-		}
+        public Map<String, List<MessageAndCondition>> getNegativeMatches() {
+            return this.negativeMatches;
+        }
 
-		public Report getParent() {
-			return this.parent;
-		}
+        public Report getParent() {
+            return this.parent;
+        }
 
-	}
+    }
 
-	/**
-	 * Adapts {@link ConditionAndOutcome} to a JSON friendly structure.
-	 */
-	@JsonPropertyOrder({ "condition", "message" })
-	public static class MessageAndCondition {
+    /**
+     * Adapts {@link ConditionAndOutcome} to a JSON friendly structure.
+     */
+    @JsonPropertyOrder({"condition", "message"})
+    public static class MessageAndCondition {
 
-		private final String condition;
+        private final String condition;
 
-		private final String message;
+        private final String message;
 
-		public MessageAndCondition(ConditionAndOutcome conditionAndOutcome) {
-			Condition condition = conditionAndOutcome.getCondition();
-			ConditionOutcome outcome = conditionAndOutcome.getOutcome();
-			this.condition = ClassUtils.getShortName(condition.getClass());
-			if (StringUtils.hasLength(outcome.getMessage())) {
-				this.message = outcome.getMessage();
-			}
-			else {
-				this.message = (outcome.isMatch() ? "matched" : "did not match");
-			}
-		}
+        public MessageAndCondition(ConditionAndOutcome conditionAndOutcome) {
+            Condition condition = conditionAndOutcome.getCondition();
+            ConditionOutcome outcome = conditionAndOutcome.getOutcome();
+            this.condition = ClassUtils.getShortName(condition.getClass());
+            if (StringUtils.hasLength(outcome.getMessage())) {
+                this.message = outcome.getMessage();
+            } else {
+                this.message = (outcome.isMatch() ? "matched" : "did not match");
+            }
+        }
 
-		public String getCondition() {
-			return this.condition;
-		}
+        public String getCondition() {
+            return this.condition;
+        }
 
-		public String getMessage() {
-			return this.message;
-		}
+        public String getMessage() {
+            return this.message;
+        }
 
-	}
+    }
 }

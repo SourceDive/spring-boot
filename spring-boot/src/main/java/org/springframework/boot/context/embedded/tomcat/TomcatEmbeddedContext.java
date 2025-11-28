@@ -22,17 +22,17 @@ import org.apache.catalina.core.StandardContext;
 /**
  * Tomcat {@link StandardContext} used by {@link TomcatEmbeddedServletContainer} to
  * support deferred initialization.
- * 
+ *
  * @author Phillip Webb
  */
 class TomcatEmbeddedContext extends StandardContext {
 
-	@Override
-	public void loadOnStartup(Container[] children) {
-	}
+    @Override
+    public void loadOnStartup(Container[] children) {
+    }
 
-	public void deferredLoadOnStartup() {
-		super.loadOnStartup(findChildren());
-	}
+    public void deferredLoadOnStartup() {
+        super.loadOnStartup(findChildren());
+    }
 
 }

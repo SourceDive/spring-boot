@@ -22,113 +22,118 @@ import org.springframework.util.ObjectUtils;
 /**
  * Simple container-independent abstraction for servlet error pages. Roughly equivalent to
  * the {@literal &lt;error-page&gt;} element traditionally found in web.xml.
- * 
+ *
  * @author Dave Syer
  */
 public class ErrorPage {
 
-	private final HttpStatus status;
+    private final HttpStatus status;
 
-	private final Class<? extends Throwable> exception;
+    private final Class<? extends Throwable> exception;
 
-	private final String path;
+    private final String path;
 
-	public ErrorPage(String path) {
-		this.status = null;
-		this.exception = null;
-		this.path = path;
-	}
+    public ErrorPage(String path) {
+        this.status = null;
+        this.exception = null;
+        this.path = path;
+    }
 
-	public ErrorPage(HttpStatus status, String path) {
-		this.status = status;
-		this.exception = null;
-		this.path = path;
-	}
+    public ErrorPage(HttpStatus status, String path) {
+        this.status = status;
+        this.exception = null;
+        this.path = path;
+    }
 
-	public ErrorPage(Class<? extends Throwable> exception, String path) {
-		this.status = null;
-		this.exception = exception;
-		this.path = path;
-	}
+    public ErrorPage(Class<? extends Throwable> exception, String path) {
+        this.status = null;
+        this.exception = exception;
+        this.path = path;
+    }
 
-	/**
-	 * The path to render (usually implemented as a forward), starting with "/". A custom
-	 * controller or servlet path can be used, or if the container supports it, a template
-	 * path (e.g. "/error.jsp").
-	 * @return the path that will be rendered for this error
-	 */
-	public String getPath() {
-		return this.path;
-	}
+    /**
+     * The path to render (usually implemented as a forward), starting with "/". A custom
+     * controller or servlet path can be used, or if the container supports it, a template
+     * path (e.g. "/error.jsp").
+     *
+     * @return the path that will be rendered for this error
+     */
+    public String getPath() {
+        return this.path;
+    }
 
-	/**
-	 * Returns the exception type (or {@code null} for a page that matches by status)
-	 * @return the exception type or {@code null}
-	 */
-	public Class<? extends Throwable> getException() {
-		return this.exception;
-	}
+    /**
+     * Returns the exception type (or {@code null} for a page that matches by status)
+     *
+     * @return the exception type or {@code null}
+     */
+    public Class<? extends Throwable> getException() {
+        return this.exception;
+    }
 
-	/**
-	 * The HTTP status value that this error page matches (or {@code null} for a page that
-	 * matches by exception).
-	 * @return the status or {@code null}
-	 */
-	public HttpStatus getStatus() {
-		return this.status;
-	}
+    /**
+     * The HTTP status value that this error page matches (or {@code null} for a page that
+     * matches by exception).
+     *
+     * @return the status or {@code null}
+     */
+    public HttpStatus getStatus() {
+        return this.status;
+    }
 
-	/**
-	 * The HTTP status value that this error page matches.
-	 * @return the status value (or 0 for a page that matches any status)
-	 */
-	public int getStatusCode() {
-		return (this.status == null ? 0 : this.status.value());
-	}
+    /**
+     * The HTTP status value that this error page matches.
+     *
+     * @return the status value (or 0 for a page that matches any status)
+     */
+    public int getStatusCode() {
+        return (this.status == null ? 0 : this.status.value());
+    }
 
-	/**
-	 * The exception type name.
-	 * @return the exception type name (or {@code null} if there is none)
-	 */
-	public String getExceptionName() {
-		return (this.exception == null ? null : this.exception.getName());
-	}
+    /**
+     * The exception type name.
+     *
+     * @return the exception type name (or {@code null} if there is none)
+     */
+    public String getExceptionName() {
+        return (this.exception == null ? null : this.exception.getName());
+    }
 
-	/**
-	 * @return is this error page a global one (matches all unmatched status and exception
-	 * types)
-	 */
-	public boolean isGlobal() {
-		return (this.status == null && this.exception == null);
-	}
+    /**
+     * @return is this error page a global one (matches all unmatched status and exception
+     * types)
+     */
+    public boolean isGlobal() {
+        return (this.status == null && this.exception == null);
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ObjectUtils.nullSafeHashCode(getExceptionName());
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.path);
-		result = prime * result + this.getStatusCode();
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ObjectUtils.nullSafeHashCode(getExceptionName());
+        result = prime * result + ObjectUtils.nullSafeHashCode(this.path);
+        result = prime * result + this.getStatusCode();
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		ErrorPage other = (ErrorPage) obj;
-		boolean rtn = true;
-		rtn &= ObjectUtils.nullSafeEquals(getExceptionName(), other.getExceptionName());
-		rtn &= ObjectUtils.nullSafeEquals(this.path, other.path);
-		rtn &= this.status == other.status;
-		return rtn;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ErrorPage other = (ErrorPage) obj;
+        boolean rtn = true;
+        rtn &= ObjectUtils.nullSafeEquals(getExceptionName(), other.getExceptionName());
+        rtn &= ObjectUtils.nullSafeEquals(this.path, other.path);
+        rtn &= this.status == other.status;
+        return rtn;
+    }
 
 }

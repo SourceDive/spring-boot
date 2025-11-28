@@ -41,58 +41,58 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 
-	@Controller
-	protected static class HomeController {
+    @Controller
+    protected static class HomeController {
 
-		@RequestMapping("/")
-		@Secured("ROLE_ADMIN")
-		public String home(Map<String, Object> model) {
-			model.put("message", "Hello World");
-			model.put("title", "Hello Home");
-			model.put("date", new Date());
-			return "home";
-		}
+        @RequestMapping("/")
+        @Secured("ROLE_ADMIN")
+        public String home(Map<String, Object> model) {
+            model.put("message", "Hello World");
+            model.put("title", "Hello Home");
+            model.put("date", new Date());
+            return "home";
+        }
 
-	}
+    }
 
-	public static void main(String[] args) throws Exception {
-		new SpringApplicationBuilder(SampleMethodSecurityApplication.class).run(args);
-	}
+    public static void main(String[] args) throws Exception {
+        new SpringApplicationBuilder(SampleMethodSecurityApplication.class).run(args);
+    }
 
-	@Override
-	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/login").setViewName("login");
-		registry.addViewController("/access").setViewName("access");
-	}
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/login").setViewName("login");
+        registry.addViewController("/access").setViewName("access");
+    }
 
-	@Bean
-	public ApplicationSecurity applicationSecurity() {
-		return new ApplicationSecurity();
-	}
+    @Bean
+    public ApplicationSecurity applicationSecurity() {
+        return new ApplicationSecurity();
+    }
 
-	@Order(Ordered.LOWEST_PRECEDENCE - 8)
-	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
+    @Order(Ordered.LOWEST_PRECEDENCE - 8)
+    protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
-		@Override
-		protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-			// @formatter:off
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            // @formatter:off
 			auth.inMemoryAuthentication().withUser("admin").password("admin")
 					.roles("ADMIN", "USER").and().withUser("user").password("user")
 					.roles("USER");
 			// @formatter:on
-		}
+        }
 
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			// @formatter:off
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            // @formatter:off
 			http.authorizeRequests().antMatchers("/login").permitAll().anyRequest()
 					.fullyAuthenticated().and().formLogin().loginPage("/login")
 					.failureUrl("/login?error").and().logout()
 					.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).and()
 					.exceptionHandling().accessDeniedPage("/access?error");
 			// @formatter:on
-		}
+        }
 
-	}
+    }
 
 }

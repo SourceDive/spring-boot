@@ -21,53 +21,53 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Abstract base class for {@link LoggingSystem} implementations.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
 public abstract class AbstractLoggingSystem extends LoggingSystem {
 
-	private final ClassLoader classLoader;
+    private final ClassLoader classLoader;
 
-	private final String[] paths;
+    private final String[] paths;
 
-	public AbstractLoggingSystem(ClassLoader classLoader, String... paths) {
-		this.classLoader = classLoader;
-		this.paths = paths.clone();
-	}
+    public AbstractLoggingSystem(ClassLoader classLoader, String... paths) {
+        this.classLoader = classLoader;
+        this.paths = paths.clone();
+    }
 
-	protected final ClassLoader getClassLoader() {
-		return this.classLoader;
-	}
+    protected final ClassLoader getClassLoader() {
+        return this.classLoader;
+    }
 
-	@Override
-	public void beforeInitialize() {
-		initializeWithSensibleDefaults();
-	}
+    @Override
+    public void beforeInitialize() {
+        initializeWithSensibleDefaults();
+    }
 
-	@Override
-	public void initialize() {
-		for (String path : this.paths) {
-			ClassPathResource resource = new ClassPathResource(path, this.classLoader);
-			if (resource.exists()) {
-				initialize("classpath:" + path);
-				return;
-			}
-		}
-		// Fallback to the non-prefixed value
-		initialize(getPackagedConfigFile(this.paths[this.paths.length - 1]));
-	}
+    @Override
+    public void initialize() {
+        for (String path : this.paths) {
+            ClassPathResource resource = new ClassPathResource(path, this.classLoader);
+            if (resource.exists()) {
+                initialize("classpath:" + path);
+                return;
+            }
+        }
+        // Fallback to the non-prefixed value
+        initialize(getPackagedConfigFile(this.paths[this.paths.length - 1]));
+    }
 
-	protected void initializeWithSensibleDefaults() {
-		initialize(getPackagedConfigFile("basic-" + this.paths[this.paths.length - 1]));
-	}
+    protected void initializeWithSensibleDefaults() {
+        initialize(getPackagedConfigFile("basic-" + this.paths[this.paths.length - 1]));
+    }
 
-	protected final String getPackagedConfigFile(String fileName) {
-		String defaultPath = ClassUtils.getPackageName(getClass());
-		defaultPath = defaultPath.replace(".", "/");
-		defaultPath = defaultPath + "/" + fileName;
-		defaultPath = "classpath:" + defaultPath;
-		return defaultPath;
-	}
+    protected final String getPackagedConfigFile(String fileName) {
+        String defaultPath = ClassUtils.getPackageName(getClass());
+        defaultPath = defaultPath.replace(".", "/");
+        defaultPath = defaultPath + "/" + fileName;
+        defaultPath = "classpath:" + defaultPath;
+        return defaultPath;
+    }
 
 }

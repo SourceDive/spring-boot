@@ -16,11 +16,6 @@
 
 package org.springframework.boot.actuate.web;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +39,10 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -56,56 +55,56 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class BasicErrorControllerIntegrationTests {
 
-	@Autowired
-	private WebApplicationContext wac;
+    @Autowired
+    private WebApplicationContext wac;
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	@Before
-	public void setup() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-	}
+    @Before
+    public void setup() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+    }
 
-	@Test
-	public void testErrorForMachineClient() throws Exception {
-		MvcResult response = this.mockMvc.perform(get("/error"))
-				.andExpect(status().is5xxServerError()).andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("999"));
-	}
+    @Test
+    public void testErrorForMachineClient() throws Exception {
+        MvcResult response = this.mockMvc.perform(get("/error"))
+                .andExpect(status().is5xxServerError()).andReturn();
+        String content = response.getResponse().getContentAsString();
+        assertTrue("Wrong content: " + content, content.contains("999"));
+    }
 
-	@Test
-	public void testErrorForBrowserClient() throws Exception {
-		MvcResult response = this.mockMvc
-				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("ERROR_BEAN"));
-	}
+    @Test
+    public void testErrorForBrowserClient() throws Exception {
+        MvcResult response = this.mockMvc
+                .perform(get("/error").accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk()).andReturn();
+        String content = response.getResponse().getContentAsString();
+        assertTrue("Wrong content: " + content, content.contains("ERROR_BEAN"));
+    }
 
-	@Configuration
-	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class })
-	public static class TestConfiguration {
+    @Configuration
+    @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class,
+            ManagementSecurityAutoConfiguration.class,
+            EndpointMBeanExportAutoConfiguration.class})
+    public static class TestConfiguration {
 
-		// For manual testing
-		public static void main(String[] args) {
-			SpringApplication.run(TestConfiguration.class, args);
-		}
+        // For manual testing
+        public static void main(String[] args) {
+            SpringApplication.run(TestConfiguration.class, args);
+        }
 
-		@Bean
-		public View error() {
-			return new AbstractView() {
-				@Override
-				protected void renderMergedOutputModel(Map<String, Object> model,
-						HttpServletRequest request, HttpServletResponse response)
-						throws Exception {
-					response.getWriter().write("ERROR_BEAN");
-				}
-			};
-		}
+        @Bean
+        public View error() {
+            return new AbstractView() {
+                @Override
+                protected void renderMergedOutputModel(Map<String, Object> model,
+                                                       HttpServletRequest request, HttpServletResponse response)
+                        throws Exception {
+                    response.getWriter().write("ERROR_BEAN");
+                }
+            };
+        }
 
-	}
+    }
 
 }

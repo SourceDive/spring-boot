@@ -16,13 +16,13 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -30,25 +30,25 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link ShutdownMvcEndpoint}.
- * 
+ *
  * @author Dave Syer
  */
 public class ShutdownMvcEndpointTests {
 
-	private ShutdownEndpoint endpoint = mock(ShutdownEndpoint.class);
-	private ShutdownMvcEndpoint mvc = new ShutdownMvcEndpoint(this.endpoint);
+    private ShutdownEndpoint endpoint = mock(ShutdownEndpoint.class);
+    private ShutdownMvcEndpoint mvc = new ShutdownMvcEndpoint(this.endpoint);
 
-	@Before
-	public void init() {
-		when(this.endpoint.isEnabled()).thenReturn(false);
-	}
+    @Before
+    public void init() {
+        when(this.endpoint.isEnabled()).thenReturn(false);
+    }
 
-	@Test
-	public void disabled() {
-		@SuppressWarnings("unchecked")
-		ResponseEntity<Map<String, String>> response = (ResponseEntity<Map<String, String>>) this.mvc
-				.invoke();
-		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-	}
+    @Test
+    public void disabled() {
+        @SuppressWarnings("unchecked")
+        ResponseEntity<Map<String, String>> response = (ResponseEntity<Map<String, String>>) this.mvc
+                .invoke();
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
 
 }

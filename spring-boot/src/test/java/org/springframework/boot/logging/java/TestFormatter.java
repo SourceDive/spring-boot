@@ -21,15 +21,15 @@ import java.util.logging.LogRecord;
 
 /**
  * Simple test {@link Formatter}.
- * 
+ *
  * @author Dave Syer
  */
 public class TestFormatter extends Formatter {
 
-	@Override
-	public String format(LogRecord record) {
-		return String.format("foo: %s -- %s\n", record.getLoggerName(),
-				record.getMessage());
-	}
+    @Override
+    public String format(LogRecord record) {
+        return String.format("foo: %s -- %s\n", record.getLoggerName(),
+                record.getMessage());
+    }
 
 }

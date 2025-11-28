@@ -30,12 +30,12 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 public class SpringInitializer implements WebApplicationInitializer {
 
-	@Override
-	public void onStartup(ServletContext servletContext) throws ServletException {
-		AnnotationConfigWebApplicationContext webApplicationContext = new AnnotationConfigWebApplicationContext();
-		webApplicationContext.register(SpringConfiguration.class);
-		servletContext.addServlet("dispatcherServlet",
-				new DispatcherServlet(webApplicationContext)).addMapping("/*");
-	}
+    @Override
+    public void onStartup(ServletContext servletContext) throws ServletException {
+        AnnotationConfigWebApplicationContext webApplicationContext = new AnnotationConfigWebApplicationContext();
+        webApplicationContext.register(SpringConfiguration.class);
+        servletContext.addServlet("dispatcherServlet",
+                new DispatcherServlet(webApplicationContext)).addMapping("/*");
+    }
 
 }

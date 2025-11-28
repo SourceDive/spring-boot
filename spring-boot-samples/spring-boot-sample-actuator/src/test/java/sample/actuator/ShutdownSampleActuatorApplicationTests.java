@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for separate management and main service ports.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -46,34 +46,34 @@ import static org.junit.Assert.assertTrue;
 @DirtiesContext
 public class ShutdownSampleActuatorApplicationTests {
 
-	@Autowired
-	private SecurityProperties security;
+    @Autowired
+    private SecurityProperties security;
 
-	@Test
-	public void testHome() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:8080", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals("Hello Phil", body.get("message"));
-	}
+    @Test
+    public void testHome() throws Exception {
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+                .getForEntity("http://localhost:8080", Map.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = entity.getBody();
+        assertEquals("Hello Phil", body.get("message"));
+    }
 
-	@Test
-	public void testShutdown() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.postForEntity("http://localhost:8080/shutdown", null, Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body,
-				((String) body.get("message")).contains("Shutting down"));
-	}
+    @Test
+    public void testShutdown() throws Exception {
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+                .postForEntity("http://localhost:8080/shutdown", null, Map.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = entity.getBody();
+        assertTrue("Wrong body: " + body,
+                ((String) body.get("message")).contains("Shutting down"));
+    }
 
-	private String getPassword() {
-		return this.security.getUser().getPassword();
-	}
+    private String getPassword() {
+        return this.security.getUser().getPassword();
+    }
 
 }

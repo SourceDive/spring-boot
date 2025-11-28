@@ -16,40 +16,39 @@
 
 package org.springframework.boot.liquibase;
 
-import java.lang.reflect.Field;
-
 import liquibase.servicelocator.ServiceLocator;
-
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Field;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link LiquibaseServiceLocatorApplicationListener}.
- * 
+ *
  * @author Phillip Webb
  */
 public class LiquibaseServiceLocatorApplicationListenerTests {
 
-	@Test
-	public void replacesServiceLocator() throws Exception {
-		SpringApplication application = new SpringApplication(Conf.class);
-		application.setWebEnvironment(false);
-		application.run();
-		ServiceLocator instance = ServiceLocator.getInstance();
-		Field field = ReflectionUtils.findField(ServiceLocator.class, "classResolver");
-		field.setAccessible(true);
-		Object resolver = field.get(instance);
-		assertThat(resolver, instanceOf(SpringPackageScanClassResolver.class));
-	}
+    @Test
+    public void replacesServiceLocator() throws Exception {
+        SpringApplication application = new SpringApplication(Conf.class);
+        application.setWebEnvironment(false);
+        application.run();
+        ServiceLocator instance = ServiceLocator.getInstance();
+        Field field = ReflectionUtils.findField(ServiceLocator.class, "classResolver");
+        field.setAccessible(true);
+        Object resolver = field.get(instance);
+        assertThat(resolver, instanceOf(SpringPackageScanClassResolver.class));
+    }
 
-	@Configuration
-	public static class Conf {
+    @Configuration
+    public static class Conf {
 
-	}
+    }
 
 }

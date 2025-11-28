@@ -16,15 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.util.Properties;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-
 import org.jolokia.http.AgentServlet;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -37,114 +28,122 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ServletWrappingController;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import java.util.Properties;
+
 /**
  * {@link MvcEndpoint} to expose Jolokia.
- * 
+ *
  * @author Christian Dupuis
  */
 @ConfigurationProperties(prefix = "endpoints.jolokia", ignoreUnknownFields = false)
 public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
-		ApplicationContextAware, ServletContextAware {
+        ApplicationContextAware, ServletContextAware {
 
-	@NotNull
-	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
-	private String path;
+    @NotNull
+    @Pattern(regexp = "/[^/]*", message = "Path must start with /")
+    private String path;
 
-	private boolean sensitive;
+    private boolean sensitive;
 
-	private boolean enabled = true;
+    private boolean enabled = true;
 
-	private final ServletWrappingController controller = new ServletWrappingController();
+    private final ServletWrappingController controller = new ServletWrappingController();
 
-	public JolokiaMvcEndpoint() {
-		this.path = "/jolokia";
-		this.controller.setServletClass(AgentServlet.class);
-		this.controller.setServletName("jolokia");
-	}
+    public JolokiaMvcEndpoint() {
+        this.path = "/jolokia";
+        this.controller.setServletClass(AgentServlet.class);
+        this.controller.setServletName("jolokia");
+    }
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		this.controller.afterPropertiesSet();
-	}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.controller.afterPropertiesSet();
+    }
 
-	@Override
-	public void setServletContext(ServletContext servletContext) {
-		this.controller.setServletContext(servletContext);
-	}
+    @Override
+    public void setServletContext(ServletContext servletContext) {
+        this.controller.setServletContext(servletContext);
+    }
 
-	public void setInitParameters(Properties initParameters) {
-		this.controller.setInitParameters(initParameters);
-	}
+    public void setInitParameters(Properties initParameters) {
+        this.controller.setInitParameters(initParameters);
+    }
 
-	@Override
-	public final void setApplicationContext(ApplicationContext context)
-			throws BeansException {
-		this.controller.setApplicationContext(context);
-	}
+    @Override
+    public final void setApplicationContext(ApplicationContext context)
+            throws BeansException {
+        this.controller.setApplicationContext(context);
+    }
 
-	public boolean isEnabled() {
-		return this.enabled;
-	}
+    public boolean isEnabled() {
+        return this.enabled;
+    }
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
-	@Override
-	public String getPath() {
-		return this.path;
-	}
+    @Override
+    public String getPath() {
+        return this.path;
+    }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	@Override
-	public boolean isSensitive() {
-		return this.sensitive;
-	}
+    @Override
+    public boolean isSensitive() {
+        return this.sensitive;
+    }
 
-	public void setSensitive(boolean sensitive) {
-		this.sensitive = sensitive;
-	}
+    public void setSensitive(boolean sensitive) {
+        this.sensitive = sensitive;
+    }
 
-	@Override
-	@SuppressWarnings("rawtypes")
-	public Class<? extends Endpoint> getEndpointType() {
-		return null;
-	}
+    @Override
+    @SuppressWarnings("rawtypes")
+    public Class<? extends Endpoint> getEndpointType() {
+        return null;
+    }
 
-	@RequestMapping("/**")
-	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
-		return this.controller.handleRequest(new PathStripper(request, getPath()),
-				response);
-	}
+    @RequestMapping("/**")
+    public ModelAndView handle(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+        return this.controller.handleRequest(new PathStripper(request, getPath()),
+                response);
+    }
 
-	private static class PathStripper extends HttpServletRequestWrapper {
+    private static class PathStripper extends HttpServletRequestWrapper {
 
-		private final String path;
+        private final String path;
 
-		public PathStripper(HttpServletRequest request, String path) {
-			super(request);
-			this.path = path;
-		}
+        public PathStripper(HttpServletRequest request, String path) {
+            super(request);
+            this.path = path;
+        }
 
-		@Override
-		public String getPathInfo() {
-			String value = super.getRequestURI();
-			if (value.startsWith(this.path)) {
-				value = value.substring(this.path.length());
-			}
-			int index = value.indexOf("?");
-			if (index > 0) {
-				value = value.substring(0, index);
-			}
-			while (value.startsWith("/")) {
-				value = value.substring(1);
-			}
-			return value;
-		}
+        @Override
+        public String getPathInfo() {
+            String value = super.getRequestURI();
+            if (value.startsWith(this.path)) {
+                value = value.substring(this.path.length());
+            }
+            int index = value.indexOf("?");
+            if (index > 0) {
+                value = value.substring(0, index);
+            }
+            while (value.startsWith("/")) {
+                value = value.substring(1);
+            }
+            return value;
+        }
 
-	}
+    }
 }

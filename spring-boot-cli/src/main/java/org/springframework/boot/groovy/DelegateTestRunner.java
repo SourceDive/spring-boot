@@ -22,16 +22,16 @@ import org.springframework.boot.cli.command.test.TestRunner;
 
 /**
  * Delegate test runner to launch tests in user application classpath.
- * 
+ *
  * @author Phillip Webb
  * @see TestRunner
  */
 public class DelegateTestRunner {
 
-	public static void run(Class<?>[] testClasses) {
-		JUnitCore jUnitCore = new JUnitCore();
-		jUnitCore.addListener(new TextListener(System.out));
-		jUnitCore.run(testClasses);
-	}
+    public static void run(Class<?>[] testClasses) {
+        JUnitCore jUnitCore = new JUnitCore();
+        jUnitCore.addListener(new TextListener(System.out));
+        jUnitCore.run(testClasses);
+    }
 
 }

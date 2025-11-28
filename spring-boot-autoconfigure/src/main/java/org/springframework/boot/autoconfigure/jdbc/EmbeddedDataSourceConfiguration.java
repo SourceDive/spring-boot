@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import javax.annotation.PreDestroy;
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,40 +23,43 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 
+import javax.annotation.PreDestroy;
+import javax.sql.DataSource;
+
 /**
  * Configuration for embedded data sources.
- * 
+ *
  * @author Phillip Webb
  * @see DataSourceAutoConfiguration
  */
 @Configuration
 public class EmbeddedDataSourceConfiguration implements BeanClassLoaderAware {
 
-	private EmbeddedDatabase database;
+    private EmbeddedDatabase database;
 
-	private ClassLoader classLoader;
+    private ClassLoader classLoader;
 
-	@Value("${spring.datasource.name:testdb}")
-	private String name = "testdb";
+    @Value("${spring.datasource.name:testdb}")
+    private String name = "testdb";
 
-	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
-	}
+    @Override
+    public void setBeanClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
 
-	@Bean
-	public DataSource dataSource() {
-		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
-				.setType(EmbeddedDatabaseConnection.get(this.classLoader).getType());
-		this.database = builder.setName(this.name).build();
-		return this.database;
-	}
+    @Bean
+    public DataSource dataSource() {
+        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseConnection.get(this.classLoader).getType());
+        this.database = builder.setName(this.name).build();
+        return this.database;
+    }
 
-	@PreDestroy
-	public void close() {
-		if (this.database != null) {
-			this.database.shutdown();
-		}
-	}
+    @PreDestroy
+    public void close() {
+        if (this.database != null) {
+            this.database.shutdown();
+        }
+    }
 
 }

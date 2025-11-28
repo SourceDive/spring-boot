@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.util.concurrent.Executor;
-
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 import org.junit.Test;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
@@ -33,120 +33,116 @@ import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.messaging.support.ExecutorSubscribableChannel;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.MetricRegistry;
+import java.util.concurrent.Executor;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MetricRepositoryAutoConfiguration}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
 public class MetricRepositoryAutoConfigurationTests {
 
-	@Test
-	public void defaultExecutor() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				MetricRepositoryAutoConfiguration.class);
-		ExecutorSubscribableChannel channel = context
-				.getBean(ExecutorSubscribableChannel.class);
-		ThreadPoolTaskExecutor executor = (ThreadPoolTaskExecutor) channel.getExecutor();
-		context.close();
-		assertTrue(executor.getThreadPoolExecutor().isShutdown());
-	}
+    @Test
+    public void defaultExecutor() throws Exception {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                MetricRepositoryAutoConfiguration.class);
+        ExecutorSubscribableChannel channel = context
+                .getBean(ExecutorSubscribableChannel.class);
+        ThreadPoolTaskExecutor executor = (ThreadPoolTaskExecutor) channel.getExecutor();
+        context.close();
+        assertTrue(executor.getThreadPoolExecutor().isShutdown());
+    }
 
-	@Test
-	public void createServices() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				SyncTaskExecutorConfiguration.class,
-				MetricRepositoryAutoConfiguration.class);
-		DefaultGaugeService gaugeService = context.getBean(DefaultGaugeService.class);
-		assertNotNull(gaugeService);
-		assertNotNull(context.getBean(DefaultCounterService.class));
-		gaugeService.submit("foo", 2.7);
-		assertEquals(2.7, context.getBean(MetricReader.class).findOne("gauge.foo")
-				.getValue());
-		context.close();
-	}
+    @Test
+    public void createServices() throws Exception {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                SyncTaskExecutorConfiguration.class,
+                MetricRepositoryAutoConfiguration.class);
+        DefaultGaugeService gaugeService = context.getBean(DefaultGaugeService.class);
+        assertNotNull(gaugeService);
+        assertNotNull(context.getBean(DefaultCounterService.class));
+        gaugeService.submit("foo", 2.7);
+        assertEquals(2.7, context.getBean(MetricReader.class).findOne("gauge.foo")
+                .getValue());
+        context.close();
+    }
 
-	@Test
-	public void provideAdditionalWriter() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				SyncTaskExecutorConfiguration.class, WriterConfig.class,
-				MetricRepositoryAutoConfiguration.class);
-		DefaultGaugeService gaugeService = context.getBean(DefaultGaugeService.class);
-		assertNotNull(gaugeService);
-		gaugeService.submit("foo", 2.7);
-		MetricWriter writer = context.getBean("writer", MetricWriter.class);
-		verify(writer).set(any(Metric.class));
-		context.close();
-	}
+    @Test
+    public void provideAdditionalWriter() {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                SyncTaskExecutorConfiguration.class, WriterConfig.class,
+                MetricRepositoryAutoConfiguration.class);
+        DefaultGaugeService gaugeService = context.getBean(DefaultGaugeService.class);
+        assertNotNull(gaugeService);
+        gaugeService.submit("foo", 2.7);
+        MetricWriter writer = context.getBean("writer", MetricWriter.class);
+        verify(writer).set(any(Metric.class));
+        context.close();
+    }
 
-	@Test
-	public void codahaleInstalledIfPresent() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				SyncTaskExecutorConfiguration.class, WriterConfig.class,
-				MetricRepositoryAutoConfiguration.class);
-		DefaultGaugeService gaugeService = context.getBean(DefaultGaugeService.class);
-		assertNotNull(gaugeService);
-		gaugeService.submit("foo", 2.7);
-		MetricRegistry registry = context.getBean(MetricRegistry.class);
-		@SuppressWarnings("unchecked")
-		Gauge<Double> gauge = (Gauge<Double>) registry.getMetrics().get("gauge.foo");
-		assertEquals(new Double(2.7), gauge.getValue());
-		context.close();
-	}
+    @Test
+    public void codahaleInstalledIfPresent() {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                SyncTaskExecutorConfiguration.class, WriterConfig.class,
+                MetricRepositoryAutoConfiguration.class);
+        DefaultGaugeService gaugeService = context.getBean(DefaultGaugeService.class);
+        assertNotNull(gaugeService);
+        gaugeService.submit("foo", 2.7);
+        MetricRegistry registry = context.getBean(MetricRegistry.class);
+        @SuppressWarnings("unchecked")
+        Gauge<Double> gauge = (Gauge<Double>) registry.getMetrics().get("gauge.foo");
+        assertEquals(new Double(2.7), gauge.getValue());
+        context.close();
+    }
 
-	@Test
-	public void skipsIfBeansExist() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				Config.class, MetricRepositoryAutoConfiguration.class);
-		assertThat(context.getBeansOfType(DefaultGaugeService.class).size(), equalTo(0));
-		assertThat(context.getBeansOfType(DefaultCounterService.class).size(), equalTo(0));
-		context.close();
-	}
+    @Test
+    public void skipsIfBeansExist() throws Exception {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                Config.class, MetricRepositoryAutoConfiguration.class);
+        assertThat(context.getBeansOfType(DefaultGaugeService.class).size(), equalTo(0));
+        assertThat(context.getBeansOfType(DefaultCounterService.class).size(), equalTo(0));
+        context.close();
+    }
 
-	@Configuration
-	public static class SyncTaskExecutorConfiguration {
+    @Configuration
+    public static class SyncTaskExecutorConfiguration {
 
-		@Bean
-		public Executor metricsExecutor() {
-			return new SyncTaskExecutor();
-		}
+        @Bean
+        public Executor metricsExecutor() {
+            return new SyncTaskExecutor();
+        }
 
-	}
+    }
 
-	@Configuration
-	public static class WriterConfig {
+    @Configuration
+    public static class WriterConfig {
 
-		@Bean
-		public MetricWriter writer() {
-			return mock(MetricWriter.class);
-		}
+        @Bean
+        public MetricWriter writer() {
+            return mock(MetricWriter.class);
+        }
 
-	}
+    }
 
-	@Configuration
-	public static class Config {
+    @Configuration
+    public static class Config {
 
-		@Bean
-		public GaugeService gaugeService() {
-			return mock(GaugeService.class);
-		}
+        @Bean
+        public GaugeService gaugeService() {
+            return mock(GaugeService.class);
+        }
 
-		@Bean
-		public CounterService counterService() {
-			return mock(CounterService.class);
-		}
+        @Bean
+        public CounterService counterService() {
+            return mock(CounterService.class);
+        }
 
-	}
+    }
 }

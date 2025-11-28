@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for demo application.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,24 +43,24 @@ import static org.junit.Assert.assertTrue;
 @DirtiesContext
 public class SampleWebStaticApplicationTests {
 
-	@Test
-	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
-				.getBody().contains("<title>Static"));
-	}
+    @Test
+    public void testHome() throws Exception {
+        ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:8080", String.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
+                .getBody().contains("<title>Static"));
+    }
 
-	@Test
-	public void testCss() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/webjars/bootstrap/3.0.3/css/bootstrap.min.css",
-				String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
-		assertEquals("Wrong content type:\n" + entity.getHeaders().getContentType(),
-				MediaType.valueOf("text/css"), entity.getHeaders().getContentType());
-	}
+    @Test
+    public void testCss() throws Exception {
+        ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:8080/webjars/bootstrap/3.0.3/css/bootstrap.min.css",
+                String.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
+        assertEquals("Wrong content type:\n" + entity.getHeaders().getContentType(),
+                MediaType.valueOf("text/css"), entity.getHeaders().getContentType());
+    }
 
 }

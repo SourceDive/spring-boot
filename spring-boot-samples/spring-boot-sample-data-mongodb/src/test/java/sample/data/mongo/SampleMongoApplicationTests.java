@@ -27,40 +27,39 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SampleMongoApplication}.
- * 
+ *
  * @author Dave Syer
  */
 public class SampleMongoApplicationTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+    @Rule
+    public OutputCapture outputCapture = new OutputCapture();
 
-	@Test
-	public void testDefaultSettings() throws Exception {
-		try {
-			SampleMongoApplication.main(new String[0]);
-		}
-		catch (IllegalStateException ex) {
-			if (serverNotRunning(ex)) {
-				return;
-			}
-		}
-		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output,
-				output.contains("firstName='Alice', lastName='Smith'"));
-	}
+    @Test
+    public void testDefaultSettings() throws Exception {
+        try {
+            SampleMongoApplication.main(new String[0]);
+        } catch (IllegalStateException ex) {
+            if (serverNotRunning(ex)) {
+                return;
+            }
+        }
+        String output = this.outputCapture.toString();
+        assertTrue("Wrong output: " + output,
+                output.contains("firstName='Alice', lastName='Smith'"));
+    }
 
-	private boolean serverNotRunning(IllegalStateException ex) {
-		@SuppressWarnings("serial")
-		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
-		};
-		if (nested.contains(ConnectException.class)) {
-			Throwable root = nested.getRootCause();
-			if (root.getMessage().contains("Connection refused")) {
-				return true;
-			}
-		}
-		return false;
-	}
+    private boolean serverNotRunning(IllegalStateException ex) {
+        @SuppressWarnings("serial")
+        NestedCheckedException nested = new NestedCheckedException("failed", ex) {
+        };
+        if (nested.contains(ConnectException.class)) {
+            Throwable root = nested.getRootCause();
+            if (root.getMessage().contains("Connection refused")) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

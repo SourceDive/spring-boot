@@ -19,17 +19,18 @@ package org.springframework.boot;
 /**
  * Interface used to generate an 'exit code' from a running command line
  * {@link SpringApplication}.
- * 
+ *
  * @author Dave Syer
  * @see SpringApplication#exit(org.springframework.context.ApplicationContext,
  * ExitCodeGenerator...)
  */
 public interface ExitCodeGenerator {
 
-	/**
-	 * Returns the exit code that should be returned from the application.
-	 * @return the exit code.
-	 */
-	int getExitCode();
+    /**
+     * Returns the exit code that should be returned from the application.
+     *
+     * @return the exit code.
+     */
+    int getExitCode();
 
 }

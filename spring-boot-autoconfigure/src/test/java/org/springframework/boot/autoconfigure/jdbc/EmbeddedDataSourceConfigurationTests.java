@@ -16,29 +16,29 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import javax.sql.DataSource;
-
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import javax.sql.DataSource;
 
 import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link EmbeddedDataSourceConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class EmbeddedDataSourceConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
-	@Test
-	public void testDefaultEmbeddedDatabase() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EmbeddedDataSourceConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-		this.context.close();
-	}
+    @Test
+    public void testDefaultEmbeddedDatabase() throws Exception {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(EmbeddedDataSourceConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context.getBean(DataSource.class));
+        this.context.close();
+    }
 
 }

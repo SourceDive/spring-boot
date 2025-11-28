@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.util.Properties;
-
 import org.jolokia.http.AgentServlet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
@@ -33,48 +31,50 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Properties;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for embedding Jolokia, a JMX-HTTP
  * bridge giving an alternative to JSR-160 connectors.
- * 
+ *
  * <p>
  * This configuration will get automatically enabled as soon as the Jolokia
  * {@link AgentServlet} is on the classpath. To disable set
  * <code>endpoints.jolokia.enabled: false</code>.
- * 
+ *
  * <p>
  * Additional configuration parameters for Jolokia can be provided by specifying
  * <code>jolokia.config.*</code> properties. See the <a
  * href="http://jolokia.org">http://jolokia.org</a> web site for more information on
  * supported configuration parameters.
- * 
+ *
  * @author Christian Dupuis
  * @author Dave Syer
  */
 @Configuration
 @ConditionalOnWebApplication
-@ConditionalOnClass({ AgentServlet.class })
+@ConditionalOnClass({AgentServlet.class})
 @ConditionalOnExpression("${endpoints.jolokia.enabled:true}")
 @AutoConfigureBefore(ManagementSecurityAutoConfiguration.class)
 @AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
 @EnableConfigurationProperties(JolokiaProperties.class)
 public class JolokiaAutoConfiguration {
 
-	@Autowired
-	JolokiaProperties properties = new JolokiaProperties();
+    @Autowired
+    JolokiaProperties properties = new JolokiaProperties();
 
-	@Bean
-	@ConditionalOnMissingBean
-	public JolokiaMvcEndpoint jolokiaEndpoint() {
-		JolokiaMvcEndpoint endpoint = new JolokiaMvcEndpoint();
-		endpoint.setInitParameters(getInitParameters());
-		return endpoint;
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public JolokiaMvcEndpoint jolokiaEndpoint() {
+        JolokiaMvcEndpoint endpoint = new JolokiaMvcEndpoint();
+        endpoint.setInitParameters(getInitParameters());
+        return endpoint;
+    }
 
-	private Properties getInitParameters() {
-		Properties initParameters = new Properties();
-		initParameters.putAll(this.properties.getConfig());
-		return initParameters;
-	}
+    private Properties getInitParameters() {
+        Properties initParameters = new Properties();
+        initParameters.putAll(this.properties.getConfig());
+        return initParameters;
+    }
 
 }

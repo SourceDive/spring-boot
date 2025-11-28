@@ -16,154 +16,151 @@
 
 package org.springframework.boot.test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+
 /**
  * JUnit {@code @Rule} to capture output from System.out and System.err.
- * 
+ *
  * @author Phillip Webb
  */
 public class OutputCapture implements TestRule {
 
-	private CaptureOutputStream captureOut;
+    private CaptureOutputStream captureOut;
 
-	private CaptureOutputStream captureErr;
+    private CaptureOutputStream captureErr;
 
-	private ByteArrayOutputStream copy;
+    private ByteArrayOutputStream copy;
 
-	@Override
-	public Statement apply(final Statement base, Description description) {
-		return new Statement() {
-			@Override
-			public void evaluate() throws Throwable {
-				captureOutput();
-				try {
-					base.evaluate();
-				}
-				finally {
-					releaseOutput();
-				}
-			}
-		};
-	}
+    @Override
+    public Statement apply(final Statement base, Description description) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                captureOutput();
+                try {
+                    base.evaluate();
+                } finally {
+                    releaseOutput();
+                }
+            }
+        };
+    }
 
-	protected void captureOutput() {
-		AnsiOutputControl.get().disableAnsiOutput();
-		this.copy = new ByteArrayOutputStream();
-		this.captureOut = new CaptureOutputStream(System.out, this.copy);
-		this.captureErr = new CaptureOutputStream(System.err, this.copy);
-		System.setOut(new PrintStream(this.captureOut));
-		System.setErr(new PrintStream(this.captureErr));
-	}
+    protected void captureOutput() {
+        AnsiOutputControl.get().disableAnsiOutput();
+        this.copy = new ByteArrayOutputStream();
+        this.captureOut = new CaptureOutputStream(System.out, this.copy);
+        this.captureErr = new CaptureOutputStream(System.err, this.copy);
+        System.setOut(new PrintStream(this.captureOut));
+        System.setErr(new PrintStream(this.captureErr));
+    }
 
-	protected void releaseOutput() {
-		AnsiOutputControl.get().enabledAnsiOutput();
-		System.setOut(this.captureOut.getOriginal());
-		System.setErr(this.captureErr.getOriginal());
-		this.copy = null;
-	}
+    protected void releaseOutput() {
+        AnsiOutputControl.get().enabledAnsiOutput();
+        System.setOut(this.captureOut.getOriginal());
+        System.setErr(this.captureErr.getOriginal());
+        this.copy = null;
+    }
 
-	public void flush() {
-		try {
-			this.captureOut.flush();
-			this.captureErr.flush();
-		}
-		catch (IOException ex) {
-			// ignore
-		}
-	}
+    public void flush() {
+        try {
+            this.captureOut.flush();
+            this.captureErr.flush();
+        } catch (IOException ex) {
+            // ignore
+        }
+    }
 
-	@Override
-	public String toString() {
-		flush();
-		return this.copy.toString();
-	}
+    @Override
+    public String toString() {
+        flush();
+        return this.copy.toString();
+    }
 
-	private static class CaptureOutputStream extends OutputStream {
+    private static class CaptureOutputStream extends OutputStream {
 
-		private final PrintStream original;
+        private final PrintStream original;
 
-		private final OutputStream copy;
+        private final OutputStream copy;
 
-		public CaptureOutputStream(PrintStream original, OutputStream copy) {
-			this.original = original;
-			this.copy = copy;
-		}
+        public CaptureOutputStream(PrintStream original, OutputStream copy) {
+            this.original = original;
+            this.copy = copy;
+        }
 
-		@Override
-		public void write(int b) throws IOException {
-			this.copy.write(b);
-			this.original.write(b);
-			this.original.flush();
-		}
+        @Override
+        public void write(int b) throws IOException {
+            this.copy.write(b);
+            this.original.write(b);
+            this.original.flush();
+        }
 
-		@Override
-		public void write(byte[] b) throws IOException {
-			write(b, 0, b.length);
-		}
+        @Override
+        public void write(byte[] b) throws IOException {
+            write(b, 0, b.length);
+        }
 
-		@Override
-		public void write(byte[] b, int off, int len) throws IOException {
-			this.copy.write(b, off, len);
-			this.original.write(b, off, len);
-		}
+        @Override
+        public void write(byte[] b, int off, int len) throws IOException {
+            this.copy.write(b, off, len);
+            this.original.write(b, off, len);
+        }
 
-		public PrintStream getOriginal() {
-			return this.original;
-		}
+        public PrintStream getOriginal() {
+            return this.original;
+        }
 
-		@Override
-		public void flush() throws IOException {
-			this.copy.flush();
-			this.original.flush();
-		}
+        @Override
+        public void flush() throws IOException {
+            this.copy.flush();
+            this.original.flush();
+        }
 
-	}
+    }
 
-	/**
-	 * Allow AnsiOutput to not be on the test classpath.
-	 */
-	private static class AnsiOutputControl {
+    /**
+     * Allow AnsiOutput to not be on the test classpath.
+     */
+    private static class AnsiOutputControl {
 
-		public void disableAnsiOutput() {
-		}
+        public void disableAnsiOutput() {
+        }
 
-		public void enabledAnsiOutput() {
-		}
+        public void enabledAnsiOutput() {
+        }
 
-		public static AnsiOutputControl get() {
-			try {
-				Class.forName("org.springframework.boot.ansi.AnsiOutput");
-				return new AnsiPresentOutputControl();
-			}
-			catch (ClassNotFoundException ex) {
-				return new AnsiOutputControl();
-			}
-		}
+        public static AnsiOutputControl get() {
+            try {
+                Class.forName("org.springframework.boot.ansi.AnsiOutput");
+                return new AnsiPresentOutputControl();
+            } catch (ClassNotFoundException ex) {
+                return new AnsiOutputControl();
+            }
+        }
 
-	}
+    }
 
-	private static class AnsiPresentOutputControl extends AnsiOutputControl {
+    private static class AnsiPresentOutputControl extends AnsiOutputControl {
 
-		@Override
-		public void disableAnsiOutput() {
-			AnsiOutput.setEnabled(Enabled.NEVER);
-		}
+        @Override
+        public void disableAnsiOutput() {
+            AnsiOutput.setEnabled(Enabled.NEVER);
+        }
 
-		@Override
-		public void enabledAnsiOutput() {
-			AnsiOutput.setEnabled(Enabled.DETECT);
-		}
+        @Override
+        public void enabledAnsiOutput() {
+            AnsiOutput.setEnabled(Enabled.DETECT);
+        }
 
-	}
+    }
 
 }

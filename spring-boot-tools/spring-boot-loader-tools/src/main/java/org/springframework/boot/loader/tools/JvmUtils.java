@@ -22,40 +22,39 @@ import java.net.URLClassLoader;
 
 /**
  * Java Virtual Machine Utils.
- * 
+ *
  * @author Phillip Webb
  */
 abstract class JvmUtils {
 
-	/**
-	 * Various search locations for tools, including the odd Java 6 OSX jar
-	 */
-	private static final String[] TOOLS_LOCATIONS = { "lib/tools.jar",
-			"../lib/tools.jar", "../Classes/classes.jar" };
+    /**
+     * Various search locations for tools, including the odd Java 6 OSX jar
+     */
+    private static final String[] TOOLS_LOCATIONS = {"lib/tools.jar",
+            "../lib/tools.jar", "../Classes/classes.jar"};
 
-	public static ClassLoader getToolsClassLoader() {
-		ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
-		return new URLClassLoader(new URL[] { getToolsJarUrl() }, systemClassLoader);
-	}
+    public static ClassLoader getToolsClassLoader() {
+        ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+        return new URLClassLoader(new URL[]{getToolsJarUrl()}, systemClassLoader);
+    }
 
-	public static URL getToolsJarUrl() {
-		String javaHome = getJavaHome();
-		for (String location : TOOLS_LOCATIONS) {
-			try {
-				URL url = new URL("file://" + javaHome + "/" + location);
-				if (new File(url.toURI()).exists()) {
-					return url;
-				}
-			}
-			catch (Exception ex) {
-				// Ignore and try the next location
-			}
-		}
-		throw new IllegalStateException("Unable to locate tools.jar");
-	}
+    public static URL getToolsJarUrl() {
+        String javaHome = getJavaHome();
+        for (String location : TOOLS_LOCATIONS) {
+            try {
+                URL url = new URL("file://" + javaHome + "/" + location);
+                if (new File(url.toURI()).exists()) {
+                    return url;
+                }
+            } catch (Exception ex) {
+                // Ignore and try the next location
+            }
+        }
+        throw new IllegalStateException("Unable to locate tools.jar");
+    }
 
-	private static String getJavaHome() {
-		return System.getProperty("java.home");
-	}
+    private static String getJavaHome() {
+        return System.getProperty("java.home");
+    }
 
 }

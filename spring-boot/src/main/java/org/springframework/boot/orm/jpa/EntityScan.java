@@ -16,14 +16,10 @@
 
 package org.springframework.boot.orm.jpa;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.context.annotation.Import;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+
+import java.lang.annotation.*;
 
 /**
  * Configures the {@link LocalContainerEntityManagerFactoryBean} to to scan for entity
@@ -40,7 +36,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * {@link #value()} may be specified to define specific packages to scan. If specific
  * packages are not defined scanning will occur from the package of the class with this
  * annotation.
- * 
+ *
  * @author Phillip Webb
  */
 @Target(ElementType.TYPE)
@@ -49,30 +45,30 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @Import(EntityScanRegistrar.class)
 public @interface EntityScan {
 
-	/**
-	 * Alias for the {@link #basePackages()} attribute. Allows for more concise annotation
-	 * declarations e.g.: {@code @EntityScan("org.my.pkg")} instead of
-	 * {@code @EntityScan(basePackages="org.my.pkg")}.
-	 */
-	String[] value() default {};
+    /**
+     * Alias for the {@link #basePackages()} attribute. Allows for more concise annotation
+     * declarations e.g.: {@code @EntityScan("org.my.pkg")} instead of
+     * {@code @EntityScan(basePackages="org.my.pkg")}.
+     */
+    String[] value() default {};
 
-	/**
-	 * Base packages to scan for annotated entities.
-	 * <p>
-	 * {@link #value()} is an alias for (and mutually exclusive with) this attribute.
-	 * <p>
-	 * Use {@link #basePackageClasses()} for a type-safe alternative to String-based
-	 * package names.
-	 */
-	String[] basePackages() default {};
+    /**
+     * Base packages to scan for annotated entities.
+     * <p>
+     * {@link #value()} is an alias for (and mutually exclusive with) this attribute.
+     * <p>
+     * Use {@link #basePackageClasses()} for a type-safe alternative to String-based
+     * package names.
+     */
+    String[] basePackages() default {};
 
-	/**
-	 * Type-safe alternative to {@link #basePackages()} for specifying the packages to
-	 * scan for annotated entities. The package of each class specified will be scanned.
-	 * <p>
-	 * Consider creating a special no-op marker class or interface in each package that
-	 * serves no purpose other than being referenced by this attribute.
-	 */
-	Class<?>[] basePackageClasses() default {};
+    /**
+     * Type-safe alternative to {@link #basePackages()} for specifying the packages to
+     * scan for annotated entities. The package of each class specified will be scanned.
+     * <p>
+     * Consider creating a special no-op marker class or interface in each package that
+     * serves no purpose other than being referenced by this attribute.
+     */
+    Class<?>[] basePackageClasses() default {};
 
 }

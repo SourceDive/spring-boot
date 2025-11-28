@@ -25,66 +25,64 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link ShutdownEndpoint}.
- * 
+ *
  * @author Dave Syer
  */
 public class ShutdownParentEndpointTests {
 
-	private ConfigurableApplicationContext context;
+    private ConfigurableApplicationContext context;
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+    @After
+    public void close() {
+        if (this.context != null) {
+            this.context.close();
+        }
+    }
 
-	@Test
-	public void shutdownChild() throws Exception {
-		this.context = new SpringApplicationBuilder(Config.class).child(Empty.class)
-				.web(false).run();
-		assertThat((String) getEndpointBean().invoke().get("message"),
-				startsWith("Shutting down"));
-		assertTrue(this.context.isActive());
-		Thread.sleep(600);
-		assertFalse(this.context.isActive());
-	}
+    @Test
+    public void shutdownChild() throws Exception {
+        this.context = new SpringApplicationBuilder(Config.class).child(Empty.class)
+                .web(false).run();
+        assertThat((String) getEndpointBean().invoke().get("message"),
+                startsWith("Shutting down"));
+        assertTrue(this.context.isActive());
+        Thread.sleep(600);
+        assertFalse(this.context.isActive());
+    }
 
-	@Test
-	public void shutdownParent() throws Exception {
-		this.context = new SpringApplicationBuilder(Empty.class).child(Config.class)
-				.web(false).run();
-		assertThat((String) getEndpointBean().invoke().get("message"),
-				startsWith("Shutting down"));
-		assertTrue(this.context.isActive());
-		Thread.sleep(600);
-		assertFalse(this.context.isActive());
-	}
+    @Test
+    public void shutdownParent() throws Exception {
+        this.context = new SpringApplicationBuilder(Empty.class).child(Config.class)
+                .web(false).run();
+        assertThat((String) getEndpointBean().invoke().get("message"),
+                startsWith("Shutting down"));
+        assertTrue(this.context.isActive());
+        Thread.sleep(600);
+        assertFalse(this.context.isActive());
+    }
 
-	private ShutdownEndpoint getEndpointBean() {
-		return this.context.getBean(ShutdownEndpoint.class);
-	}
+    private ShutdownEndpoint getEndpointBean() {
+        return this.context.getBean(ShutdownEndpoint.class);
+    }
 
-	@Configuration
-	@EnableConfigurationProperties
-	public static class Config {
+    @Configuration
+    @EnableConfigurationProperties
+    public static class Config {
 
-		@Bean
-		public ShutdownEndpoint endpoint() {
-			ShutdownEndpoint endpoint = new ShutdownEndpoint();
-			endpoint.setEnabled(true);
-			return endpoint;
-		}
+        @Bean
+        public ShutdownEndpoint endpoint() {
+            ShutdownEndpoint endpoint = new ShutdownEndpoint();
+            endpoint.setEnabled(true);
+            return endpoint;
+        }
 
-	}
+    }
 
-	@Configuration
-	public static class Empty {
-	}
+    @Configuration
+    public static class Empty {
+    }
 }

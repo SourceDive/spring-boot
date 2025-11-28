@@ -16,11 +16,6 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.sql.Connection;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
@@ -28,71 +23,72 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link SimpleHealthIndicator}.
- * 
+ *
  * @author Dave Syer
  */
 public class SimpleHealthIndicatorTests {
 
-	private final SimpleHealthIndicator indicator = new SimpleHealthIndicator();
-	private DriverManagerDataSource dataSource;
+    private final SimpleHealthIndicator indicator = new SimpleHealthIndicator();
+    private DriverManagerDataSource dataSource;
 
-	@Before
-	public void init() {
-		EmbeddedDatabaseConnection db = EmbeddedDatabaseConnection.HSQL;
-		this.dataSource = new SingleConnectionDataSource(db.getUrl(), "sa", "", false);
-		this.dataSource.setDriverClassName(db.getDriverClassName());
-	}
+    @Before
+    public void init() {
+        EmbeddedDatabaseConnection db = EmbeddedDatabaseConnection.HSQL;
+        this.dataSource = new SingleConnectionDataSource(db.getUrl(), "sa", "", false);
+        this.dataSource.setDriverClassName(db.getDriverClassName());
+    }
 
-	@Test
-	public void database() {
-		this.indicator.setDataSource(this.dataSource);
-		Map<String, Object> health = this.indicator.health();
-		assertNotNull(health.get("database"));
-		assertNotNull(health.get("hello"));
-	}
+    @Test
+    public void database() {
+        this.indicator.setDataSource(this.dataSource);
+        Map<String, Object> health = this.indicator.health();
+        assertNotNull(health.get("database"));
+        assertNotNull(health.get("hello"));
+    }
 
-	@Test
-	public void customQuery() {
-		this.indicator.setDataSource(this.dataSource);
-		new JdbcTemplate(this.dataSource)
-				.execute("CREATE TABLE FOO (id INTEGER IDENTITY PRIMARY KEY)");
-		this.indicator.setQuery("SELECT COUNT(*) from FOO");
-		Map<String, Object> health = this.indicator.health();
-		System.err.println(health);
-		assertNotNull(health.get("database"));
-		assertEquals("ok", health.get("status"));
-		assertNotNull(health.get("hello"));
-	}
+    @Test
+    public void customQuery() {
+        this.indicator.setDataSource(this.dataSource);
+        new JdbcTemplate(this.dataSource)
+                .execute("CREATE TABLE FOO (id INTEGER IDENTITY PRIMARY KEY)");
+        this.indicator.setQuery("SELECT COUNT(*) from FOO");
+        Map<String, Object> health = this.indicator.health();
+        System.err.println(health);
+        assertNotNull(health.get("database"));
+        assertEquals("ok", health.get("status"));
+        assertNotNull(health.get("hello"));
+    }
 
-	@Test
-	public void error() {
-		this.indicator.setDataSource(this.dataSource);
-		this.indicator.setQuery("SELECT COUNT(*) from BAR");
-		Map<String, Object> health = this.indicator.health();
-		assertNotNull(health.get("database"));
-		assertEquals("error", health.get("status"));
-	}
+    @Test
+    public void error() {
+        this.indicator.setDataSource(this.dataSource);
+        this.indicator.setQuery("SELECT COUNT(*) from BAR");
+        Map<String, Object> health = this.indicator.health();
+        assertNotNull(health.get("database"));
+        assertEquals("error", health.get("status"));
+    }
 
-	@Test
-	public void connectionClosed() throws Exception {
-		DataSource dataSource = mock(DataSource.class);
-		Connection connection = mock(Connection.class);
-		when(connection.getMetaData()).thenReturn(
-				this.dataSource.getConnection().getMetaData());
-		when(dataSource.getConnection()).thenReturn(connection);
-		this.indicator.setDataSource(dataSource);
-		Map<String, Object> health = this.indicator.health();
-		assertNotNull(health.get("database"));
-		verify(connection, times(2)).close();
-	}
+    @Test
+    public void connectionClosed() throws Exception {
+        DataSource dataSource = mock(DataSource.class);
+        Connection connection = mock(Connection.class);
+        when(connection.getMetaData()).thenReturn(
+                this.dataSource.getConnection().getMetaData());
+        when(dataSource.getConnection()).thenReturn(connection);
+        this.indicator.setDataSource(dataSource);
+        Map<String, Object> health = this.indicator.health();
+        assertNotNull(health.get("database"));
+        verify(connection, times(2)).close();
+    }
 
 }

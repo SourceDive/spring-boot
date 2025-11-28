@@ -16,89 +16,85 @@
 
 package org.springframework.boot.cli.compiler;
 
+import org.codehaus.groovy.ast.*;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.codehaus.groovy.ast.AnnotatedNode;
-import org.codehaus.groovy.ast.AnnotationNode;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.FieldNode;
-import org.codehaus.groovy.ast.MethodNode;
-
 /**
  * General purpose AST utilities.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Greg Turnquist
  */
 public abstract class AstUtils {
 
-	/**
-	 * Determine if a {@link ClassNode} has one or more of the specified annotations on
-	 * the class or any of its methods. N.B. the type names are not normally fully
-	 * qualified.
-	 */
-	public static boolean hasAtLeastOneAnnotation(ClassNode node, String... annotations) {
-		if (hasAtLeastOneAnnotation((AnnotatedNode) node, annotations)) {
-			return true;
-		}
-		for (MethodNode method : node.getMethods()) {
-			if (hasAtLeastOneAnnotation(method, annotations)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    /**
+     * Determine if a {@link ClassNode} has one or more of the specified annotations on
+     * the class or any of its methods. N.B. the type names are not normally fully
+     * qualified.
+     */
+    public static boolean hasAtLeastOneAnnotation(ClassNode node, String... annotations) {
+        if (hasAtLeastOneAnnotation((AnnotatedNode) node, annotations)) {
+            return true;
+        }
+        for (MethodNode method : node.getMethods()) {
+            if (hasAtLeastOneAnnotation(method, annotations)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	/**
-	 * Determine if an {@link AnnotatedNode} has one or more of the specified annotations.
-	 * N.B. the annotation type names are not normally fully qualified.
-	 */
-	public static boolean hasAtLeastOneAnnotation(AnnotatedNode node,
-			String... annotations) {
-		for (AnnotationNode annotationNode : node.getAnnotations()) {
-			for (String annotation : annotations) {
-				if (annotation.equals(annotationNode.getClassNode().getName())) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+    /**
+     * Determine if an {@link AnnotatedNode} has one or more of the specified annotations.
+     * N.B. the annotation type names are not normally fully qualified.
+     */
+    public static boolean hasAtLeastOneAnnotation(AnnotatedNode node,
+                                                  String... annotations) {
+        for (AnnotationNode annotationNode : node.getAnnotations()) {
+            for (String annotation : annotations) {
+                if (annotation.equals(annotationNode.getClassNode().getName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-	/**
-	 * Determine if a {@link ClassNode} has one or more fields of the specified types or
-	 * method returning one or more of the specified types. N.B. the type names are not
-	 * normally fully qualified.
-	 */
-	public static boolean hasAtLeastOneFieldOrMethod(ClassNode node, String... types) {
-		Set<String> typesSet = new HashSet<String>(Arrays.asList(types));
-		for (FieldNode field : node.getFields()) {
-			if (typesSet.contains(field.getType().getName())) {
-				return true;
-			}
-		}
-		for (MethodNode method : node.getMethods()) {
-			if (typesSet.contains(method.getReturnType().getName())) {
-				return true;
-			}
-		}
-		return false;
-	}
+    /**
+     * Determine if a {@link ClassNode} has one or more fields of the specified types or
+     * method returning one or more of the specified types. N.B. the type names are not
+     * normally fully qualified.
+     */
+    public static boolean hasAtLeastOneFieldOrMethod(ClassNode node, String... types) {
+        Set<String> typesSet = new HashSet<String>(Arrays.asList(types));
+        for (FieldNode field : node.getFields()) {
+            if (typesSet.contains(field.getType().getName())) {
+                return true;
+            }
+        }
+        for (MethodNode method : node.getMethods()) {
+            if (typesSet.contains(method.getReturnType().getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	/**
-	 * Determine if a {@link ClassNode} subclasses any of the specified types N.B. the
-	 * type names are not normally fully qualified.
-	 */
-	public static boolean subclasses(ClassNode node, String... types) {
-		for (String type : types) {
-			if (node.getSuperClass().getName().equals(type)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    /**
+     * Determine if a {@link ClassNode} subclasses any of the specified types N.B. the
+     * type names are not normally fully qualified.
+     */
+    public static boolean subclasses(ClassNode node, String... types) {
+        for (String type : types) {
+            if (node.getSuperClass().getName().equals(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

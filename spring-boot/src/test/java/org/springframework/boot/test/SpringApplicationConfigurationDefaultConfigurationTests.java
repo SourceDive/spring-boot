@@ -26,24 +26,24 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link SpringApplicationContextLoader} (detectDefaultConfigurationClasses).
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration
 public class SpringApplicationConfigurationDefaultConfigurationTests {
 
-	@Autowired
-	private Config config;
+    @Autowired
+    private Config config;
 
-	@Test
-	public void nestedConfigClasses() {
-		assertNotNull(this.config);
-	}
+    @Test
+    public void nestedConfigClasses() {
+        assertNotNull(this.config);
+    }
 
-	@Configuration
-	protected static class Config {
+    @Configuration
+    protected static class Config {
 
-	}
+    }
 
 }

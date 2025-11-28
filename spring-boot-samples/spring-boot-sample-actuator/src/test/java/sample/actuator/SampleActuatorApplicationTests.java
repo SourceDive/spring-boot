@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for service demo application.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -54,132 +54,132 @@ import static org.junit.Assert.assertTrue;
 @DirtiesContext
 public class SampleActuatorApplicationTests {
 
-	@Autowired
-	private SecurityProperties security;
+    @Autowired
+    private SecurityProperties security;
 
-	@Test
-	public void testHomeIsSecure() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080", Map.class);
-		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals("Wrong body: " + body, "Unauthorized", body.get("error"));
-		assertFalse("Wrong headers: " + entity.getHeaders(), entity.getHeaders()
-				.containsKey("Set-Cookie"));
-	}
+    @Test
+    public void testHomeIsSecure() throws Exception {
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:8080", Map.class);
+        assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = entity.getBody();
+        assertEquals("Wrong body: " + body, "Unauthorized", body.get("error"));
+        assertFalse("Wrong headers: " + entity.getHeaders(), entity.getHeaders()
+                .containsKey("Set-Cookie"));
+    }
 
-	@Test
-	public void testHome() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:8080", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals("Hello Phil", body.get("message"));
-	}
+    @Test
+    public void testHome() throws Exception {
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+                .getForEntity("http://localhost:8080", Map.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = entity.getBody();
+        assertEquals("Hello Phil", body.get("message"));
+    }
 
-	@Test
-	public void testMetrics() throws Exception {
-		testHome(); // makes sure some requests have been made
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:8080/metrics", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body, body.containsKey("counter.status.200.root"));
-	}
+    @Test
+    public void testMetrics() throws Exception {
+        testHome(); // makes sure some requests have been made
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+                .getForEntity("http://localhost:8080/metrics", Map.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = entity.getBody();
+        assertTrue("Wrong body: " + body, body.containsKey("counter.status.200.root"));
+    }
 
-	@Test
-	public void testEnv() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:8080/env", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body, body.containsKey("systemProperties"));
-	}
+    @Test
+    public void testEnv() throws Exception {
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+                .getForEntity("http://localhost:8080/env", Map.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = entity.getBody();
+        assertTrue("Wrong body: " + body, body.containsKey("systemProperties"));
+    }
 
-	@Test
-	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/health", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("ok", entity.getBody());
-	}
+    @Test
+    public void testHealth() throws Exception {
+        ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:8080/health", String.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        assertEquals("ok", entity.getBody());
+    }
 
-	@Test
-	public void testErrorPage() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:8080/foo", String.class);
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
-		String body = entity.getBody();
-		assertNotNull(body);
-		assertTrue("Wrong body: " + body, body.contains("\"error\":"));
-	}
+    @Test
+    public void testErrorPage() throws Exception {
+        ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
+                .getForEntity("http://localhost:8080/foo", String.class);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
+        String body = entity.getBody();
+        assertNotNull(body);
+        assertTrue("Wrong body: " + body, body.contains("\"error\":"));
+    }
 
-	@Test
-	public void testHtmlErrorPage() throws Exception {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		HttpEntity<?> request = new HttpEntity<Void>(headers);
-		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
-				.exchange("http://localhost:8080/foo", HttpMethod.GET, request,
-						String.class);
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
-		String body = entity.getBody();
-		assertNotNull("Body was null", body);
-		assertTrue("Wrong body: " + body,
-				body.contains("This application has no explicit mapping for /error"));
-	}
+    @Test
+    public void testHtmlErrorPage() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+        HttpEntity<?> request = new HttpEntity<Void>(headers);
+        ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
+                .exchange("http://localhost:8080/foo", HttpMethod.GET, request,
+                        String.class);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
+        String body = entity.getBody();
+        assertNotNull("Body was null", body);
+        assertTrue("Wrong body: " + body,
+                body.contains("This application has no explicit mapping for /error"));
+    }
 
-	@Test
-	public void testTrace() throws Exception {
-		new TestRestTemplate().getForEntity("http://localhost:8080/health", String.class);
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<List> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:8080/trace", List.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> list = entity.getBody();
-		Map<String, Object> trace = list.get(list.size() - 1);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) trace
-				.get("info")).get("headers")).get("response");
-		assertEquals("200", map.get("status"));
-	}
+    @Test
+    public void testTrace() throws Exception {
+        new TestRestTemplate().getForEntity("http://localhost:8080/health", String.class);
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<List> entity = new TestRestTemplate("user", getPassword())
+                .getForEntity("http://localhost:8080/trace", List.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> list = entity.getBody();
+        Map<String, Object> trace = list.get(list.size() - 1);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) trace
+                .get("info")).get("headers")).get("response");
+        assertEquals("200", map.get("status"));
+    }
 
-	@Test
-	public void testErrorPageDirectAccess() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/error", Map.class);
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals("None", body.get("error"));
-		assertEquals(999, body.get("status"));
-	}
+    @Test
+    public void testErrorPageDirectAccess() throws Exception {
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+                "http://localhost:8080/error", Map.class);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = entity.getBody();
+        assertEquals("None", body.get("error"));
+        assertEquals(999, body.get("status"));
+    }
 
-	@Test
-	public void testBeans() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<List> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:8080/beans", List.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals(1, entity.getBody().size());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = (Map<String, Object>) entity.getBody().get(0);
-		assertTrue("Wrong body: " + body,
-				((String) body.get("context")).startsWith("application"));
-	}
+    @Test
+    public void testBeans() throws Exception {
+        @SuppressWarnings("rawtypes")
+        ResponseEntity<List> entity = new TestRestTemplate("user", getPassword())
+                .getForEntity("http://localhost:8080/beans", List.class);
+        assertEquals(HttpStatus.OK, entity.getStatusCode());
+        assertEquals(1, entity.getBody().size());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = (Map<String, Object>) entity.getBody().get(0);
+        assertTrue("Wrong body: " + body,
+                ((String) body.get("context")).startsWith("application"));
+    }
 
-	private String getPassword() {
-		return this.security.getUser().getPassword();
-	}
+    private String getPassword() {
+        return this.security.getUser().getPassword();
+    }
 
 }

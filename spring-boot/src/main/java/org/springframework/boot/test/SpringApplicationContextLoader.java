@@ -16,14 +16,6 @@
 
 package org.springframework.boot.test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.web.ServletContextApplicationContextInitializer;
@@ -42,6 +34,8 @@ import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
+import java.util.*;
+
 /**
  * A {@link ContextLoader} that can be used to test Spring Boot applications (those that
  * normally startup using {@link SpringApplication}). Normally never starts an embedded
@@ -58,132 +52,133 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * <p>
  * If <code>@ActiveProfiles</code> are provided in the test class they will be used to
  * create the application context.
- * 
+ *
  * @author Dave Syer
  * @see IntegrationTest
  */
 public class SpringApplicationContextLoader extends AbstractContextLoader {
 
-	@Override
-	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig)
-			throws Exception {
+    @Override
+    public ApplicationContext loadContext(MergedContextConfiguration mergedConfig)
+            throws Exception {
 
-		SpringApplication application = getSpringApplication();
-		application.setSources(getSources(mergedConfig));
-		if (!ObjectUtils.isEmpty(mergedConfig.getActiveProfiles())) {
-			application.setAdditionalProfiles(mergedConfig.getActiveProfiles());
-		}
-		application.setDefaultProperties(getArgs(mergedConfig));
-		List<ApplicationContextInitializer<?>> initializers = getInitializers(
-				mergedConfig, application);
-		if (mergedConfig instanceof WebMergedContextConfiguration) {
-			new WebConfigurer().configure(mergedConfig, application, initializers);
-		}
-		else {
-			application.setWebEnvironment(false);
-		}
-		application.setInitializers(initializers);
+        SpringApplication application = getSpringApplication();
+        application.setSources(getSources(mergedConfig));
+        if (!ObjectUtils.isEmpty(mergedConfig.getActiveProfiles())) {
+            application.setAdditionalProfiles(mergedConfig.getActiveProfiles());
+        }
+        application.setDefaultProperties(getArgs(mergedConfig));
+        List<ApplicationContextInitializer<?>> initializers = getInitializers(
+                mergedConfig, application);
+        if (mergedConfig instanceof WebMergedContextConfiguration) {
+            new WebConfigurer().configure(mergedConfig, application, initializers);
+        } else {
+            application.setWebEnvironment(false);
+        }
+        application.setInitializers(initializers);
 
-		return application.run();
-	}
+        return application.run();
+    }
 
-	@Override
-	public void processContextConfiguration(
-			ContextConfigurationAttributes configAttributes) {
-		if (!configAttributes.hasLocations() && !configAttributes.hasClasses()) {
-			Class<?>[] defaultConfigClasses = detectDefaultConfigurationClasses(configAttributes
-					.getDeclaringClass());
-			configAttributes.setClasses(defaultConfigClasses);
-		}
-	}
+    @Override
+    public void processContextConfiguration(
+            ContextConfigurationAttributes configAttributes) {
+        if (!configAttributes.hasLocations() && !configAttributes.hasClasses()) {
+            Class<?>[] defaultConfigClasses = detectDefaultConfigurationClasses(configAttributes
+                    .getDeclaringClass());
+            configAttributes.setClasses(defaultConfigClasses);
+        }
+    }
 
-	/**
-	 * Builds new {@link org.springframework.boot.SpringApplication} instance. You can
-	 * override this method to add custom behaviour
-	 * @return {@link org.springframework.boot.SpringApplication} instance
-	 */
-	protected SpringApplication getSpringApplication() {
-		return new SpringApplication();
-	}
+    /**
+     * Builds new {@link org.springframework.boot.SpringApplication} instance. You can
+     * override this method to add custom behaviour
+     *
+     * @return {@link org.springframework.boot.SpringApplication} instance
+     */
+    protected SpringApplication getSpringApplication() {
+        return new SpringApplication();
+    }
 
-	private Set<Object> getSources(MergedContextConfiguration mergedConfig) {
-		Set<Object> sources = new LinkedHashSet<Object>();
-		sources.addAll(Arrays.asList(mergedConfig.getClasses()));
-		sources.addAll(Arrays.asList(mergedConfig.getLocations()));
-		if (sources.isEmpty()) {
-			throw new IllegalStateException(
-					"No configuration classes or locations found in @SpringApplicationConfiguration. "
-							+ "For default configuration detection to work you need Spring 4.0.3 or better (found "
-							+ SpringVersion.getVersion() + ").");
-		}
-		return sources;
-	}
+    private Set<Object> getSources(MergedContextConfiguration mergedConfig) {
+        Set<Object> sources = new LinkedHashSet<Object>();
+        sources.addAll(Arrays.asList(mergedConfig.getClasses()));
+        sources.addAll(Arrays.asList(mergedConfig.getLocations()));
+        if (sources.isEmpty()) {
+            throw new IllegalStateException(
+                    "No configuration classes or locations found in @SpringApplicationConfiguration. "
+                            + "For default configuration detection to work you need Spring 4.0.3 or better (found "
+                            + SpringVersion.getVersion() + ").");
+        }
+        return sources;
+    }
 
-	/**
-	 * Detect the default configuration classes for the supplied test class. By default
-	 * simply delegates to
-	 * {@link AnnotationConfigContextLoaderUtils#detectDefaultConfigurationClasses} .
-	 * @param declaringClass the test class that declared {@code @ContextConfiguration}
-	 * @return an array of default configuration classes, potentially empty but never
-	 * {@code null}
-	 * @see AnnotationConfigContextLoaderUtils
-	 */
-	protected Class<?>[] detectDefaultConfigurationClasses(Class<?> declaringClass) {
-		return AnnotationConfigContextLoaderUtils
-				.detectDefaultConfigurationClasses(declaringClass);
-	}
+    /**
+     * Detect the default configuration classes for the supplied test class. By default
+     * simply delegates to
+     * {@link AnnotationConfigContextLoaderUtils#detectDefaultConfigurationClasses} .
+     *
+     * @param declaringClass the test class that declared {@code @ContextConfiguration}
+     * @return an array of default configuration classes, potentially empty but never
+     * {@code null}
+     * @see AnnotationConfigContextLoaderUtils
+     */
+    protected Class<?>[] detectDefaultConfigurationClasses(Class<?> declaringClass) {
+        return AnnotationConfigContextLoaderUtils
+                .detectDefaultConfigurationClasses(declaringClass);
+    }
 
-	private Map<String, Object> getArgs(MergedContextConfiguration mergedConfig) {
-		Map<String, Object> args = new LinkedHashMap<String, Object>();
-		if (AnnotationUtils.findAnnotation(mergedConfig.getTestClass(),
-				IntegrationTest.class) == null) {
-			// Not running an embedded server, just setting up web context
-			args.put("server.port", "-1");
-		}
-		// JMX bean names will clash if the same bean is used in multiple contexts
-		args.put("spring.jmx.enabled", "false");
-		return args;
-	}
+    private Map<String, Object> getArgs(MergedContextConfiguration mergedConfig) {
+        Map<String, Object> args = new LinkedHashMap<String, Object>();
+        if (AnnotationUtils.findAnnotation(mergedConfig.getTestClass(),
+                IntegrationTest.class) == null) {
+            // Not running an embedded server, just setting up web context
+            args.put("server.port", "-1");
+        }
+        // JMX bean names will clash if the same bean is used in multiple contexts
+        args.put("spring.jmx.enabled", "false");
+        return args;
+    }
 
-	private List<ApplicationContextInitializer<?>> getInitializers(
-			MergedContextConfiguration mergedConfig, SpringApplication application) {
-		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
-		initializers.addAll(application.getInitializers());
-		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : mergedConfig
-				.getContextInitializerClasses()) {
-			initializers.add(BeanUtils.instantiate(initializerClass));
-		}
-		return initializers;
-	}
+    private List<ApplicationContextInitializer<?>> getInitializers(
+            MergedContextConfiguration mergedConfig, SpringApplication application) {
+        List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
+        initializers.addAll(application.getInitializers());
+        for (Class<? extends ApplicationContextInitializer<?>> initializerClass : mergedConfig
+                .getContextInitializerClasses()) {
+            initializers.add(BeanUtils.instantiate(initializerClass));
+        }
+        return initializers;
+    }
 
-	@Override
-	public ApplicationContext loadContext(String... locations) throws Exception {
-		throw new UnsupportedOperationException(
-				"SpringApplicationContextLoader does not support the loadContext(String...) method");
-	}
+    @Override
+    public ApplicationContext loadContext(String... locations) throws Exception {
+        throw new UnsupportedOperationException(
+                "SpringApplicationContextLoader does not support the loadContext(String...) method");
+    }
 
-	@Override
-	protected String getResourceSuffix() {
-		return "-context.xml";
-	}
+    @Override
+    protected String getResourceSuffix() {
+        return "-context.xml";
+    }
 
-	private static class WebConfigurer {
+    private static class WebConfigurer {
 
-		void configure(MergedContextConfiguration configuration,
-				SpringApplication application,
-				List<ApplicationContextInitializer<?>> initializers) {
-			WebMergedContextConfiguration webConfiguration = (WebMergedContextConfiguration) configuration;
-			if (AnnotationUtils.findAnnotation(webConfiguration.getTestClass(),
-					IntegrationTest.class) == null) {
-				MockServletContext servletContext = new MockServletContext(
-						webConfiguration.getResourceBasePath());
-				initializers.add(0, new ServletContextApplicationContextInitializer(
-						servletContext));
-				application
-						.setApplicationContextClass(GenericWebApplicationContext.class);
-			}
-		}
+        void configure(MergedContextConfiguration configuration,
+                       SpringApplication application,
+                       List<ApplicationContextInitializer<?>> initializers) {
+            WebMergedContextConfiguration webConfiguration = (WebMergedContextConfiguration) configuration;
+            if (AnnotationUtils.findAnnotation(webConfiguration.getTestClass(),
+                    IntegrationTest.class) == null) {
+                MockServletContext servletContext = new MockServletContext(
+                        webConfiguration.getResourceBasePath());
+                initializers.add(0, new ServletContextApplicationContextInitializer(
+                        servletContext));
+                application
+                        .setApplicationContextClass(GenericWebApplicationContext.class);
+            }
+        }
 
-	}
+    }
 
 }

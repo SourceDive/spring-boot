@@ -24,12 +24,12 @@ import org.springframework.stereotype.Component;
 @Profile("goodbye")
 public class GoodbyeWorldService implements MessageService {
 
-	@Value("${name:World}")
-	private String name;
+    @Value("${name:World}")
+    private String name;
 
-	@Override
-	public String getMessage() {
-		return "Goodbye " + this.name;
-	}
+    @Override
+    public String getMessage() {
+        return "Goodbye " + this.name;
+    }
 
 }

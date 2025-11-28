@@ -47,50 +47,50 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { TestConfiguration.class })
+@SpringApplicationConfiguration(classes = {TestConfiguration.class})
 @WebAppConfiguration
 public class EnvironmentMvcEndpointTests {
 
-	@Autowired
-	private WebApplicationContext context;
+    @Autowired
+    private WebApplicationContext context;
 
-	private MockMvc mvc;
+    private MockMvc mvc;
 
-	@Before
-	public void setUp() {
-		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		EnvironmentTestUtils.addEnvironment(
-				(ConfigurableApplicationContext) this.context, "foo:bar");
-	}
+    @Before
+    public void setUp() {
+        this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+        EnvironmentTestUtils.addEnvironment(
+                (ConfigurableApplicationContext) this.context, "foo:bar");
+    }
 
-	@Test
-	public void home() throws Exception {
-		this.mvc.perform(get("/env")).andExpect(status().isOk())
-				.andExpect(content().string(containsString("systemProperties")));
-	}
+    @Test
+    public void home() throws Exception {
+        this.mvc.perform(get("/env")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("systemProperties")));
+    }
 
-	@Test
-	public void sub() throws Exception {
-		this.mvc.perform(get("/env/foo")).andExpect(status().isOk())
-				.andExpect(content().string(equalToIgnoringCase("bar")));
-	}
+    @Test
+    public void sub() throws Exception {
+        this.mvc.perform(get("/env/foo")).andExpect(status().isOk())
+                .andExpect(content().string(equalToIgnoringCase("bar")));
+    }
 
-	@Import({ EndpointWebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class })
-	@EnableWebMvc
-	@Configuration
-	public static class TestConfiguration {
+    @Import({EndpointWebMvcAutoConfiguration.class,
+            ManagementServerPropertiesAutoConfiguration.class})
+    @EnableWebMvc
+    @Configuration
+    public static class TestConfiguration {
 
-		@Bean
-		public EnvironmentEndpoint endpoint() {
-			return new EnvironmentEndpoint();
-		}
+        @Bean
+        public EnvironmentEndpoint endpoint() {
+            return new EnvironmentEndpoint();
+        }
 
-		@Bean
-		public EnvironmentMvcEndpoint mvcEndpoint() {
-			return new EnvironmentMvcEndpoint(endpoint());
-		}
+        @Bean
+        public EnvironmentMvcEndpoint mvcEndpoint() {
+            return new EnvironmentMvcEndpoint(endpoint());
+        }
 
-	}
+    }
 
 }

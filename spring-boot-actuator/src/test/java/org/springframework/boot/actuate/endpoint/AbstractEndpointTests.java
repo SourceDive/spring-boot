@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Collections;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,85 +24,87 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
+import java.util.Collections;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
  * Abstract base class for endpoint tests.
- * 
+ *
  * @author Phillip Webb
  */
 public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 
-	protected AnnotationConfigApplicationContext context;
+    protected AnnotationConfigApplicationContext context;
 
-	private final Class<?> configClass;
+    private final Class<?> configClass;
 
-	private final Class<?> type;
+    private final Class<?> type;
 
-	private final String id;
+    private final String id;
 
-	private final boolean sensitive;
+    private final boolean sensitive;
 
-	private final String property;
+    private final String property;
 
-	public AbstractEndpointTests(Class<?> configClass, Class<?> type, String id,
-			boolean sensitive, String property) {
-		this.configClass = configClass;
-		this.type = type;
-		this.id = id;
-		this.sensitive = sensitive;
-		this.property = property;
-	}
+    public AbstractEndpointTests(Class<?> configClass, Class<?> type, String id,
+                                 boolean sensitive, String property) {
+        this.configClass = configClass;
+        this.type = type;
+        this.id = id;
+        this.sensitive = sensitive;
+        this.property = property;
+    }
 
-	@Before
-	public void setup() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(this.configClass);
-		this.context.refresh();
-	}
+    @Before
+    public void setup() {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(this.configClass);
+        this.context.refresh();
+    }
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+    @After
+    public void close() {
+        if (this.context != null) {
+            this.context.close();
+        }
+    }
 
-	@Test
-	public void getId() throws Exception {
-		assertThat(getEndpointBean().getId(), equalTo(this.id));
-	}
+    @Test
+    public void getId() throws Exception {
+        assertThat(getEndpointBean().getId(), equalTo(this.id));
+    }
 
-	@Test
-	public void isSensitive() throws Exception {
-		assertThat(getEndpointBean().isSensitive(), equalTo(this.sensitive));
-	}
+    @Test
+    public void isSensitive() throws Exception {
+        assertThat(getEndpointBean().isSensitive(), equalTo(this.sensitive));
+    }
 
-	@Test
-	public void idOverride() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, this.property + ".id:myid");
-		this.context.register(this.configClass);
-		this.context.refresh();
-		assertThat(getEndpointBean().getId(), equalTo("myid"));
-	}
+    @Test
+    public void idOverride() throws Exception {
+        this.context = new AnnotationConfigApplicationContext();
+        EnvironmentTestUtils.addEnvironment(this.context, this.property + ".id:myid");
+        this.context.register(this.configClass);
+        this.context.refresh();
+        assertThat(getEndpointBean().getId(), equalTo("myid"));
+    }
 
-	@Test
-	public void isSensitiveOverride() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object> singletonMap(this.property + ".sensitive",
-						String.valueOf(!this.sensitive)));
-		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
-		this.context.register(this.configClass);
-		this.context.refresh();
-		assertThat(getEndpointBean().isSensitive(), equalTo(!this.sensitive));
-	}
+    @Test
+    public void isSensitiveOverride() throws Exception {
+        this.context = new AnnotationConfigApplicationContext();
+        PropertySource<?> propertySource = new MapPropertySource("test",
+                Collections.<String, Object>singletonMap(this.property + ".sensitive",
+                        String.valueOf(!this.sensitive)));
+        this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+        this.context.register(this.configClass);
+        this.context.refresh();
+        assertThat(getEndpointBean().isSensitive(), equalTo(!this.sensitive));
+    }
 
-	@SuppressWarnings("unchecked")
-	protected T getEndpointBean() {
-		return (T) this.context.getBean(this.type);
-	}
+    @SuppressWarnings("unchecked")
+    protected T getEndpointBean() {
+        return (T) this.context.getBean(this.type);
+    }
 
 }

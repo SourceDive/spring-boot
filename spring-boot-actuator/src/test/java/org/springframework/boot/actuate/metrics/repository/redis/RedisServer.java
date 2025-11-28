@@ -34,111 +34,106 @@ import static org.junit.Assert.fail;
  */
 public class RedisServer implements TestRule {
 
-	private static final String EXTERNAL_SERVERS_REQUIRED = "EXTERNAL_SERVERS_REQUIRED";
+    private static final String EXTERNAL_SERVERS_REQUIRED = "EXTERNAL_SERVERS_REQUIRED";
 
-	protected LettuceConnectionFactory resource;
+    protected LettuceConnectionFactory resource;
 
-	private final String resourceDescription = "Redis ConnectionFactory";
+    private final String resourceDescription = "Redis ConnectionFactory";
 
-	private static final Log logger = LogFactory.getLog(RedisServer.class);
+    private static final Log logger = LogFactory.getLog(RedisServer.class);
 
-	public static RedisServer running() {
-		return new RedisServer();
-	}
+    public static RedisServer running() {
+        return new RedisServer();
+    }
 
-	private RedisServer() {
-	}
+    private RedisServer() {
+    }
 
-	@Override
-	public Statement apply(final Statement base, Description description) {
-		try {
-			this.resource = obtainResource();
-		}
-		catch (Exception ex) {
-			maybeCleanup();
-			return failOrSkip(ex);
-		}
+    @Override
+    public Statement apply(final Statement base, Description description) {
+        try {
+            this.resource = obtainResource();
+        } catch (Exception ex) {
+            maybeCleanup();
+            return failOrSkip(ex);
+        }
 
-		return new Statement() {
+        return new Statement() {
 
-			@Override
-			public void evaluate() throws Throwable {
-				try {
-					base.evaluate();
-				}
-				finally {
-					try {
-						cleanupResource();
-					}
-					catch (Exception ignored) {
-						RedisServer.logger.warn(
-								"Exception while trying to cleanup proper resource",
-								ignored);
-					}
-				}
-			}
+            @Override
+            public void evaluate() throws Throwable {
+                try {
+                    base.evaluate();
+                } finally {
+                    try {
+                        cleanupResource();
+                    } catch (Exception ignored) {
+                        RedisServer.logger.warn(
+                                "Exception while trying to cleanup proper resource",
+                                ignored);
+                    }
+                }
+            }
 
-		};
-	}
+        };
+    }
 
-	private Statement failOrSkip(Exception exception) {
-		String serversRequired = System.getenv(EXTERNAL_SERVERS_REQUIRED);
-		if ("true".equalsIgnoreCase(serversRequired)) {
-			logger.error(this.resourceDescription + " IS REQUIRED BUT NOT AVAILABLE",
-					exception);
-			fail(this.resourceDescription + " IS NOT AVAILABLE");
-			// Never reached, here to satisfy method signature
-			return null;
-		}
-		else {
-			logger.error(this.resourceDescription + " IS NOT AVAILABLE, SKIPPING TESTS",
-					exception);
-			return new Statement() {
+    private Statement failOrSkip(Exception exception) {
+        String serversRequired = System.getenv(EXTERNAL_SERVERS_REQUIRED);
+        if ("true".equalsIgnoreCase(serversRequired)) {
+            logger.error(this.resourceDescription + " IS REQUIRED BUT NOT AVAILABLE",
+                    exception);
+            fail(this.resourceDescription + " IS NOT AVAILABLE");
+            // Never reached, here to satisfy method signature
+            return null;
+        } else {
+            logger.error(this.resourceDescription + " IS NOT AVAILABLE, SKIPPING TESTS",
+                    exception);
+            return new Statement() {
 
-				@Override
-				public void evaluate() throws Throwable {
-					Assume.assumeTrue("Skipping test due to "
-							+ RedisServer.this.resourceDescription
-							+ " not being available", false);
-				}
-			};
-		}
-	}
+                @Override
+                public void evaluate() throws Throwable {
+                    Assume.assumeTrue("Skipping test due to "
+                            + RedisServer.this.resourceDescription
+                            + " not being available", false);
+                }
+            };
+        }
+    }
 
-	private void maybeCleanup() {
-		if (this.resource != null) {
-			try {
-				cleanupResource();
-			}
-			catch (Exception ignored) {
-				logger.warn("Exception while trying to cleanup failed resource", ignored);
-			}
-		}
-	}
+    private void maybeCleanup() {
+        if (this.resource != null) {
+            try {
+                cleanupResource();
+            } catch (Exception ignored) {
+                logger.warn("Exception while trying to cleanup failed resource", ignored);
+            }
+        }
+    }
 
-	public RedisConnectionFactory getResource() {
-		return this.resource;
-	}
+    public RedisConnectionFactory getResource() {
+        return this.resource;
+    }
 
-	/**
-	 * Perform cleanup of the {@link #resource} field, which is guaranteed to be non null.
-	 * 
-	 * @throws Exception any exception thrown by this method will be logged and swallowed
-	 */
-	protected void cleanupResource() throws Exception {
-		this.resource.destroy();
-	}
+    /**
+     * Perform cleanup of the {@link #resource} field, which is guaranteed to be non null.
+     *
+     * @throws Exception any exception thrown by this method will be logged and swallowed
+     */
+    protected void cleanupResource() throws Exception {
+        this.resource.destroy();
+    }
 
-	/**
-	 * Try to obtain and validate a resource. Implementors should either set the
-	 * {@link #resource} field with a valid resource and return normally, or throw an
-	 * exception.
-	 */
-	protected LettuceConnectionFactory obtainResource() throws Exception {
-		LettuceConnectionFactory resource = new LettuceConnectionFactory();
-		resource.afterPropertiesSet();
-		resource.getConnection().close();
-		return resource;
-	}
+    /**
+     * Try to obtain and validate a resource. Implementors should either set the
+     * {@link #resource} field with a valid resource and return normally, or throw an
+     * exception.
+     */
+    protected LettuceConnectionFactory obtainResource() throws Exception {
+        LettuceConnectionFactory resource = new LettuceConnectionFactory();
+        resource.afterPropertiesSet();
+        resource.getConnection().close();
+        return resource;
+    }
 
 }

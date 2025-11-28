@@ -25,29 +25,29 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
  * {@link CompilerAutoConfiguration} for Spock test framework
- * 
+ *
  * @author Greg Turnquist
  */
 public class SpockCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
-	@Override
-	public boolean matches(ClassNode classNode) {
-		return AstUtils.subclasses(classNode, "Specification");
-	}
+    @Override
+    public boolean matches(ClassNode classNode) {
+        return AstUtils.subclasses(classNode, "Specification");
+    }
 
-	@Override
-	public void applyDependencies(DependencyCustomizer dependencies)
-			throws CompilationFailedException {
-		dependencies.add("spock-core").add("junit").add("spring-test")
-				.add("hamcrest-library");
-	}
+    @Override
+    public void applyDependencies(DependencyCustomizer dependencies)
+            throws CompilationFailedException {
+        dependencies.add("spock-core").add("junit").add("spring-test")
+                .add("hamcrest-library");
+    }
 
-	@Override
-	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addStarImports("spock.lang").addStarImports("org.junit")
-				.addStaticStars("org.junit.Assert")
-				.addStaticStars("org.hamcrest.MatcherAssert")
-				.addStaticStars("org.hamcrest.Matchers");
-	}
+    @Override
+    public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
+        imports.addStarImports("spock.lang").addStarImports("org.junit")
+                .addStaticStars("org.junit.Assert")
+                .addStaticStars("org.hamcrest.MatcherAssert")
+                .addStaticStars("org.hamcrest.Matchers");
+    }
 
 }

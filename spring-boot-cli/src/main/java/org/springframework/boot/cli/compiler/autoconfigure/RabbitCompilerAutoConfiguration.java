@@ -26,33 +26,33 @@ import org.springframework.boot.groovy.EnableRabbitMessaging;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Rabbit.
- * 
+ *
  * @author Greg Turnquist
  */
 public class RabbitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
-	@Override
-	public boolean matches(ClassNode classNode) {
-		// Slightly weird detection algorithm because there is no @Enable annotation for
-		// Integration
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableRabbitMessaging");
-	}
+    @Override
+    public boolean matches(ClassNode classNode) {
+        // Slightly weird detection algorithm because there is no @Enable annotation for
+        // Integration
+        return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableRabbitMessaging");
+    }
 
-	@Override
-	public void applyDependencies(DependencyCustomizer dependencies)
-			throws CompilationFailedException {
-		dependencies.add("spring-rabbit");
+    @Override
+    public void applyDependencies(DependencyCustomizer dependencies)
+            throws CompilationFailedException {
+        dependencies.add("spring-rabbit");
 
-	}
+    }
 
-	@Override
-	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addStarImports("org.springframework.amqp.rabbit.core",
-				"org.springframework.amqp.rabbit.connection",
-				"org.springframework.amqp.rabbit.listener",
-				"org.springframework.amqp.rabbit.listener.adapter",
-				"org.springframework.amqp.core").addImports(
-				EnableRabbitMessaging.class.getCanonicalName());
-	}
+    @Override
+    public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
+        imports.addStarImports("org.springframework.amqp.rabbit.core",
+                "org.springframework.amqp.rabbit.connection",
+                "org.springframework.amqp.rabbit.listener",
+                "org.springframework.amqp.rabbit.listener.adapter",
+                "org.springframework.amqp.core").addImports(
+                EnableRabbitMessaging.class.getCanonicalName());
+    }
 
 }

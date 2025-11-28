@@ -30,21 +30,21 @@ import static org.mockito.Mockito.verify;
  */
 public class MessageChannelMetricWriterTests {
 
-	private final MessageChannel channel = mock(MessageChannel.class);
+    private final MessageChannel channel = mock(MessageChannel.class);
 
-	private final MessageChannelMetricWriter observer = new MessageChannelMetricWriter(
-			this.channel);
+    private final MessageChannelMetricWriter observer = new MessageChannelMetricWriter(
+            this.channel);
 
-	@Test
-	public void messageSentOnAdd() {
-		this.observer.increment(new Delta<Integer>("foo", 1));
-		verify(this.channel).send(any(Message.class));
-	}
+    @Test
+    public void messageSentOnAdd() {
+        this.observer.increment(new Delta<Integer>("foo", 1));
+        verify(this.channel).send(any(Message.class));
+    }
 
-	@Test
-	public void messageSentOnSet() {
-		this.observer.set(new Metric<Double>("foo", 1d));
-		verify(this.channel).send(any(Message.class));
-	}
+    @Test
+    public void messageSentOnSet() {
+        this.observer.set(new Metric<Double>("foo", 1d));
+        verify(this.channel).send(any(Message.class));
+    }
 
 }

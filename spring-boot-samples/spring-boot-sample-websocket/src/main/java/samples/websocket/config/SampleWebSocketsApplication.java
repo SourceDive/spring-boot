@@ -39,41 +39,41 @@ import samples.websocket.snake.SnakeWebSocketHandler;
 @EnableAutoConfiguration
 @EnableWebSocket
 public class SampleWebSocketsApplication extends SpringBootServletInitializer implements
-		WebSocketConfigurer {
+        WebSocketConfigurer {
 
-	@Override
-	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(echoWebSocketHandler(), "/echo").withSockJS();
-		registry.addHandler(snakeWebSocketHandler(), "/snake").withSockJS();
-	}
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        registry.addHandler(echoWebSocketHandler(), "/echo").withSockJS();
+        registry.addHandler(snakeWebSocketHandler(), "/snake").withSockJS();
+    }
 
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(SampleWebSocketsApplication.class);
-	}
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(SampleWebSocketsApplication.class);
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(SampleWebSocketsApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SampleWebSocketsApplication.class, args);
+    }
 
-	@Bean
-	public EchoService echoService() {
-		return new DefaultEchoService("Did you say \"%s\"?");
-	}
+    @Bean
+    public EchoService echoService() {
+        return new DefaultEchoService("Did you say \"%s\"?");
+    }
 
-	@Bean
-	public GreetingService greetingService() {
-		return new SimpleGreetingService();
-	}
+    @Bean
+    public GreetingService greetingService() {
+        return new SimpleGreetingService();
+    }
 
-	@Bean
-	public WebSocketHandler echoWebSocketHandler() {
-		return new EchoWebSocketHandler(echoService());
-	}
+    @Bean
+    public WebSocketHandler echoWebSocketHandler() {
+        return new EchoWebSocketHandler(echoService());
+    }
 
-	@Bean
-	public WebSocketHandler snakeWebSocketHandler() {
-		return new PerConnectionWebSocketHandler(SnakeWebSocketHandler.class);
-	}
+    @Bean
+    public WebSocketHandler snakeWebSocketHandler() {
+        return new PerConnectionWebSocketHandler(SnakeWebSocketHandler.class);
+    }
 
 }

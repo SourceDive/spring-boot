@@ -23,19 +23,19 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 /**
  * Simple wrapper around {@link Endpoint} implementations that provide actuator data of
  * some sort.
- * 
+ *
  * @author Christian Dupuis
  */
 @ManagedResource
 public class DataEndpointMBean extends EndpointMBean {
 
-	public DataEndpointMBean(String beanName, Endpoint<?> endpoint) {
-		super(beanName, endpoint);
-	}
+    public DataEndpointMBean(String beanName, Endpoint<?> endpoint) {
+        super(beanName, endpoint);
+    }
 
-	@ManagedAttribute(description = "Invoke the underlying endpoint")
-	public Object getData() {
-		return convert(getEndpoint().invoke());
-	}
+    @ManagedAttribute(description = "Invoke the underlying endpoint")
+    public Object getData() {
+        return convert(getEndpoint().invoke());
+    }
 
 }

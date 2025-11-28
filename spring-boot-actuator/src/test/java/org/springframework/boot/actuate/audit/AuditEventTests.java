@@ -16,35 +16,35 @@
 
 package org.springframework.boot.actuate.audit;
 
-import java.util.Collections;
-
 import org.junit.Test;
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link AuditEvent}.
- * 
+ *
  * @author Dave Syer
  */
 public class AuditEventTests {
 
-	@Test
-	public void testNowEvent() throws Exception {
-		AuditEvent event = new AuditEvent("phil", "UNKNOWN", Collections.singletonMap(
-				"a", (Object) "b"));
-		assertEquals("b", event.getData().get("a"));
-		assertEquals("UNKNOWN", event.getType());
-		assertEquals("phil", event.getPrincipal());
-		assertNotNull(event.getTimestamp());
-	}
+    @Test
+    public void testNowEvent() throws Exception {
+        AuditEvent event = new AuditEvent("phil", "UNKNOWN", Collections.singletonMap(
+                "a", (Object) "b"));
+        assertEquals("b", event.getData().get("a"));
+        assertEquals("UNKNOWN", event.getType());
+        assertEquals("phil", event.getPrincipal());
+        assertNotNull(event.getTimestamp());
+    }
 
-	@Test
-	public void testConvertStringsToData() throws Exception {
-		AuditEvent event = new AuditEvent("phil", "UNKNOWN", "a=b", "c=d");
-		assertEquals("b", event.getData().get("a"));
-		assertEquals("d", event.getData().get("c"));
-	}
+    @Test
+    public void testConvertStringsToData() throws Exception {
+        AuditEvent event = new AuditEvent("phil", "UNKNOWN", "a=b", "c=d");
+        assertEquals("b", event.getData().get("a"));
+        assertEquals("d", event.getData().get("c"));
+    }
 
 }

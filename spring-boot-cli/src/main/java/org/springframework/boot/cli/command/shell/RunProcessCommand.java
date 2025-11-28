@@ -16,6 +16,10 @@
 
 package org.springframework.boot.cli.command.shell;
 
+import org.springframework.boot.cli.command.AbstractCommand;
+import org.springframework.boot.cli.command.Command;
+import org.springframework.util.ReflectionUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,128 +27,121 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.springframework.boot.cli.command.AbstractCommand;
-import org.springframework.boot.cli.command.Command;
-import org.springframework.util.ReflectionUtils;
-
 /**
  * Special {@link Command} used to run a process from the shell. NOTE: this command is not
  * directly installed into the shell.
- * 
+ *
  * @author Phillip Webb
  */
 class RunProcessCommand extends AbstractCommand {
 
-	private static final Method INHERIT_IO_METHOD = ReflectionUtils.findMethod(
-			ProcessBuilder.class, "inheritIO");
+    private static final Method INHERIT_IO_METHOD = ReflectionUtils.findMethod(
+            ProcessBuilder.class, "inheritIO");
 
-	private static final long JUST_ENDED_LIMIT = 500;
+    private static final long JUST_ENDED_LIMIT = 500;
 
-	private final String[] command;
+    private final String[] command;
 
-	private volatile Process process;
+    private volatile Process process;
 
-	private volatile long endTime;
+    private volatile long endTime;
 
-	public RunProcessCommand(String... command) {
-		super(null, null);
-		this.command = command;
-	}
+    public RunProcessCommand(String... command) {
+        super(null, null);
+        this.command = command;
+    }
 
-	@Override
-	public void run(String... args) throws Exception {
-		run(Arrays.asList(args));
-	}
+    @Override
+    public void run(String... args) throws Exception {
+        run(Arrays.asList(args));
+    }
 
-	protected void run(Collection<String> args) throws IOException {
-		ProcessBuilder builder = new ProcessBuilder(this.command);
-		builder.command().addAll(args);
-		builder.redirectErrorStream(true);
-		boolean inheritedIO = inheritIO(builder);
-		try {
-			this.process = builder.start();
-			if (!inheritedIO) {
-				redirectOutput(this.process);
-			}
-			try {
-				this.process.waitFor();
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-		}
-		finally {
-			this.endTime = System.currentTimeMillis();
-			this.process = null;
-		}
-	}
+    protected void run(Collection<String> args) throws IOException {
+        ProcessBuilder builder = new ProcessBuilder(this.command);
+        builder.command().addAll(args);
+        builder.redirectErrorStream(true);
+        boolean inheritedIO = inheritIO(builder);
+        try {
+            this.process = builder.start();
+            if (!inheritedIO) {
+                redirectOutput(this.process);
+            }
+            try {
+                this.process.waitFor();
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+        } finally {
+            this.endTime = System.currentTimeMillis();
+            this.process = null;
+        }
+    }
 
-	private boolean inheritIO(ProcessBuilder builder) {
-		try {
-			INHERIT_IO_METHOD.invoke(builder);
-			return true;
-		}
-		catch (Exception ex) {
-			return false;
-		}
-	}
+    private boolean inheritIO(ProcessBuilder builder) {
+        try {
+            INHERIT_IO_METHOD.invoke(builder);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
 
-	private void redirectOutput(Process process) {
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(
-				process.getInputStream()));
-		new Thread() {
-			@Override
-			public void run() {
-				try {
-					String line = reader.readLine();
-					while (line != null) {
-						System.out.println(line);
-						line = reader.readLine();
-					}
-					reader.close();
-				}
-				catch (Exception ex) {
-				}
-			};
-		}.start();
-	}
+    private void redirectOutput(Process process) {
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(
+                process.getInputStream()));
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    String line = reader.readLine();
+                    while (line != null) {
+                        System.out.println(line);
+                        line = reader.readLine();
+                    }
+                    reader.close();
+                } catch (Exception ex) {
+                }
+            }
 
-	/**
-	 * @return the running process or {@code null}
-	 */
-	public Process getRunningProcess() {
-		return this.process;
-	}
+            ;
+        }.start();
+    }
 
-	/**
-	 * @return {@code true} if the process was stopped.
-	 */
-	public boolean handleSigInt() {
+    /**
+     * @return the running process or {@code null}
+     */
+    public Process getRunningProcess() {
+        return this.process;
+    }
 
-		// if the process has just ended, probably due to this SIGINT, consider handled.
-		if (hasJustEnded()) {
-			return true;
-		}
+    /**
+     * @return {@code true} if the process was stopped.
+     */
+    public boolean handleSigInt() {
 
-		// destroy the running process
-		Process process = this.process;
-		if (process != null) {
-			try {
-				process.destroy();
-				process.waitFor();
-				this.process = null;
-				return true;
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-		}
+        // if the process has just ended, probably due to this SIGINT, consider handled.
+        if (hasJustEnded()) {
+            return true;
+        }
 
-		return false;
-	}
+        // destroy the running process
+        Process process = this.process;
+        if (process != null) {
+            try {
+                process.destroy();
+                process.waitFor();
+                this.process = null;
+                return true;
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+        }
 
-	public boolean hasJustEnded() {
-		return System.currentTimeMillis() < (this.endTime + JUST_ENDED_LIMIT);
-	}
+        return false;
+    }
+
+    public boolean hasJustEnded() {
+        return System.currentTimeMillis() < (this.endTime + JUST_ENDED_LIMIT);
+    }
 
 }

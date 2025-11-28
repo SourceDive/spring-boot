@@ -21,17 +21,18 @@ import java.io.IOException;
 
 /**
  * Callback interface used to iterate {@link Libraries}.
- * 
+ *
  * @author Phillip Webb
  */
 public interface LibraryCallback {
 
-	/**
-	 * Callback to for a single library backed by a {@link File}.
-	 * @param file the library file
-	 * @param scope the scope of the library
-	 * @throws IOException
-	 */
-	void library(File file, LibraryScope scope) throws IOException;
+    /**
+     * Callback to for a single library backed by a {@link File}.
+     *
+     * @param file  the library file
+     * @param scope the scope of the library
+     * @throws IOException
+     */
+    void library(File file, LibraryScope scope) throws IOException;
 
 }

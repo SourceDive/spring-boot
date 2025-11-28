@@ -16,55 +16,52 @@
 
 package org.springframework.boot.maven;
 
+import org.junit.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.jar.JarOutputStream;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link PropertiesMergingResourceTransformer}.
- * 
+ *
  * @author Dave Syer
  */
 public class PropertiesMergingResourceTransformerTests {
 
-	private final PropertiesMergingResourceTransformer transformer = new PropertiesMergingResourceTransformer();
+    private final PropertiesMergingResourceTransformer transformer = new PropertiesMergingResourceTransformer();
 
-	@Test
-	public void testProcess() throws Exception {
-		assertFalse(this.transformer.hasTransformedResource());
-		this.transformer.processResource("foo",
-				new ByteArrayInputStream("foo=bar".getBytes()), null);
-		assertTrue(this.transformer.hasTransformedResource());
-	}
+    @Test
+    public void testProcess() throws Exception {
+        assertFalse(this.transformer.hasTransformedResource());
+        this.transformer.processResource("foo",
+                new ByteArrayInputStream("foo=bar".getBytes()), null);
+        assertTrue(this.transformer.hasTransformedResource());
+    }
 
-	@Test
-	public void testMerge() throws Exception {
-		this.transformer.processResource("foo",
-				new ByteArrayInputStream("foo=bar".getBytes()), null);
-		this.transformer.processResource("bar",
-				new ByteArrayInputStream("foo=spam".getBytes()), null);
-		assertEquals("bar,spam", this.transformer.getData().getProperty("foo"));
-	}
+    @Test
+    public void testMerge() throws Exception {
+        this.transformer.processResource("foo",
+                new ByteArrayInputStream("foo=bar".getBytes()), null);
+        this.transformer.processResource("bar",
+                new ByteArrayInputStream("foo=spam".getBytes()), null);
+        assertEquals("bar,spam", this.transformer.getData().getProperty("foo"));
+    }
 
-	@Test
-	public void testOutput() throws Exception {
-		this.transformer.setResource("foo");
-		this.transformer.processResource("foo",
-				new ByteArrayInputStream("foo=bar".getBytes()), null);
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		JarOutputStream os = new JarOutputStream(out);
-		this.transformer.modifyOutputStream(os);
-		os.flush();
-		os.close();
-		assertNotNull(out.toByteArray());
-		assertTrue(out.toByteArray().length > 0);
-	}
+    @Test
+    public void testOutput() throws Exception {
+        this.transformer.setResource("foo");
+        this.transformer.processResource("foo",
+                new ByteArrayInputStream("foo=bar".getBytes()), null);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        JarOutputStream os = new JarOutputStream(out);
+        this.transformer.modifyOutputStream(os);
+        os.flush();
+        os.close();
+        assertNotNull(out.toByteArray());
+        assertTrue(out.toByteArray().length > 0);
+    }
 
 }

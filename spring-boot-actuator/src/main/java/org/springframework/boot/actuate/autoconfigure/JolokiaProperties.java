@@ -16,27 +16,27 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 /**
  * Configuration properties for Jolokia.
- * 
+ *
  * @author Christian Dupuis
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "jolokia")
 public class JolokiaProperties {
 
-	private Map<String, String> config = new HashMap<String, String>();
+    private Map<String, String> config = new HashMap<String, String>();
 
-	public Map<String, String> getConfig() {
-		return this.config;
-	}
+    public Map<String, String> getConfig() {
+        return this.config;
+    }
 
-	public void setConfig(Map<String, String> config) {
-		this.config = config;
-	}
+    public void setConfig(Map<String, String> config) {
+        this.config = config;
+    }
 }

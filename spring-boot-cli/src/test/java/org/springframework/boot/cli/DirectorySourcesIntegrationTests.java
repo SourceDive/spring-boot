@@ -24,29 +24,29 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests for code in directories.
- * 
+ *
  * @author Dave Syer
  */
 public class DirectorySourcesIntegrationTests {
 
-	@Rule
-	public CliTester cli = new CliTester("src/test/resources/dir-sample/");
+    @Rule
+    public CliTester cli = new CliTester("src/test/resources/dir-sample/");
 
-	@Test
-	public void runDirectory() throws Exception {
-		this.cli.run("code");
-		assertThat(this.cli.getOutput(), containsString("Hello World"));
-	}
+    @Test
+    public void runDirectory() throws Exception {
+        this.cli.run("code");
+        assertThat(this.cli.getOutput(), containsString("Hello World"));
+    }
 
-	@Test
-	public void runDirectoryRecursive() throws Exception {
-		this.cli.run("");
-		assertThat(this.cli.getOutput(), containsString("Hello World"));
-	}
+    @Test
+    public void runDirectoryRecursive() throws Exception {
+        this.cli.run("");
+        assertThat(this.cli.getOutput(), containsString("Hello World"));
+    }
 
-	@Test
-	public void runPathPattern() throws Exception {
-		this.cli.run("**/*.groovy");
-		assertThat(this.cli.getOutput(), containsString("Hello World"));
-	}
+    @Test
+    public void runPathPattern() throws Exception {
+        this.cli.run("**/*.groovy");
+        assertThat(this.cli.getOutput(), containsString("Hello World"));
+    }
 }

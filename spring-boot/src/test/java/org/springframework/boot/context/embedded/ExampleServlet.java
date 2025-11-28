@@ -16,24 +16,23 @@
 
 package org.springframework.boot.context.embedded;
 
-import java.io.IOException;
-
 import javax.servlet.GenericServlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import java.io.IOException;
 
 /**
  * Simple example Servlet used for testing.
- * 
+ *
  * @author Phillip Webb
  */
 public class ExampleServlet extends GenericServlet {
 
-	@Override
-	public void service(ServletRequest request, ServletResponse response)
-			throws ServletException, IOException {
-		response.getWriter().write("Hello World");
-	}
+    @Override
+    public void service(ServletRequest request, ServletResponse response)
+            throws ServletException, IOException {
+        response.getWriter().write("Hello World");
+    }
 
 }

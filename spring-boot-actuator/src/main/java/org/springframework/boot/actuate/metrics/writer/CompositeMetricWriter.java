@@ -16,50 +16,50 @@
 
 package org.springframework.boot.actuate.metrics.writer;
 
+import org.springframework.boot.actuate.metrics.Metric;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.boot.actuate.metrics.Metric;
 
 /**
  * Composite implementation of {@link MetricWriter} that just sends its input to all of
  * the delegates that have been registered.
- * 
+ *
  * @author Dave Syer
  */
 public class CompositeMetricWriter implements MetricWriter {
 
-	private final List<MetricWriter> writers = new ArrayList<MetricWriter>();
+    private final List<MetricWriter> writers = new ArrayList<MetricWriter>();
 
-	public CompositeMetricWriter(MetricWriter... writers) {
-		for (MetricWriter writer : writers) {
-			this.writers.add(writer);
-		}
-	}
+    public CompositeMetricWriter(MetricWriter... writers) {
+        for (MetricWriter writer : writers) {
+            this.writers.add(writer);
+        }
+    }
 
-	public CompositeMetricWriter(List<MetricWriter> writers) {
-		this.writers.addAll(writers);
-	}
+    public CompositeMetricWriter(List<MetricWriter> writers) {
+        this.writers.addAll(writers);
+    }
 
-	@Override
-	public void increment(Delta<?> delta) {
-		for (MetricWriter writer : this.writers) {
-			writer.increment(delta);
-		}
-	}
+    @Override
+    public void increment(Delta<?> delta) {
+        for (MetricWriter writer : this.writers) {
+            writer.increment(delta);
+        }
+    }
 
-	@Override
-	public void set(Metric<?> value) {
-		for (MetricWriter writer : this.writers) {
-			writer.set(value);
-		}
-	}
+    @Override
+    public void set(Metric<?> value) {
+        for (MetricWriter writer : this.writers) {
+            writer.set(value);
+        }
+    }
 
-	@Override
-	public void reset(String metricName) {
-		for (MetricWriter writer : this.writers) {
-			writer.reset(metricName);
-		}
-	}
+    @Override
+    public void reset(String metricName) {
+        for (MetricWriter writer : this.writers) {
+            writer.reset(metricName);
+        }
+    }
 
 }

@@ -22,14 +22,14 @@ import org.eclipse.aether.RepositorySystem;
 /**
  * Strategy that can be used to apply some auto-configuration during the installation of
  * an {@link AetherGrapeEngine}.
- * 
+ *
  * @author Andy Wilkinson
  */
 public interface RepositorySystemSessionAutoConfiguration {
 
-	/**
-	 * Apply the configuration
-	 */
-	void apply(DefaultRepositorySystemSession session, RepositorySystem repositorySystem);
+    /**
+     * Apply the configuration
+     */
+    void apply(DefaultRepositorySystemSession session, RepositorySystem repositorySystem);
 
 }

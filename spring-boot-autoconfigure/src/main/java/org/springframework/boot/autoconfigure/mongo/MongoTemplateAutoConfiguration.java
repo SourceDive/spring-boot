@@ -16,8 +16,7 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.net.UnknownHostException;
-
+import com.mongodb.Mongo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -26,7 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import com.mongodb.Mongo;
+import java.net.UnknownHostException;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's
@@ -34,25 +33,25 @@ import com.mongodb.Mongo;
  * <p>
  * Registers a {@link org.springframework.data.mongodb.core.MongoTemplate} bean if no
  * other bean of the same type is configured.
- * <P>
+ * <p>
  * Honors the {@literal spring.data.mongodb.database} property if set, otherwise connects
  * to the {@literal test} database.
- * 
+ *
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Josh Long
  */
 @Configuration
-@ConditionalOnClass({ Mongo.class, MongoTemplate.class })
+@ConditionalOnClass({Mongo.class, MongoTemplate.class})
 public class MongoTemplateAutoConfiguration {
 
-	@Autowired
-	private MongoProperties properties;
+    @Autowired
+    private MongoProperties properties;
 
-	@Bean
-	@ConditionalOnMissingBean
-	public MongoTemplate mongoTemplate(Mongo mongo) throws UnknownHostException {
-		return new MongoTemplate(mongo, this.properties.getMongoClientDatabase());
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public MongoTemplate mongoTemplate(Mongo mongo) throws UnknownHostException {
+        return new MongoTemplate(mongo, this.properties.getMongoClientDatabase());
+    }
 
 }

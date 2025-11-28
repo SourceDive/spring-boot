@@ -20,41 +20,42 @@ import org.springframework.boot.actuate.metrics.CounterService;
 
 /**
  * Default implementation of {@link CounterService}.
- * 
+ *
  * @author Dave Syer
  */
 public class DefaultCounterService implements CounterService {
 
-	private final MetricWriter writer;
+    private final MetricWriter writer;
 
-	/**
-	 * Create a {@link DefaultCounterService} instance.
-	 * @param writer the underlying writer used to manage metrics
-	 */
-	public DefaultCounterService(MetricWriter writer) {
-		this.writer = writer;
-	}
+    /**
+     * Create a {@link DefaultCounterService} instance.
+     *
+     * @param writer the underlying writer used to manage metrics
+     */
+    public DefaultCounterService(MetricWriter writer) {
+        this.writer = writer;
+    }
 
-	@Override
-	public void increment(String metricName) {
-		this.writer.increment(new Delta<Long>(wrap(metricName), 1L));
-	}
+    @Override
+    public void increment(String metricName) {
+        this.writer.increment(new Delta<Long>(wrap(metricName), 1L));
+    }
 
-	@Override
-	public void decrement(String metricName) {
-		this.writer.increment(new Delta<Long>(wrap(metricName), -1L));
-	}
+    @Override
+    public void decrement(String metricName) {
+        this.writer.increment(new Delta<Long>(wrap(metricName), -1L));
+    }
 
-	@Override
-	public void reset(String metricName) {
-		this.writer.increment(new Delta<Long>(wrap(metricName), 0L));
-	}
+    @Override
+    public void reset(String metricName) {
+        this.writer.increment(new Delta<Long>(wrap(metricName), 0L));
+    }
 
-	private String wrap(String metricName) {
-		if (metricName.startsWith("counter") || metricName.startsWith("meter")) {
-			return metricName;
-		}
-		return "counter." + metricName;
-	}
+    private String wrap(String metricName) {
+        if (metricName.startsWith("counter") || metricName.startsWith("meter")) {
+            return metricName;
+        }
+        return "counter." + metricName;
+    }
 
 }

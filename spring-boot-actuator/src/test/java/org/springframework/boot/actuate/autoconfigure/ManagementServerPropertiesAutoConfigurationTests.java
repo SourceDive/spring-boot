@@ -27,39 +27,39 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ManagementServerPropertiesAutoConfiguration}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ManagementServerPropertiesAutoConfigurationTests {
 
-	@Test
-	public void defaultManagementServerProperties() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				ManagementServerPropertiesAutoConfiguration.class);
-		assertThat(context.getBean(ManagementServerProperties.class).getPort(),
-				nullValue());
-		context.close();
-	}
+    @Test
+    public void defaultManagementServerProperties() {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                ManagementServerPropertiesAutoConfiguration.class);
+        assertThat(context.getBean(ManagementServerProperties.class).getPort(),
+                nullValue());
+        context.close();
+    }
 
-	@Test
-	public void definedManagementServerProperties() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				Config.class, ManagementServerPropertiesAutoConfiguration.class);
-		assertThat(context.getBean(ManagementServerProperties.class).getPort(),
-				equalTo(Integer.valueOf(123)));
-		context.close();
-	}
+    @Test
+    public void definedManagementServerProperties() throws Exception {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                Config.class, ManagementServerPropertiesAutoConfiguration.class);
+        assertThat(context.getBean(ManagementServerProperties.class).getPort(),
+                equalTo(Integer.valueOf(123)));
+        context.close();
+    }
 
-	@Configuration
-	public static class Config {
+    @Configuration
+    public static class Config {
 
-		@Bean
-		public ManagementServerProperties managementServerProperties() {
-			ManagementServerProperties properties = new ManagementServerProperties();
-			properties.setPort(123);
-			return properties;
-		}
+        @Bean
+        public ManagementServerProperties managementServerProperties() {
+            ManagementServerProperties properties = new ManagementServerProperties();
+            properties.setPort(123);
+            return properties;
+        }
 
-	}
+    }
 
 }

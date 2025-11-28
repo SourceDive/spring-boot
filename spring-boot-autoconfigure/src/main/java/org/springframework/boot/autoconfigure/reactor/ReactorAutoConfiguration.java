@@ -23,14 +23,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import reactor.core.Environment;
 import reactor.core.Reactor;
 import reactor.spring.context.config.EnableReactor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Reactor.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
@@ -39,15 +38,15 @@ import reactor.spring.context.config.EnableReactor;
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class ReactorAutoConfiguration {
 
-	@Bean
-	public Reactor rootReactor(Environment environment) {
-		return environment.getRootReactor();
-	}
+    @Bean
+    public Reactor rootReactor(Environment environment) {
+        return environment.getRootReactor();
+    }
 
-	@Configuration
-	@ConditionalOnMissingBean(Environment.class)
-	@EnableReactor
-	protected static class ReactorConfiguration {
-	}
+    @Configuration
+    @ConditionalOnMissingBean(Environment.class)
+    @EnableReactor
+    protected static class ReactorConfiguration {
+    }
 
 }

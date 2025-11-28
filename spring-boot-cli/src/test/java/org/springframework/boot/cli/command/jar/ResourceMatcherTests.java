@@ -16,103 +16,101 @@
 
 package org.springframework.boot.cli.command.jar;
 
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
+import org.junit.Test;
+import org.springframework.boot.cli.command.jar.ResourceMatcher.MatchedResource;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
-import org.junit.Test;
-import org.springframework.boot.cli.command.jar.ResourceMatcher.MatchedResource;
-
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link ResourceMatcher}.
- * 
+ *
  * @author Andy Wilkinson
  */
 public class ResourceMatcherTests {
 
-	private final ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(
-			"alpha/**", "bravo/*", "*"), Arrays.asList(".*", "alpha/**/excluded"));
+    private final ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(
+            "alpha/**", "bravo/*", "*"), Arrays.asList(".*", "alpha/**/excluded"));
 
-	@Test
-	public void nonExistentRoot() throws IOException {
-		List<MatchedResource> matchedResources = this.resourceMatcher.find(Arrays
-				.asList(new File("does-not-exist")));
-		assertEquals(0, matchedResources.size());
-	}
+    @Test
+    public void nonExistentRoot() throws IOException {
+        List<MatchedResource> matchedResources = this.resourceMatcher.find(Arrays
+                .asList(new File("does-not-exist")));
+        assertEquals(0, matchedResources.size());
+    }
 
-	@Test
-	public void excludedWins() throws Exception {
-		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("*"),
-				Arrays.asList("**/*.jar"));
-		List<MatchedResource> found = resourceMatcher.find(Arrays.asList(new File(
-				"src/test/resources")));
-		assertThat(found, not(hasItem(new FooJarMatcher(MatchedResource.class))));
-	}
+    @Test
+    public void excludedWins() throws Exception {
+        ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("*"),
+                Arrays.asList("**/*.jar"));
+        List<MatchedResource> found = resourceMatcher.find(Arrays.asList(new File(
+                "src/test/resources")));
+        assertThat(found, not(hasItem(new FooJarMatcher(MatchedResource.class))));
+    }
 
-	@Test
-	public void jarFileAlwaysMatches() throws Exception {
-		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("*"),
-				Arrays.asList("**/*.jar"));
-		List<MatchedResource> found = resourceMatcher.find(Arrays.asList(new File(
-				"src/test/resources/templates"), new File("src/test/resources/foo.jar")));
-		FooJarMatcher matcher = new FooJarMatcher(MatchedResource.class);
-		assertThat(found, hasItem(matcher));
-		// A jar file is always treated as a dependency (stick it in /lib)
-		assertTrue(matcher.getMatched().isRoot());
-	}
+    @Test
+    public void jarFileAlwaysMatches() throws Exception {
+        ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("*"),
+                Arrays.asList("**/*.jar"));
+        List<MatchedResource> found = resourceMatcher.find(Arrays.asList(new File(
+                "src/test/resources/templates"), new File("src/test/resources/foo.jar")));
+        FooJarMatcher matcher = new FooJarMatcher(MatchedResource.class);
+        assertThat(found, hasItem(matcher));
+        // A jar file is always treated as a dependency (stick it in /lib)
+        assertTrue(matcher.getMatched().isRoot());
+    }
 
-	@Test
-	public void resourceMatching() throws IOException {
-		List<MatchedResource> matchedResources = this.resourceMatcher.find(Arrays.asList(
-				new File("src/test/resources/resource-matcher/one"), new File(
-						"src/test/resources/resource-matcher/two"), new File(
-						"src/test/resources/resource-matcher/three")));
-		System.out.println(matchedResources);
-		List<String> paths = new ArrayList<String>();
-		for (MatchedResource resource : matchedResources) {
-			paths.add(resource.getName());
-		}
+    @Test
+    public void resourceMatching() throws IOException {
+        List<MatchedResource> matchedResources = this.resourceMatcher.find(Arrays.asList(
+                new File("src/test/resources/resource-matcher/one"), new File(
+                        "src/test/resources/resource-matcher/two"), new File(
+                        "src/test/resources/resource-matcher/three")));
+        System.out.println(matchedResources);
+        List<String> paths = new ArrayList<String>();
+        for (MatchedResource resource : matchedResources) {
+            paths.add(resource.getName());
+        }
 
-		assertEquals(6, paths.size());
-		assertTrue(paths.containsAll(Arrays.asList("alpha/nested/fileA", "bravo/fileC",
-				"fileD", "bravo/fileE", "fileF", "three")));
-	}
+        assertEquals(6, paths.size());
+        assertTrue(paths.containsAll(Arrays.asList("alpha/nested/fileA", "bravo/fileC",
+                "fileD", "bravo/fileE", "fileF", "three")));
+    }
 
-	private final class FooJarMatcher extends TypeSafeMatcher<MatchedResource> {
+    private final class FooJarMatcher extends TypeSafeMatcher<MatchedResource> {
 
-		private MatchedResource matched;
+        private MatchedResource matched;
 
-		public MatchedResource getMatched() {
-			return this.matched;
-		}
+        public MatchedResource getMatched() {
+            return this.matched;
+        }
 
-		private FooJarMatcher(Class<?> expectedType) {
-			super(expectedType);
-		}
+        private FooJarMatcher(Class<?> expectedType) {
+            super(expectedType);
+        }
 
-		@Override
-		public void describeTo(Description description) {
-			description.appendText("foo.jar");
-		}
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("foo.jar");
+        }
 
-		@Override
-		protected boolean matchesSafely(MatchedResource item) {
-			boolean matches = item.getFile().getName().equals("foo.jar");
-			if (matches) {
-				this.matched = item;
-			}
-			return matches;
-		}
-	}
+        @Override
+        protected boolean matchesSafely(MatchedResource item) {
+            boolean matches = item.getFile().getName().equals("foo.jar");
+            if (matches) {
+                this.matched = item;
+            }
+            return matches;
+        }
+    }
 
 }

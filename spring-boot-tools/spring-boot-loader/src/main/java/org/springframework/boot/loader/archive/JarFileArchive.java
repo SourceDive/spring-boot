@@ -16,6 +16,11 @@
 
 package org.springframework.boot.loader.archive;
 
+import org.springframework.boot.loader.jar.JarEntryData;
+import org.springframework.boot.loader.jar.JarEntryFilter;
+import org.springframework.boot.loader.jar.JarFile;
+import org.springframework.boot.loader.util.AsciiBytes;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -27,103 +32,98 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.jar.JarEntryData;
-import org.springframework.boot.loader.jar.JarEntryFilter;
-import org.springframework.boot.loader.jar.JarFile;
-import org.springframework.boot.loader.util.AsciiBytes;
-
 /**
  * {@link Archive} implementation backed by a {@link JarFile}.
- * 
+ *
  * @author Phillip Webb
  */
 public class JarFileArchive extends Archive {
 
-	private final JarFile jarFile;
+    private final JarFile jarFile;
 
-	private final List<Entry> entries;
+    private final List<Entry> entries;
 
-	public JarFileArchive(File file) throws IOException {
-		this(new JarFile(file));
-	}
+    public JarFileArchive(File file) throws IOException {
+        this(new JarFile(file));
+    }
 
-	public JarFileArchive(JarFile jarFile) {
-		this.jarFile = jarFile;
-		ArrayList<Entry> jarFileEntries = new ArrayList<Entry>();
-		for (JarEntryData data : jarFile) {
-			jarFileEntries.add(new JarFileEntry(data));
-		}
-		this.entries = Collections.unmodifiableList(jarFileEntries);
-	}
+    public JarFileArchive(JarFile jarFile) {
+        this.jarFile = jarFile;
+        ArrayList<Entry> jarFileEntries = new ArrayList<Entry>();
+        for (JarEntryData data : jarFile) {
+            jarFileEntries.add(new JarFileEntry(data));
+        }
+        this.entries = Collections.unmodifiableList(jarFileEntries);
+    }
 
-	@Override
-	public URL getUrl() throws MalformedURLException {
-		return this.jarFile.getUrl();
-	}
+    @Override
+    public URL getUrl() throws MalformedURLException {
+        return this.jarFile.getUrl();
+    }
 
-	@Override
-	public Manifest getManifest() throws IOException {
-		return this.jarFile.getManifest();
-	}
+    @Override
+    public Manifest getManifest() throws IOException {
+        return this.jarFile.getManifest();
+    }
 
-	@Override
-	public List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
-		List<Archive> nestedArchives = new ArrayList<Archive>();
-		for (Entry entry : getEntries()) {
-			if (filter.matches(entry)) {
-				nestedArchives.add(getNestedArchive(entry));
-			}
-		}
-		return Collections.unmodifiableList(nestedArchives);
-	}
+    @Override
+    public List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
+        List<Archive> nestedArchives = new ArrayList<Archive>();
+        for (Entry entry : getEntries()) {
+            if (filter.matches(entry)) {
+                nestedArchives.add(getNestedArchive(entry));
+            }
+        }
+        return Collections.unmodifiableList(nestedArchives);
+    }
 
-	@Override
-	public Collection<Entry> getEntries() {
-		return Collections.unmodifiableCollection(this.entries);
-	}
+    @Override
+    public Collection<Entry> getEntries() {
+        return Collections.unmodifiableCollection(this.entries);
+    }
 
-	protected Archive getNestedArchive(Entry entry) throws IOException {
-		JarEntryData data = ((JarFileEntry) entry).getJarEntryData();
-		JarFile jarFile = this.jarFile.getNestedJarFile(data);
-		return new JarFileArchive(jarFile);
-	}
+    protected Archive getNestedArchive(Entry entry) throws IOException {
+        JarEntryData data = ((JarFileEntry) entry).getJarEntryData();
+        JarFile jarFile = this.jarFile.getNestedJarFile(data);
+        return new JarFileArchive(jarFile);
+    }
 
-	@Override
-	public Archive getFilteredArchive(final EntryRenameFilter filter) throws IOException {
-		JarFile filteredJar = this.jarFile.getFilteredJarFile(new JarEntryFilter() {
-			@Override
-			public AsciiBytes apply(AsciiBytes name, JarEntryData entryData) {
-				return filter.apply(name, new JarFileEntry(entryData));
-			}
-		});
-		return new JarFileArchive(filteredJar);
-	}
+    @Override
+    public Archive getFilteredArchive(final EntryRenameFilter filter) throws IOException {
+        JarFile filteredJar = this.jarFile.getFilteredJarFile(new JarEntryFilter() {
+            @Override
+            public AsciiBytes apply(AsciiBytes name, JarEntryData entryData) {
+                return filter.apply(name, new JarFileEntry(entryData));
+            }
+        });
+        return new JarFileArchive(filteredJar);
+    }
 
-	/**
-	 * {@link Archive.Entry} implementation backed by a {@link JarEntry}.
-	 */
-	private static class JarFileEntry implements Entry {
+    /**
+     * {@link Archive.Entry} implementation backed by a {@link JarEntry}.
+     */
+    private static class JarFileEntry implements Entry {
 
-		private final JarEntryData entryData;
+        private final JarEntryData entryData;
 
-		public JarFileEntry(JarEntryData entryData) {
-			this.entryData = entryData;
-		}
+        public JarFileEntry(JarEntryData entryData) {
+            this.entryData = entryData;
+        }
 
-		public JarEntryData getJarEntryData() {
-			return this.entryData;
-		}
+        public JarEntryData getJarEntryData() {
+            return this.entryData;
+        }
 
-		@Override
-		public boolean isDirectory() {
-			return this.entryData.isDirectory();
-		}
+        @Override
+        public boolean isDirectory() {
+            return this.entryData.isDirectory();
+        }
 
-		@Override
-		public AsciiBytes getName() {
-			return this.entryData.getName();
-		}
+        @Override
+        public AsciiBytes getName() {
+            return this.entryData.getName();
+        }
 
-	}
+    }
 
 }

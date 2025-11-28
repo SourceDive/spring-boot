@@ -28,75 +28,75 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests to exercise the CLI's test command.
- * 
+ *
  * @author Greg Turnquist
  * @author Phillip Webb
  */
 public class TestCommandIntegrationTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	@Rule
-	public CliTester cli = new CliTester("test-samples/");
+    @Rule
+    public CliTester cli = new CliTester("test-samples/");
 
-	@Before
-	public void setup() throws Exception {
-		System.setProperty("disableSpringSnapshotRepos", "false");
-	}
+    @Before
+    public void setup() throws Exception {
+        System.setProperty("disableSpringSnapshotRepos", "false");
+    }
 
-	@After
-	public void teardown() {
-		System.clearProperty("disableSpringSnapshotRepos");
-	}
+    @After
+    public void teardown() {
+        System.clearProperty("disableSpringSnapshotRepos");
+    }
 
-	@Test
-	public void noTests() throws Throwable {
-		String output = this.cli.test("book.groovy");
-		assertThat(output, containsString("No tests found"));
-	}
+    @Test
+    public void noTests() throws Throwable {
+        String output = this.cli.test("book.groovy");
+        assertThat(output, containsString("No tests found"));
+    }
 
-	@Test
-	public void empty() throws Exception {
-		String output = this.cli.test("empty.groovy");
-		assertThat(output, containsString("No tests found"));
-	}
+    @Test
+    public void empty() throws Exception {
+        String output = this.cli.test("empty.groovy");
+        assertThat(output, containsString("No tests found"));
+    }
 
-	@Test
-	public void noFile() throws Exception {
-		TestCommand command = new TestCommand();
-		this.thrown.expect(RuntimeException.class);
-		this.thrown.expectMessage("Can't find nothing.groovy");
-		command.run("nothing.groovy");
-	}
+    @Test
+    public void noFile() throws Exception {
+        TestCommand command = new TestCommand();
+        this.thrown.expect(RuntimeException.class);
+        this.thrown.expectMessage("Can't find nothing.groovy");
+        command.run("nothing.groovy");
+    }
 
-	@Test
-	public void appAndTestsInOneFile() throws Exception {
-		String output = this.cli.test("book_and_tests.groovy");
-		assertThat(output, containsString("OK (1 test)"));
-	}
+    @Test
+    public void appAndTestsInOneFile() throws Exception {
+        String output = this.cli.test("book_and_tests.groovy");
+        assertThat(output, containsString("OK (1 test)"));
+    }
 
-	@Test
-	public void appInOneFileTestsInAnotherFile() throws Exception {
-		String output = this.cli.test("book.groovy", "test.groovy");
-		assertThat(output, containsString("OK (1 test)"));
-	}
+    @Test
+    public void appInOneFileTestsInAnotherFile() throws Exception {
+        String output = this.cli.test("book.groovy", "test.groovy");
+        assertThat(output, containsString("OK (1 test)"));
+    }
 
-	@Test
-	public void spockTester() throws Exception {
-		String output = this.cli.test("spock.groovy");
-		assertThat(output, containsString("OK (1 test)"));
-	}
+    @Test
+    public void spockTester() throws Exception {
+        String output = this.cli.test("spock.groovy");
+        assertThat(output, containsString("OK (1 test)"));
+    }
 
-	@Test
-	public void spockAndJunitTester() throws Exception {
-		String output = this.cli.test("spock.groovy", "book_and_tests.groovy");
-		assertThat(output, containsString("OK (2 tests)"));
-	}
+    @Test
+    public void spockAndJunitTester() throws Exception {
+        String output = this.cli.test("spock.groovy", "book_and_tests.groovy");
+        assertThat(output, containsString("OK (2 tests)"));
+    }
 
-	@Test
-	public void verifyFailures() throws Exception {
-		String output = this.cli.test("failures.groovy");
-		assertThat(output, containsString("Tests run: 5,  Failures: 3"));
-	}
+    @Test
+    public void verifyFailures() throws Exception {
+        String output = this.cli.test("failures.groovy");
+        assertThat(output, containsString("Tests run: 5,  Failures: 3"));
+    }
 }

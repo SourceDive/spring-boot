@@ -16,37 +16,37 @@
 
 package org.springframework.boot.actuate.trace;
 
+import org.springframework.util.Assert;
+
 import java.util.Date;
 import java.util.Map;
-
-import org.springframework.util.Assert;
 
 /**
  * A value object representing a trace event: at a particular time with a simple (map)
  * information. Can be used for analyzing contextual information such as HTTP headers.
- * 
+ *
  * @author Dave Syer
  */
 public final class Trace {
 
-	private final Date timestamp;
+    private final Date timestamp;
 
-	private final Map<String, Object> info;
+    private final Map<String, Object> info;
 
-	public Trace(Date timestamp, Map<String, Object> info) {
-		super();
-		Assert.notNull(timestamp, "Timestamp must not be null");
-		Assert.notNull(info, "Info must not be null");
-		this.timestamp = timestamp;
-		this.info = info;
-	}
+    public Trace(Date timestamp, Map<String, Object> info) {
+        super();
+        Assert.notNull(timestamp, "Timestamp must not be null");
+        Assert.notNull(info, "Info must not be null");
+        this.timestamp = timestamp;
+        this.info = info;
+    }
 
-	public Date getTimestamp() {
-		return this.timestamp;
-	}
+    public Date getTimestamp() {
+        return this.timestamp;
+    }
 
-	public Map<String, Object> getInfo() {
-		return this.info;
-	}
+    public Map<String, Object> getInfo() {
+        return this.info;
+    }
 
 }

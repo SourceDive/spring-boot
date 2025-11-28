@@ -16,68 +16,68 @@
 
 package org.springframework.boot.context.embedded;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * {@link BeanPostProcessor} that apply all {@link EmbeddedServletContainerCustomizer}s
  * from the bean factory to {@link ConfigurableEmbeddedServletContainer} beans.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
 public class EmbeddedServletContainerCustomizerBeanPostProcessor implements
-		BeanPostProcessor, ApplicationContextAware {
+        BeanPostProcessor, ApplicationContextAware {
 
-	private ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
-	private List<EmbeddedServletContainerCustomizer> customizers;
+    private List<EmbeddedServletContainerCustomizer> customizers;
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.applicationContext = applicationContext;
-	}
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext)
+            throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 
-	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
-			throws BeansException {
-		if (bean instanceof ConfigurableEmbeddedServletContainer) {
-			postProcessBeforeInitialization((ConfigurableEmbeddedServletContainer) bean);
-		}
-		return bean;
-	}
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName)
+            throws BeansException {
+        if (bean instanceof ConfigurableEmbeddedServletContainer) {
+            postProcessBeforeInitialization((ConfigurableEmbeddedServletContainer) bean);
+        }
+        return bean;
+    }
 
-	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
-		return bean;
-	}
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName)
+            throws BeansException {
+        return bean;
+    }
 
-	private void postProcessBeforeInitialization(ConfigurableEmbeddedServletContainer bean) {
-		for (EmbeddedServletContainerCustomizer customizer : getCustomizers()) {
-			customizer.customize(bean);
-		}
-	}
+    private void postProcessBeforeInitialization(ConfigurableEmbeddedServletContainer bean) {
+        for (EmbeddedServletContainerCustomizer customizer : getCustomizers()) {
+            customizer.customize(bean);
+        }
+    }
 
-	private Collection<EmbeddedServletContainerCustomizer> getCustomizers() {
-		if (this.customizers == null) {
-			// Look up does not include the parent context
-			this.customizers = new ArrayList<EmbeddedServletContainerCustomizer>(
-					this.applicationContext.getBeansOfType(
-							EmbeddedServletContainerCustomizer.class).values());
-			Collections.sort(this.customizers, AnnotationAwareOrderComparator.INSTANCE);
-			this.customizers = Collections.unmodifiableList(this.customizers);
-		}
-		return this.customizers;
-	}
+    private Collection<EmbeddedServletContainerCustomizer> getCustomizers() {
+        if (this.customizers == null) {
+            // Look up does not include the parent context
+            this.customizers = new ArrayList<EmbeddedServletContainerCustomizer>(
+                    this.applicationContext.getBeansOfType(
+                            EmbeddedServletContainerCustomizer.class).values());
+            Collections.sort(this.customizers, AnnotationAwareOrderComparator.INSTANCE);
+            this.customizers = Collections.unmodifiableList(this.customizers);
+        }
+        return this.customizers;
+    }
 
 }

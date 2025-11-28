@@ -21,20 +21,21 @@ import java.util.Map;
 
 /**
  * A repository for {@link Trace}s.
- * 
+ *
  * @author Dave Syer
  */
 public interface TraceRepository {
 
-	/**
-	 * Find all {@link Trace} objects contained in the repository.
-	 */
-	List<Trace> findAll();
+    /**
+     * Find all {@link Trace} objects contained in the repository.
+     */
+    List<Trace> findAll();
 
-	/**
-	 * Add a new {@link Trace} object at the current time.
-	 * @param traceInfo trace information
-	 */
-	void add(Map<String, Object> traceInfo);
+    /**
+     * Add a new {@link Trace} object at the current time.
+     *
+     * @param traceInfo trace information
+     */
+    void add(Map<String, Object> traceInfo);
 
 }

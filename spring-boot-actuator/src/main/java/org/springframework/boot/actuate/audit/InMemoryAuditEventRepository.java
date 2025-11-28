@@ -16,54 +16,49 @@
 
 package org.springframework.boot.actuate.audit;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * In-memory {@link AuditEventRepository} implementation.
- * 
+ *
  * @author Dave Syer
  */
 public class InMemoryAuditEventRepository implements AuditEventRepository {
 
-	private int capacity = 100;
+    private int capacity = 100;
 
-	private final Map<String, List<AuditEvent>> events = new HashMap<String, List<AuditEvent>>();
+    private final Map<String, List<AuditEvent>> events = new HashMap<String, List<AuditEvent>>();
 
-	/**
-	 * @param capacity the capacity to set
-	 */
-	public void setCapacity(int capacity) {
-		this.capacity = capacity;
-	}
+    /**
+     * @param capacity the capacity to set
+     */
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
 
-	@Override
-	public List<AuditEvent> find(String principal, Date after) {
-		synchronized (this.events) {
-			return Collections.unmodifiableList(getEvents(principal));
-		}
-	}
+    @Override
+    public List<AuditEvent> find(String principal, Date after) {
+        synchronized (this.events) {
+            return Collections.unmodifiableList(getEvents(principal));
+        }
+    }
 
-	private List<AuditEvent> getEvents(String principal) {
-		if (!this.events.containsKey(principal)) {
-			this.events.put(principal, new ArrayList<AuditEvent>());
-		}
-		return this.events.get(principal);
-	}
+    private List<AuditEvent> getEvents(String principal) {
+        if (!this.events.containsKey(principal)) {
+            this.events.put(principal, new ArrayList<AuditEvent>());
+        }
+        return this.events.get(principal);
+    }
 
-	@Override
-	public void add(AuditEvent event) {
-		synchronized (this.events) {
-			List<AuditEvent> list = getEvents(event.getPrincipal());
-			while (list.size() >= this.capacity) {
-				list.remove(0);
-			}
-			list.add(event);
-		}
-	}
+    @Override
+    public void add(AuditEvent event) {
+        synchronized (this.events) {
+            List<AuditEvent> list = getEvents(event.getPrincipal());
+            while (list.size() >= this.capacity) {
+                list.remove(0);
+            }
+            list.add(event);
+        }
+    }
 
 }

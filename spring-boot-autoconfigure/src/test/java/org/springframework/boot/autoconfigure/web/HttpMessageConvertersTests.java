@@ -16,10 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -32,51 +28,53 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link HttpMessageConverters}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
 public class HttpMessageConvertersTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	@Test
-	public void containsDefaults() throws Exception {
-		HttpMessageConverters converters = new HttpMessageConverters();
-		List<Class<?>> converterClasses = new ArrayList<Class<?>>();
-		for (HttpMessageConverter<?> converter : converters) {
-			converterClasses.add(converter.getClass());
-		}
-		assertThat(converterClasses, equalTo(Arrays.<Class<?>> asList(
-				ByteArrayHttpMessageConverter.class, StringHttpMessageConverter.class,
-				ResourceHttpMessageConverter.class, SourceHttpMessageConverter.class,
-				AllEncompassingFormHttpMessageConverter.class,
-				MappingJackson2HttpMessageConverter.class,
-				Jaxb2RootElementHttpMessageConverter.class)));
-	}
+    @Test
+    public void containsDefaults() throws Exception {
+        HttpMessageConverters converters = new HttpMessageConverters();
+        List<Class<?>> converterClasses = new ArrayList<Class<?>>();
+        for (HttpMessageConverter<?> converter : converters) {
+            converterClasses.add(converter.getClass());
+        }
+        assertThat(converterClasses, equalTo(Arrays.<Class<?>>asList(
+                ByteArrayHttpMessageConverter.class, StringHttpMessageConverter.class,
+                ResourceHttpMessageConverter.class, SourceHttpMessageConverter.class,
+                AllEncompassingFormHttpMessageConverter.class,
+                MappingJackson2HttpMessageConverter.class,
+                Jaxb2RootElementHttpMessageConverter.class)));
+    }
 
-	@Test
-	public void overrideExistingConverter() {
-		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-		HttpMessageConverters converters = new HttpMessageConverters(converter);
-		assertTrue(converters.getConverters().contains(converter));
-	}
+    @Test
+    public void overrideExistingConverter() {
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        HttpMessageConverters converters = new HttpMessageConverters(converter);
+        assertTrue(converters.getConverters().contains(converter));
+    }
 
-	@Test
-	public void addNewConverter() {
-		HttpMessageConverter<?> converter = mock(HttpMessageConverter.class);
-		HttpMessageConverters converters = new HttpMessageConverters(converter);
-		assertTrue(converters.getConverters().contains(converter));
-		assertEquals(converter, converters.getConverters().get(0));
-	}
+    @Test
+    public void addNewConverter() {
+        HttpMessageConverter<?> converter = mock(HttpMessageConverter.class);
+        HttpMessageConverters converters = new HttpMessageConverters(converter);
+        assertTrue(converters.getConverters().contains(converter));
+        assertEquals(converter, converters.getConverters().get(0));
+    }
 
 }

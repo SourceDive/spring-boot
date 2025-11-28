@@ -16,26 +16,6 @@
 
 package org.springframework.boot.loader;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-import java.util.jar.Manifest;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.Archive.Entry;
 import org.springframework.boot.loader.archive.Archive.EntryFilter;
@@ -44,6 +24,18 @@ import org.springframework.boot.loader.archive.FilteredArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
 import org.springframework.boot.loader.util.AsciiBytes;
 import org.springframework.boot.loader.util.SystemPropertyUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.*;
+import java.util.*;
+import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * {@link Launcher} for archives with user-configured classpath and main class via a
@@ -68,552 +60,540 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * <code>Start-Class</code> in a <code>MANIFEST.MF</code>, if there is one in
  * <code>${loader.home}/META-INF</code>.</li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  * @author Janne Valkealahti
  */
 public class PropertiesLauncher extends Launcher {
 
-	private final Logger logger = Logger.getLogger(Launcher.class.getName());
+    private final Logger logger = Logger.getLogger(Launcher.class.getName());
 
-	/**
-	 * Properties key for main class. As a manifest entry can also be specified as
-	 * <code>Start-Class</code>.
-	 */
-	public static final String MAIN = "loader.main";
+    /**
+     * Properties key for main class. As a manifest entry can also be specified as
+     * <code>Start-Class</code>.
+     */
+    public static final String MAIN = "loader.main";
 
-	/**
-	 * Properties key for classpath entries (directories possibly containing jars).
-	 * Defaults to "lib/" (relative to {@link #HOME loader home directory}). Multiple
-	 * entries can be specified using a comma separeted list.
-	 */
-	public static final String PATH = "loader.path";
+    /**
+     * Properties key for classpath entries (directories possibly containing jars).
+     * Defaults to "lib/" (relative to {@link #HOME loader home directory}). Multiple
+     * entries can be specified using a comma separeted list.
+     */
+    public static final String PATH = "loader.path";
 
-	/**
-	 * Properties key for home directory. This is the location of external configuration
-	 * if not on classpath, and also the base path for any relative paths in the
-	 * {@link #PATH loader path}. Defaults to current working directory (
-	 * <code>${user.dir}</code>).
-	 */
-	public static final String HOME = "loader.home";
+    /**
+     * Properties key for home directory. This is the location of external configuration
+     * if not on classpath, and also the base path for any relative paths in the
+     * {@link #PATH loader path}. Defaults to current working directory (
+     * <code>${user.dir}</code>).
+     */
+    public static final String HOME = "loader.home";
 
-	/**
-	 * Properties key for default command line arguments. These arguments (if present) are
-	 * prepended to the main method arguments before launching.
-	 */
-	public static final String ARGS = "loader.args";
+    /**
+     * Properties key for default command line arguments. These arguments (if present) are
+     * prepended to the main method arguments before launching.
+     */
+    public static final String ARGS = "loader.args";
 
-	/**
-	 * Properties key for name of external configuration file (excluding suffix). Defaults
-	 * to "application". Ignored if {@link #CONFIG_LOCATION loader config location} is
-	 * provided instead.
-	 */
-	public static final String CONFIG_NAME = "loader.config.name";
+    /**
+     * Properties key for name of external configuration file (excluding suffix). Defaults
+     * to "application". Ignored if {@link #CONFIG_LOCATION loader config location} is
+     * provided instead.
+     */
+    public static final String CONFIG_NAME = "loader.config.name";
 
-	/**
-	 * Properties key for config file location (including optional classpath:, file: or
-	 * URL prefix)
-	 */
-	public static final String CONFIG_LOCATION = "loader.config.location";
+    /**
+     * Properties key for config file location (including optional classpath:, file: or
+     * URL prefix)
+     */
+    public static final String CONFIG_LOCATION = "loader.config.location";
 
-	/**
-	 * Properties key for boolean flag (default false) which if set will cause the
-	 * external configuration properties to be copied to System properties (assuming that
-	 * is allowed by Java security).
-	 */
-	public static final String SET_SYSTEM_PROPERTIES = "loader.system";
+    /**
+     * Properties key for boolean flag (default false) which if set will cause the
+     * external configuration properties to be copied to System properties (assuming that
+     * is allowed by Java security).
+     */
+    public static final String SET_SYSTEM_PROPERTIES = "loader.system";
 
-	private static final List<String> DEFAULT_PATHS = Arrays.asList("lib/");
+    private static final List<String> DEFAULT_PATHS = Arrays.asList("lib/");
 
-	private static final Pattern WORD_SEPARATOR = Pattern.compile("\\W+");
+    private static final Pattern WORD_SEPARATOR = Pattern.compile("\\W+");
 
-	private static final URL[] EMPTY_URLS = {};
+    private static final URL[] EMPTY_URLS = {};
 
-	private final File home;
+    private final File home;
 
-	private List<String> paths = new ArrayList<String>(DEFAULT_PATHS);
+    private List<String> paths = new ArrayList<String>(DEFAULT_PATHS);
 
-	private final Properties properties = new Properties();
+    private final Properties properties = new Properties();
 
-	public PropertiesLauncher() {
-		if (!isDebug()) {
-			this.logger.setLevel(Level.SEVERE);
-		}
-		try {
-			this.home = getHomeDirectory();
-			initializeProperties(this.home);
-			initializePaths();
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
-	}
+    public PropertiesLauncher() {
+        if (!isDebug()) {
+            this.logger.setLevel(Level.SEVERE);
+        }
+        try {
+            this.home = getHomeDirectory();
+            initializeProperties(this.home);
+            initializePaths();
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
 
-	private boolean isDebug() {
-		String debug = System.getProperty("debug");
-		if (debug != null && !"false".equals(debug)) {
-			return true;
-		}
-		debug = System.getProperty("DEBUG");
-		if (debug != null && !"false".equals(debug)) {
-			return true;
-		}
-		debug = System.getenv("DEBUG");
-		if (debug != null && !"false".equals(debug)) {
-			return true;
-		}
-		return false;
-	}
+    private boolean isDebug() {
+        String debug = System.getProperty("debug");
+        if (debug != null && !"false".equals(debug)) {
+            return true;
+        }
+        debug = System.getProperty("DEBUG");
+        if (debug != null && !"false".equals(debug)) {
+            return true;
+        }
+        debug = System.getenv("DEBUG");
+        if (debug != null && !"false".equals(debug)) {
+            return true;
+        }
+        return false;
+    }
 
-	protected File getHomeDirectory() {
-		return new File(SystemPropertyUtils.resolvePlaceholders(System.getProperty(HOME,
-				"${user.dir}")));
-	}
+    protected File getHomeDirectory() {
+        return new File(SystemPropertyUtils.resolvePlaceholders(System.getProperty(HOME,
+                "${user.dir}")));
+    }
 
-	private void initializeProperties(File home) throws Exception, IOException {
-		String config = "classpath:"
-				+ SystemPropertyUtils.resolvePlaceholders(SystemPropertyUtils
-						.getProperty(CONFIG_NAME, "application")) + ".properties";
-		config = SystemPropertyUtils.resolvePlaceholders(SystemPropertyUtils.getProperty(
-				CONFIG_LOCATION, config));
-		InputStream resource = getResource(config);
+    private void initializeProperties(File home) throws Exception, IOException {
+        String config = "classpath:"
+                + SystemPropertyUtils.resolvePlaceholders(SystemPropertyUtils
+                .getProperty(CONFIG_NAME, "application")) + ".properties";
+        config = SystemPropertyUtils.resolvePlaceholders(SystemPropertyUtils.getProperty(
+                CONFIG_LOCATION, config));
+        InputStream resource = getResource(config);
 
-		if (resource != null) {
-			this.logger.info("Found: " + config);
-			try {
-				this.properties.load(resource);
-			}
-			finally {
-				resource.close();
-			}
-			for (Object key : Collections.list(this.properties.propertyNames())) {
-				String text = this.properties.getProperty((String) key);
-				String value = SystemPropertyUtils.resolvePlaceholders(this.properties,
-						text);
-				if (value != null) {
-					this.properties.put(key, value);
-				}
-			}
-			if (SystemPropertyUtils.resolvePlaceholders(
-					"${" + SET_SYSTEM_PROPERTIES + ":false}").equals("true")) {
-				this.logger.info("Adding resolved properties to System properties");
-				for (Object key : Collections.list(this.properties.propertyNames())) {
-					String value = this.properties.getProperty((String) key);
-					System.setProperty((String) key, value);
-				}
-			}
-		}
-		else {
-			this.logger.info("Not found: " + config);
-		}
+        if (resource != null) {
+            this.logger.info("Found: " + config);
+            try {
+                this.properties.load(resource);
+            } finally {
+                resource.close();
+            }
+            for (Object key : Collections.list(this.properties.propertyNames())) {
+                String text = this.properties.getProperty((String) key);
+                String value = SystemPropertyUtils.resolvePlaceholders(this.properties,
+                        text);
+                if (value != null) {
+                    this.properties.put(key, value);
+                }
+            }
+            if (SystemPropertyUtils.resolvePlaceholders(
+                    "${" + SET_SYSTEM_PROPERTIES + ":false}").equals("true")) {
+                this.logger.info("Adding resolved properties to System properties");
+                for (Object key : Collections.list(this.properties.propertyNames())) {
+                    String value = this.properties.getProperty((String) key);
+                    System.setProperty((String) key, value);
+                }
+            }
+        } else {
+            this.logger.info("Not found: " + config);
+        }
 
-	}
+    }
 
-	private InputStream getResource(String config) throws Exception {
-		if (config.startsWith("classpath:")) {
-			return getClasspathResource(config.substring("classpath:".length()));
-		}
-		config = stripFileUrlPrefix(config);
-		if (isUrl(config)) {
-			return getURLResource(config);
-		}
-		return getFileResource(config);
-	}
+    private InputStream getResource(String config) throws Exception {
+        if (config.startsWith("classpath:")) {
+            return getClasspathResource(config.substring("classpath:".length()));
+        }
+        config = stripFileUrlPrefix(config);
+        if (isUrl(config)) {
+            return getURLResource(config);
+        }
+        return getFileResource(config);
+    }
 
-	private String stripFileUrlPrefix(String config) {
-		if (config.startsWith("file:")) {
-			config = config.substring("file:".length());
-			if (config.startsWith("//")) {
-				config = config.substring(2);
-			}
-		}
-		return config;
-	}
+    private String stripFileUrlPrefix(String config) {
+        if (config.startsWith("file:")) {
+            config = config.substring("file:".length());
+            if (config.startsWith("//")) {
+                config = config.substring(2);
+            }
+        }
+        return config;
+    }
 
-	private boolean isUrl(String config) {
-		return config.contains("://");
-	}
+    private boolean isUrl(String config) {
+        return config.contains("://");
+    }
 
-	private InputStream getClasspathResource(String config) {
-		while (config.startsWith("/")) {
-			config = config.substring(1);
-		}
-		config = "/" + config;
-		this.logger.fine("Trying classpath: " + config);
-		return getClass().getResourceAsStream(config);
-	}
+    private InputStream getClasspathResource(String config) {
+        while (config.startsWith("/")) {
+            config = config.substring(1);
+        }
+        config = "/" + config;
+        this.logger.fine("Trying classpath: " + config);
+        return getClass().getResourceAsStream(config);
+    }
 
-	private InputStream getFileResource(String config) throws Exception {
-		File file = new File(config);
-		this.logger.fine("Trying file: " + config);
-		if (file.canRead()) {
-			return new FileInputStream(file);
-		}
-		return null;
-	}
+    private InputStream getFileResource(String config) throws Exception {
+        File file = new File(config);
+        this.logger.fine("Trying file: " + config);
+        if (file.canRead()) {
+            return new FileInputStream(file);
+        }
+        return null;
+    }
 
-	private InputStream getURLResource(String config) throws Exception {
-		URL url = new URL(config);
-		if (exists(url)) {
-			URLConnection con = url.openConnection();
-			try {
-				return con.getInputStream();
-			}
-			catch (IOException ex) {
-				// Close the HTTP connection (if applicable).
-				if (con instanceof HttpURLConnection) {
-					((HttpURLConnection) con).disconnect();
-				}
-				throw ex;
-			}
-		}
-		return null;
-	}
+    private InputStream getURLResource(String config) throws Exception {
+        URL url = new URL(config);
+        if (exists(url)) {
+            URLConnection con = url.openConnection();
+            try {
+                return con.getInputStream();
+            } catch (IOException ex) {
+                // Close the HTTP connection (if applicable).
+                if (con instanceof HttpURLConnection) {
+                    ((HttpURLConnection) con).disconnect();
+                }
+                throw ex;
+            }
+        }
+        return null;
+    }
 
-	private boolean exists(URL url) throws IOException {
-		// Try a URL connection content-length header...
-		URLConnection connection = url.openConnection();
-		try {
-			connection.setUseCaches(connection.getClass().getSimpleName()
-					.startsWith("JNLP"));
-			if (connection instanceof HttpURLConnection) {
-				HttpURLConnection httpConnection = (HttpURLConnection) connection;
-				httpConnection.setRequestMethod("HEAD");
-				int responseCode = httpConnection.getResponseCode();
-				if (responseCode == HttpURLConnection.HTTP_OK) {
-					return true;
-				}
-				else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-					return false;
-				}
-			}
-			return (connection.getContentLength() >= 0);
-		}
-		finally {
-			if (connection instanceof HttpURLConnection) {
-				((HttpURLConnection) connection).disconnect();
-			}
-		}
-	}
+    private boolean exists(URL url) throws IOException {
+        // Try a URL connection content-length header...
+        URLConnection connection = url.openConnection();
+        try {
+            connection.setUseCaches(connection.getClass().getSimpleName()
+                    .startsWith("JNLP"));
+            if (connection instanceof HttpURLConnection) {
+                HttpURLConnection httpConnection = (HttpURLConnection) connection;
+                httpConnection.setRequestMethod("HEAD");
+                int responseCode = httpConnection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    return true;
+                } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                    return false;
+                }
+            }
+            return (connection.getContentLength() >= 0);
+        } finally {
+            if (connection instanceof HttpURLConnection) {
+                ((HttpURLConnection) connection).disconnect();
+            }
+        }
+    }
 
-	private void initializePaths() throws IOException {
-		String path = SystemPropertyUtils.getProperty(PATH);
-		if (path == null) {
-			path = this.properties.getProperty(PATH);
-		}
-		if (path != null) {
-			this.paths = parsePathsProperty(SystemPropertyUtils.resolvePlaceholders(path));
-		}
-		this.logger.info("Nested archive paths: " + this.paths);
-	}
+    private void initializePaths() throws IOException {
+        String path = SystemPropertyUtils.getProperty(PATH);
+        if (path == null) {
+            path = this.properties.getProperty(PATH);
+        }
+        if (path != null) {
+            this.paths = parsePathsProperty(SystemPropertyUtils.resolvePlaceholders(path));
+        }
+        this.logger.info("Nested archive paths: " + this.paths);
+    }
 
-	private List<String> parsePathsProperty(String commaSeparatedPaths) {
-		List<String> paths = new ArrayList<String>();
-		for (String path : commaSeparatedPaths.split(",")) {
-			path = cleanupPath(path);
-			// Empty path (i.e. the archive itself if running from a JAR) is always added
-			// to the classpath so no need for it to be explicitly listed
-			if (!(path.equals(".") || path.equals(""))) {
-				paths.add(path);
-			}
-		}
-		if (paths.isEmpty()) {
-			// On the other hand, we don't want a completely empty path. If the app is
-			// running from an archive (java -jar) then this will make sure the archive
-			// itself is included at the very least.
-			paths.add(".");
-		}
-		return paths;
-	}
+    private List<String> parsePathsProperty(String commaSeparatedPaths) {
+        List<String> paths = new ArrayList<String>();
+        for (String path : commaSeparatedPaths.split(",")) {
+            path = cleanupPath(path);
+            // Empty path (i.e. the archive itself if running from a JAR) is always added
+            // to the classpath so no need for it to be explicitly listed
+            if (!(path.equals(".") || path.equals(""))) {
+                paths.add(path);
+            }
+        }
+        if (paths.isEmpty()) {
+            // On the other hand, we don't want a completely empty path. If the app is
+            // running from an archive (java -jar) then this will make sure the archive
+            // itself is included at the very least.
+            paths.add(".");
+        }
+        return paths;
+    }
 
-	protected String[] getArgs(String... args) throws Exception {
-		String loaderArgs = getProperty(ARGS);
-		if (loaderArgs != null) {
-			String[] defaultArgs = loaderArgs.split("\\s+");
-			String[] additionalArgs = args;
-			args = new String[defaultArgs.length + additionalArgs.length];
-			System.arraycopy(defaultArgs, 0, args, 0, defaultArgs.length);
-			System.arraycopy(additionalArgs, 0, args, defaultArgs.length,
-					additionalArgs.length);
-		}
-		return args;
-	}
+    protected String[] getArgs(String... args) throws Exception {
+        String loaderArgs = getProperty(ARGS);
+        if (loaderArgs != null) {
+            String[] defaultArgs = loaderArgs.split("\\s+");
+            String[] additionalArgs = args;
+            args = new String[defaultArgs.length + additionalArgs.length];
+            System.arraycopy(defaultArgs, 0, args, 0, defaultArgs.length);
+            System.arraycopy(additionalArgs, 0, args, defaultArgs.length,
+                    additionalArgs.length);
+        }
+        return args;
+    }
 
-	@Override
-	protected String getMainClass() throws Exception {
-		String mainClass = getProperty(MAIN, "Start-Class");
-		if (mainClass == null) {
-			throw new IllegalStateException("No '" + MAIN
-					+ "' or 'Start-Class' specified");
-		}
-		return mainClass;
-	}
+    @Override
+    protected String getMainClass() throws Exception {
+        String mainClass = getProperty(MAIN, "Start-Class");
+        if (mainClass == null) {
+            throw new IllegalStateException("No '" + MAIN
+                    + "' or 'Start-Class' specified");
+        }
+        return mainClass;
+    }
 
-	@Override
-	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
-		ClassLoader loader = super.createClassLoader(archives);
-		String customLoaderClassName = getProperty("loader.classLoader");
-		if (customLoaderClassName != null) {
-			loader = wrapWithCustomClassLoader(loader, customLoaderClassName);
-			this.logger.info("Using custom class loader: " + customLoaderClassName);
-		}
-		return loader;
-	}
+    @Override
+    protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
+        ClassLoader loader = super.createClassLoader(archives);
+        String customLoaderClassName = getProperty("loader.classLoader");
+        if (customLoaderClassName != null) {
+            loader = wrapWithCustomClassLoader(loader, customLoaderClassName);
+            this.logger.info("Using custom class loader: " + customLoaderClassName);
+        }
+        return loader;
+    }
 
-	@SuppressWarnings("unchecked")
-	private ClassLoader wrapWithCustomClassLoader(ClassLoader parent,
-			String loaderClassName) throws Exception {
+    @SuppressWarnings("unchecked")
+    private ClassLoader wrapWithCustomClassLoader(ClassLoader parent,
+                                                  String loaderClassName) throws Exception {
 
-		Class<ClassLoader> loaderClass = (Class<ClassLoader>) Class.forName(
-				loaderClassName, true, parent);
+        Class<ClassLoader> loaderClass = (Class<ClassLoader>) Class.forName(
+                loaderClassName, true, parent);
 
-		try {
-			return loaderClass.getConstructor(ClassLoader.class).newInstance(parent);
-		}
-		catch (NoSuchMethodException ex) {
-			// Ignore and try with URLs
-		}
+        try {
+            return loaderClass.getConstructor(ClassLoader.class).newInstance(parent);
+        } catch (NoSuchMethodException ex) {
+            // Ignore and try with URLs
+        }
 
-		try {
-			return loaderClass.getConstructor(URL[].class, ClassLoader.class)
-					.newInstance(new URL[0], parent);
-		}
-		catch (NoSuchMethodException ex) {
-			// Ignore and try without any arguments
-		}
+        try {
+            return loaderClass.getConstructor(URL[].class, ClassLoader.class)
+                    .newInstance(new URL[0], parent);
+        } catch (NoSuchMethodException ex) {
+            // Ignore and try without any arguments
+        }
 
-		return loaderClass.newInstance();
-	}
+        return loaderClass.newInstance();
+    }
 
-	private String getProperty(String propertyKey) throws Exception {
-		return getProperty(propertyKey, null);
-	}
+    private String getProperty(String propertyKey) throws Exception {
+        return getProperty(propertyKey, null);
+    }
 
-	private String getProperty(String propertyKey, String manifestKey) throws Exception {
-		if (manifestKey == null) {
-			manifestKey = propertyKey.replace(".", "-");
-			manifestKey = toCamelCase(manifestKey);
-		}
+    private String getProperty(String propertyKey, String manifestKey) throws Exception {
+        if (manifestKey == null) {
+            manifestKey = propertyKey.replace(".", "-");
+            manifestKey = toCamelCase(manifestKey);
+        }
 
-		String property = SystemPropertyUtils.getProperty(propertyKey);
-		if (property != null) {
-			String value = SystemPropertyUtils.resolvePlaceholders(property);
-			this.logger.fine("Property '" + propertyKey + "' from environment: " + value);
-			return value;
-		}
+        String property = SystemPropertyUtils.getProperty(propertyKey);
+        if (property != null) {
+            String value = SystemPropertyUtils.resolvePlaceholders(property);
+            this.logger.fine("Property '" + propertyKey + "' from environment: " + value);
+            return value;
+        }
 
-		if (this.properties.containsKey(propertyKey)) {
-			String value = SystemPropertyUtils.resolvePlaceholders(this.properties
-					.getProperty(propertyKey));
-			this.logger.fine("Property '" + propertyKey + "' from properties: " + value);
-			return value;
-		}
+        if (this.properties.containsKey(propertyKey)) {
+            String value = SystemPropertyUtils.resolvePlaceholders(this.properties
+                    .getProperty(propertyKey));
+            this.logger.fine("Property '" + propertyKey + "' from properties: " + value);
+            return value;
+        }
 
-		try {
-			// Prefer home dir for MANIFEST if there is one
-			Manifest manifest = new ExplodedArchive(this.home, false).getManifest();
-			if (manifest != null) {
-				String value = manifest.getMainAttributes().getValue(manifestKey);
-				this.logger.fine("Property '" + manifestKey
-						+ "' from home directory manifest: " + value);
-				return value;
-			}
-		}
-		catch (IllegalStateException ex) {
-			// Ignore
-		}
+        try {
+            // Prefer home dir for MANIFEST if there is one
+            Manifest manifest = new ExplodedArchive(this.home, false).getManifest();
+            if (manifest != null) {
+                String value = manifest.getMainAttributes().getValue(manifestKey);
+                this.logger.fine("Property '" + manifestKey
+                        + "' from home directory manifest: " + value);
+                return value;
+            }
+        } catch (IllegalStateException ex) {
+            // Ignore
+        }
 
-		// Otherwise try the parent archive
-		Manifest manifest = createArchive().getManifest();
-		if (manifest != null) {
-			String value = manifest.getMainAttributes().getValue(manifestKey);
-			if (value != null) {
-				this.logger.fine("Property '" + manifestKey + "' from archive manifest: "
-						+ value);
-				return value;
-			}
-		}
-		return null;
-	}
+        // Otherwise try the parent archive
+        Manifest manifest = createArchive().getManifest();
+        if (manifest != null) {
+            String value = manifest.getMainAttributes().getValue(manifestKey);
+            if (value != null) {
+                this.logger.fine("Property '" + manifestKey + "' from archive manifest: "
+                        + value);
+                return value;
+            }
+        }
+        return null;
+    }
 
-	@Override
-	protected List<Archive> getClassPathArchives() throws Exception {
-		List<Archive> lib = new ArrayList<Archive>();
-		for (String path : this.paths) {
-			for (Archive archive : getClassPathArchives(path)) {
-				List<Archive> nested = new ArrayList<Archive>(
-						archive.getNestedArchives(new ArchiveEntryFilter()));
-				nested.add(0, archive);
-				lib.addAll(nested);
-			}
-		}
-		addParentClassLoaderEntries(lib);
-		return lib;
-	}
+    @Override
+    protected List<Archive> getClassPathArchives() throws Exception {
+        List<Archive> lib = new ArrayList<Archive>();
+        for (String path : this.paths) {
+            for (Archive archive : getClassPathArchives(path)) {
+                List<Archive> nested = new ArrayList<Archive>(
+                        archive.getNestedArchives(new ArchiveEntryFilter()));
+                nested.add(0, archive);
+                lib.addAll(nested);
+            }
+        }
+        addParentClassLoaderEntries(lib);
+        return lib;
+    }
 
-	private List<Archive> getClassPathArchives(String path) throws Exception {
-		String root = cleanupPath(stripFileUrlPrefix(path));
-		List<Archive> lib = new ArrayList<Archive>();
-		File file = new File(root);
-		if (!root.startsWith("/")) {
-			file = new File(this.home, root);
-		}
-		if (file.isDirectory()) {
-			this.logger.info("Adding classpath entries from " + file);
-			Archive archive = new ExplodedArchive(file, false);
-			lib.add(archive);
-		}
-		Archive archive = getArchive(file);
-		if (archive != null) {
-			this.logger.info("Adding classpath entries from archive " + archive.getUrl()
-					+ root);
-			lib.add(archive);
-		}
-		Archive nested = getNestedArchive(root);
-		if (nested != null) {
-			this.logger.info("Adding classpath entries from nested " + nested.getUrl()
-					+ root);
-			lib.add(nested);
-		}
-		return lib;
-	}
+    private List<Archive> getClassPathArchives(String path) throws Exception {
+        String root = cleanupPath(stripFileUrlPrefix(path));
+        List<Archive> lib = new ArrayList<Archive>();
+        File file = new File(root);
+        if (!root.startsWith("/")) {
+            file = new File(this.home, root);
+        }
+        if (file.isDirectory()) {
+            this.logger.info("Adding classpath entries from " + file);
+            Archive archive = new ExplodedArchive(file, false);
+            lib.add(archive);
+        }
+        Archive archive = getArchive(file);
+        if (archive != null) {
+            this.logger.info("Adding classpath entries from archive " + archive.getUrl()
+                    + root);
+            lib.add(archive);
+        }
+        Archive nested = getNestedArchive(root);
+        if (nested != null) {
+            this.logger.info("Adding classpath entries from nested " + nested.getUrl()
+                    + root);
+            lib.add(nested);
+        }
+        return lib;
+    }
 
-	private Archive getArchive(File file) throws IOException {
-		String name = file.getName().toLowerCase();
-		if (name.endsWith(".jar") || name.endsWith(".zip")) {
-			return new JarFileArchive(file);
-		}
-		return null;
-	}
+    private Archive getArchive(File file) throws IOException {
+        String name = file.getName().toLowerCase();
+        if (name.endsWith(".jar") || name.endsWith(".zip")) {
+            return new JarFileArchive(file);
+        }
+        return null;
+    }
 
-	private Archive getNestedArchive(final String root) throws Exception {
-		Archive parent = createArchive();
-		if (root.startsWith("/") || parent.getUrl().equals(this.home.toURI().toURL())) {
-			// If home dir is same as parent archive, no need to add it twice.
-			return null;
-		}
-		EntryFilter filter = new PrefixMatchingArchiveFilter(root);
-		if (parent.getNestedArchives(filter).isEmpty()) {
-			return null;
-		}
-		// If there are more archives nested in this subdirectory (root) then create a new
-		// virtual archive for them, and have it added to the classpath
-		return new FilteredArchive(parent, filter);
-	}
+    private Archive getNestedArchive(final String root) throws Exception {
+        Archive parent = createArchive();
+        if (root.startsWith("/") || parent.getUrl().equals(this.home.toURI().toURL())) {
+            // If home dir is same as parent archive, no need to add it twice.
+            return null;
+        }
+        EntryFilter filter = new PrefixMatchingArchiveFilter(root);
+        if (parent.getNestedArchives(filter).isEmpty()) {
+            return null;
+        }
+        // If there are more archives nested in this subdirectory (root) then create a new
+        // virtual archive for them, and have it added to the classpath
+        return new FilteredArchive(parent, filter);
+    }
 
-	private void addParentClassLoaderEntries(List<Archive> lib) throws IOException,
-			URISyntaxException {
-		ClassLoader parentClassLoader = getClass().getClassLoader();
-		for (URL url : getURLs(parentClassLoader)) {
-			if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
-				lib.add(0, new JarFileArchive(new File(url.toURI())));
-			}
-			else if (url.toString().endsWith("/*")) {
-				String name = url.getFile();
-				File dir = new File(name.substring(0, name.length() - 1));
-				if (dir.exists()) {
-					lib.add(0,
-							new ExplodedArchive(new File(name.substring(0,
-									name.length() - 1)), false));
-				}
-			}
-			else {
-				lib.add(0, new ExplodedArchive(new File(url.getFile())));
-			}
-		}
-	}
+    private void addParentClassLoaderEntries(List<Archive> lib) throws IOException,
+            URISyntaxException {
+        ClassLoader parentClassLoader = getClass().getClassLoader();
+        for (URL url : getURLs(parentClassLoader)) {
+            if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
+                lib.add(0, new JarFileArchive(new File(url.toURI())));
+            } else if (url.toString().endsWith("/*")) {
+                String name = url.getFile();
+                File dir = new File(name.substring(0, name.length() - 1));
+                if (dir.exists()) {
+                    lib.add(0,
+                            new ExplodedArchive(new File(name.substring(0,
+                                    name.length() - 1)), false));
+                }
+            } else {
+                lib.add(0, new ExplodedArchive(new File(url.getFile())));
+            }
+        }
+    }
 
-	private URL[] getURLs(ClassLoader classLoader) {
-		if (classLoader instanceof URLClassLoader) {
-			return ((URLClassLoader) classLoader).getURLs();
-		}
-		return EMPTY_URLS;
-	}
+    private URL[] getURLs(ClassLoader classLoader) {
+        if (classLoader instanceof URLClassLoader) {
+            return ((URLClassLoader) classLoader).getURLs();
+        }
+        return EMPTY_URLS;
+    }
 
-	private String cleanupPath(String path) {
-		path = path.trim();
-		if (path.toLowerCase().endsWith(".jar") || path.toLowerCase().endsWith(".zip")) {
-			return path;
-		}
-		if (path.endsWith("/*")) {
-			path = path.substring(0, path.length() - 1);
-		}
-		else {
-			// It's a directory
-			if (!path.endsWith("/")) {
-				path = path + "/";
-			}
-		}
-		// No need for current dir path
-		if (path.startsWith("./")) {
-			path = path.substring(2);
-		}
-		return path;
-	}
+    private String cleanupPath(String path) {
+        path = path.trim();
+        if (path.toLowerCase().endsWith(".jar") || path.toLowerCase().endsWith(".zip")) {
+            return path;
+        }
+        if (path.endsWith("/*")) {
+            path = path.substring(0, path.length() - 1);
+        } else {
+            // It's a directory
+            if (!path.endsWith("/")) {
+                path = path + "/";
+            }
+        }
+        // No need for current dir path
+        if (path.startsWith("./")) {
+            path = path.substring(2);
+        }
+        return path;
+    }
 
-	public static void main(String[] args) throws Exception {
-		PropertiesLauncher launcher = new PropertiesLauncher();
-		args = launcher.getArgs(args);
-		launcher.launch(args);
-	}
+    public static void main(String[] args) throws Exception {
+        PropertiesLauncher launcher = new PropertiesLauncher();
+        args = launcher.getArgs(args);
+        launcher.launch(args);
+    }
 
-	public static String toCamelCase(CharSequence string) {
-		if (string == null) {
-			return null;
-		}
-		StringBuilder builder = new StringBuilder();
-		Matcher matcher = WORD_SEPARATOR.matcher(string);
-		int pos = 0;
-		while (matcher.find()) {
-			builder.append(capitalize(string.subSequence(pos, matcher.end()).toString()));
-			pos = matcher.end();
-		}
-		builder.append(capitalize(string.subSequence(pos, string.length()).toString()));
-		return builder.toString();
-	}
+    public static String toCamelCase(CharSequence string) {
+        if (string == null) {
+            return null;
+        }
+        StringBuilder builder = new StringBuilder();
+        Matcher matcher = WORD_SEPARATOR.matcher(string);
+        int pos = 0;
+        while (matcher.find()) {
+            builder.append(capitalize(string.subSequence(pos, matcher.end()).toString()));
+            pos = matcher.end();
+        }
+        builder.append(capitalize(string.subSequence(pos, string.length()).toString()));
+        return builder.toString();
+    }
 
-	private static Object capitalize(String str) {
-		StringBuilder sb = new StringBuilder(str.length());
-		sb.append(Character.toUpperCase(str.charAt(0)));
-		sb.append(str.substring(1));
-		return sb.toString();
-	}
+    private static Object capitalize(String str) {
+        StringBuilder sb = new StringBuilder(str.length());
+        sb.append(Character.toUpperCase(str.charAt(0)));
+        sb.append(str.substring(1));
+        return sb.toString();
+    }
 
-	/**
-	 * Convenience class for finding nested archives (archive entries that can be
-	 * classpath entries).
-	 */
-	private static final class ArchiveEntryFilter implements EntryFilter {
+    /**
+     * Convenience class for finding nested archives (archive entries that can be
+     * classpath entries).
+     */
+    private static final class ArchiveEntryFilter implements EntryFilter {
 
-		private static final AsciiBytes DOT_JAR = new AsciiBytes(".jar");
+        private static final AsciiBytes DOT_JAR = new AsciiBytes(".jar");
 
-		private static final AsciiBytes DOT_ZIP = new AsciiBytes(".zip");
+        private static final AsciiBytes DOT_ZIP = new AsciiBytes(".zip");
 
-		@Override
-		public boolean matches(Entry entry) {
-			return entry.isDirectory() || entry.getName().endsWith(DOT_JAR)
-					|| entry.getName().endsWith(DOT_ZIP);
-		}
-	}
+        @Override
+        public boolean matches(Entry entry) {
+            return entry.isDirectory() || entry.getName().endsWith(DOT_JAR)
+                    || entry.getName().endsWith(DOT_ZIP);
+        }
+    }
 
-	/**
-	 * Convenience class for finding nested archives that have a prefix in their file path
-	 * (e.g. "lib/").
-	 */
-	private static final class PrefixMatchingArchiveFilter implements EntryFilter {
+    /**
+     * Convenience class for finding nested archives that have a prefix in their file path
+     * (e.g. "lib/").
+     */
+    private static final class PrefixMatchingArchiveFilter implements EntryFilter {
 
-		private final AsciiBytes prefix;
+        private final AsciiBytes prefix;
 
-		private final ArchiveEntryFilter filter = new ArchiveEntryFilter();
+        private final ArchiveEntryFilter filter = new ArchiveEntryFilter();
 
-		private PrefixMatchingArchiveFilter(String prefix) {
-			this.prefix = new AsciiBytes(prefix);
-		}
+        private PrefixMatchingArchiveFilter(String prefix) {
+            this.prefix = new AsciiBytes(prefix);
+        }
 
-		@Override
-		public boolean matches(Entry entry) {
-			return entry.getName().startsWith(this.prefix) && this.filter.matches(entry);
-		}
-	}
+        @Override
+        public boolean matches(Entry entry) {
+            return entry.getName().startsWith(this.prefix) && this.filter.matches(entry);
+        }
+    }
 
 }

@@ -30,37 +30,37 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests to reproduce reported issues.
- * 
+ *
  * @author Phillip Webb
  */
 public class AutoConfigurationReproTests {
 
-	private ConfigurableApplicationContext context;
+    private ConfigurableApplicationContext context;
 
-	@After
-	public void cleanup() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+    @After
+    public void cleanup() {
+        if (this.context != null) {
+            this.context.close();
+        }
+    }
 
-	@Test
-	public void doesNotEarlyInitializeFactoryBeans() throws Exception {
-		SpringApplication application = new SpringApplication(EarlyInitConfig.class,
-				PropertySourcesPlaceholderConfigurer.class,
-				EmbeddedServletContainerAutoConfiguration.class);
-		this.context = application.run();
-		String bean = (String) this.context.getBean("earlyInit");
-		assertThat(bean, equalTo("bucket"));
-	}
+    @Test
+    public void doesNotEarlyInitializeFactoryBeans() throws Exception {
+        SpringApplication application = new SpringApplication(EarlyInitConfig.class,
+                PropertySourcesPlaceholderConfigurer.class,
+                EmbeddedServletContainerAutoConfiguration.class);
+        this.context = application.run();
+        String bean = (String) this.context.getBean("earlyInit");
+        assertThat(bean, equalTo("bucket"));
+    }
 
-	@Configuration
-	public static class Config {
-	}
+    @Configuration
+    public static class Config {
+    }
 
-	@Configuration
-	@ImportResource("classpath:/early-init-test.xml")
-	public static class EarlyInitConfig {
+    @Configuration
+    @ImportResource("classpath:/early-init-test.xml")
+    public static class EarlyInitConfig {
 
-	}
+    }
 }

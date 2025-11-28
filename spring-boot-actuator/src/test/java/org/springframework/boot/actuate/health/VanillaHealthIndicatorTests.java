@@ -23,15 +23,15 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link VanillaHealthIndicator}.
- * 
+ *
  * @author Phillip Webb
  */
 public class VanillaHealthIndicatorTests {
 
-	@Test
-	public void ok() throws Exception {
-		VanillaHealthIndicator healthIndicator = new VanillaHealthIndicator();
-		assertThat(healthIndicator.health(), equalTo("ok"));
-	}
+    @Test
+    public void ok() throws Exception {
+        VanillaHealthIndicator healthIndicator = new VanillaHealthIndicator();
+        assertThat(healthIndicator.health(), equalTo("ok"));
+    }
 
 }

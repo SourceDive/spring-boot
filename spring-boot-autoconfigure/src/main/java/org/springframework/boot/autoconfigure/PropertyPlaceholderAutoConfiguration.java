@@ -27,7 +27,7 @@ import org.springframework.core.annotation.Order;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
  * {@link PropertySourcesPlaceholderConfigurer}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -35,10 +35,10 @@ import org.springframework.core.annotation.Order;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class PropertyPlaceholderAutoConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
-	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-		return new PropertySourcesPlaceholderConfigurer();
-	}
+    @Bean
+    @ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 
 }

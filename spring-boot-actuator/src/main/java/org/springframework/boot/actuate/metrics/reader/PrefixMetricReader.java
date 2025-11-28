@@ -20,16 +20,17 @@ import org.springframework.boot.actuate.metrics.Metric;
 
 /**
  * Interface for extracting metrics as a group whose name starts with a prefix.
- * 
+ *
  * @author Dave Syer
  */
 public interface PrefixMetricReader {
 
-	/**
-	 * Find all metrics whose name starts with the given prefix.
-	 * @param prefix the prefix for metric names
-	 * @return all metrics with names starting with the prefix
-	 */
-	Iterable<Metric<?>> findAll(String prefix);
+    /**
+     * Find all metrics whose name starts with the given prefix.
+     *
+     * @param prefix the prefix for metric names
+     * @return all metrics with names starting with the prefix
+     */
+    Iterable<Metric<?>> findAll(String prefix);
 
 }

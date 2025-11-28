@@ -16,18 +16,17 @@
 
 package org.springframework.boot.context.embedded;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.servlet.Registration;
-
 import org.springframework.core.Conventions;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
+import javax.servlet.Registration;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Base class for Servlet 3.0+ based registration beans.
- * 
+ *
  * @author Phillip Webb
  * @see ServletRegistrationBean
  * @see FilterRegistrationBean
@@ -35,100 +34,103 @@ import org.springframework.util.Assert;
  */
 public abstract class RegistrationBean implements ServletContextInitializer, Ordered {
 
-	private String name;
+    private String name;
 
-	private int order = Ordered.LOWEST_PRECEDENCE;
+    private int order = Ordered.LOWEST_PRECEDENCE;
 
-	private boolean asyncSupported = true;
+    private boolean asyncSupported = true;
 
-	private Map<String, String> initParameters = new LinkedHashMap<String, String>();
+    private Map<String, String> initParameters = new LinkedHashMap<String, String>();
 
-	/**
-	 * Set the name of this registration. If not specified the bean name will be used.
-	 */
-	public void setName(String name) {
-		Assert.hasLength(name, "Name must not be empty");
-		this.name = name;
-	}
+    /**
+     * Set the name of this registration. If not specified the bean name will be used.
+     */
+    public void setName(String name) {
+        Assert.hasLength(name, "Name must not be empty");
+        this.name = name;
+    }
 
-	/**
-	 * Sets if asynchronous operations are support for this registration. If not specified
-	 * defaults to {@code true}.
-	 */
-	public void setAsyncSupported(boolean asyncSupported) {
-		this.asyncSupported = asyncSupported;
-	}
+    /**
+     * Sets if asynchronous operations are support for this registration. If not specified
+     * defaults to {@code true}.
+     */
+    public void setAsyncSupported(boolean asyncSupported) {
+        this.asyncSupported = asyncSupported;
+    }
 
-	/**
-	 * Returns if asynchronous operations are support for this registration.
-	 */
-	public boolean isAsyncSupported() {
-		return this.asyncSupported;
-	}
+    /**
+     * Returns if asynchronous operations are support for this registration.
+     */
+    public boolean isAsyncSupported() {
+        return this.asyncSupported;
+    }
 
-	/**
-	 * Set init-parameters for this registration. Calling this method will replace any
-	 * existing init-parameters.
-	 * @see #getInitParameters
-	 * @see #addInitParameter
-	 */
-	public void setInitParameters(Map<String, String> initParameters) {
-		Assert.notNull(initParameters, "InitParameters must not be null");
-		this.initParameters = new LinkedHashMap<String, String>(initParameters);
-	}
+    /**
+     * Set init-parameters for this registration. Calling this method will replace any
+     * existing init-parameters.
+     *
+     * @see #getInitParameters
+     * @see #addInitParameter
+     */
+    public void setInitParameters(Map<String, String> initParameters) {
+        Assert.notNull(initParameters, "InitParameters must not be null");
+        this.initParameters = new LinkedHashMap<String, String>(initParameters);
+    }
 
-	/**
-	 * Returns a mutable Map of the registration init-parameters.
-	 */
-	public Map<String, String> getInitParameters() {
-		return this.initParameters;
-	}
+    /**
+     * Returns a mutable Map of the registration init-parameters.
+     */
+    public Map<String, String> getInitParameters() {
+        return this.initParameters;
+    }
 
-	/**
-	 * Add a single init-parameter, replacing any existing parameter with the same name.
-	 * @param name the init-parameter name
-	 * @param value the init-parameter value
-	 */
-	public void addInitParameter(String name, String value) {
-		Assert.notNull(name, "Name must not be null");
-		this.initParameters.put(name, value);
-	}
+    /**
+     * Add a single init-parameter, replacing any existing parameter with the same name.
+     *
+     * @param name  the init-parameter name
+     * @param value the init-parameter value
+     */
+    public void addInitParameter(String name, String value) {
+        Assert.notNull(name, "Name must not be null");
+        this.initParameters.put(name, value);
+    }
 
-	/**
-	 * Deduces the name for this registration. Will return user specified name or fallback
-	 * to convention based naming.
-	 * @param value the object used for convention based names
-	 */
-	protected final String getOrDeduceName(Object value) {
-		return (this.name != null ? this.name : Conventions.getVariableName(value));
-	}
+    /**
+     * Deduces the name for this registration. Will return user specified name or fallback
+     * to convention based naming.
+     *
+     * @param value the object used for convention based names
+     */
+    protected final String getOrDeduceName(Object value) {
+        return (this.name != null ? this.name : Conventions.getVariableName(value));
+    }
 
-	/**
-	 * Configure registration base settings.
-	 */
-	protected void configure(Registration.Dynamic registration) {
-		Assert.state(registration != null,
-				"Registration is null. Was something already registered for name=["
-						+ this.name + "]?");
-		registration.setAsyncSupported(this.asyncSupported);
-		if (this.initParameters.size() > 0) {
-			registration.setInitParameters(this.initParameters);
-		}
-	}
+    /**
+     * Configure registration base settings.
+     */
+    protected void configure(Registration.Dynamic registration) {
+        Assert.state(registration != null,
+                "Registration is null. Was something already registered for name=["
+                        + this.name + "]?");
+        registration.setAsyncSupported(this.asyncSupported);
+        if (this.initParameters.size() > 0) {
+            registration.setInitParameters(this.initParameters);
+        }
+    }
 
-	/**
-	 * @param order the order to set
-	 */
-	public void setOrder(int order) {
-		this.order = order;
-	}
+    /**
+     * @param order the order to set
+     */
+    public void setOrder(int order) {
+        this.order = order;
+    }
 
-	/**
-	 * @return the order
-	 */
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
+    /**
+     * @return the order
+     */
+    @Override
+    public int getOrder() {
+        return this.order;
+    }
 
 }

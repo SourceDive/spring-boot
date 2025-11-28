@@ -18,11 +18,11 @@ package org.springframework.boot.cli.command;
 
 /**
  * Exception used to indicate that no arguemnts were specified.
- * 
+ *
  * @author Phillip Webb
  */
 class NoArgumentsException extends CommandException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
 }

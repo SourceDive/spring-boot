@@ -29,23 +29,23 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ConfigFileApplicationContextInitializer}.
- * 
+ *
  * @author Phillip Webb
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ConfigFileApplicationContextInitializerTests.Config.class, initializers = ConfigFileApplicationContextInitializer.class)
 public class ConfigFileApplicationContextInitializerTests {
 
-	@Autowired
-	private Environment environment;
+    @Autowired
+    private Environment environment;
 
-	@Test
-	public void initializerPopulatesEnvironment() {
-		assertThat(this.environment.getProperty("foo"), equalTo("bucket"));
-	}
+    @Test
+    public void initializerPopulatesEnvironment() {
+        assertThat(this.environment.getProperty("foo"), equalTo("bucket"));
+    }
 
-	@Configuration
-	public static class Config {
+    @Configuration
+    public static class Config {
 
-	}
+    }
 }

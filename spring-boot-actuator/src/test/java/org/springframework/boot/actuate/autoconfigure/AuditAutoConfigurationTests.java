@@ -31,43 +31,43 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link AuditAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class AuditAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
-	@Test
-	public void testTraceConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(AuditAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(AuditEventRepository.class));
-		assertNotNull(this.context.getBean(AuthenticationAuditListener.class));
-		assertNotNull(this.context.getBean(AuthorizationAuditListener.class));
-	}
+    @Test
+    public void testTraceConfiguration() throws Exception {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(AuditAutoConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context.getBean(AuditEventRepository.class));
+        assertNotNull(this.context.getBean(AuthenticationAuditListener.class));
+        assertNotNull(this.context.getBean(AuthorizationAuditListener.class));
+    }
 
-	@Test
-	public void ownAutoRepository() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(Config.class, AuditAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(AuditEventRepository.class),
-				instanceOf(TestAuditEventRepository.class));
-	}
+    @Test
+    public void ownAutoRepository() throws Exception {
+        this.context = new AnnotationConfigApplicationContext();
+        this.context.register(Config.class, AuditAutoConfiguration.class);
+        this.context.refresh();
+        assertThat(this.context.getBean(AuditEventRepository.class),
+                instanceOf(TestAuditEventRepository.class));
+    }
 
-	@Configuration
-	public static class Config {
+    @Configuration
+    public static class Config {
 
-		@Bean
-		public TestAuditEventRepository testAuditEventRepository() {
-			return new TestAuditEventRepository();
-		}
+        @Bean
+        public TestAuditEventRepository testAuditEventRepository() {
+            return new TestAuditEventRepository();
+        }
 
-	}
+    }
 
-	public static class TestAuditEventRepository extends InMemoryAuditEventRepository {
-	}
+    public static class TestAuditEventRepository extends InMemoryAuditEventRepository {
+    }
 
 }

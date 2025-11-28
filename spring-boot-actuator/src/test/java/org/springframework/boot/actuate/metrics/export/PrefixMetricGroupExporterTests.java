@@ -16,55 +16,55 @@
 
 package org.springframework.boot.actuate.metrics.export;
 
-import java.util.Collections;
-
 import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Iterables;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 
+import java.util.Collections;
+
 import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link PrefixMetricGroupExporter}.
- * 
+ *
  * @author Dave Syer
  */
 public class PrefixMetricGroupExporterTests {
 
-	private final InMemoryMetricRepository reader = new InMemoryMetricRepository();
+    private final InMemoryMetricRepository reader = new InMemoryMetricRepository();
 
-	private final InMemoryMetricRepository writer = new InMemoryMetricRepository();
+    private final InMemoryMetricRepository writer = new InMemoryMetricRepository();
 
-	private final PrefixMetricGroupExporter exporter = new PrefixMetricGroupExporter(
-			this.reader, this.writer);
+    private final PrefixMetricGroupExporter exporter = new PrefixMetricGroupExporter(
+            this.reader, this.writer);
 
-	@Test
-	public void prefixedMetricsCopied() {
-		this.reader.set(new Metric<Number>("foo.bar", 2.3));
-		this.reader.set(new Metric<Number>("foo.spam", 1.3));
-		this.exporter.setGroups(Collections.singleton("foo"));
-		this.exporter.export();
-		assertEquals(1, Iterables.collection(this.writer.groups()).size());
-	}
+    @Test
+    public void prefixedMetricsCopied() {
+        this.reader.set(new Metric<Number>("foo.bar", 2.3));
+        this.reader.set(new Metric<Number>("foo.spam", 1.3));
+        this.exporter.setGroups(Collections.singleton("foo"));
+        this.exporter.export();
+        assertEquals(1, Iterables.collection(this.writer.groups()).size());
+    }
 
-	@Test
-	public void unprefixedMetricsNotCopied() {
-		this.reader.set(new Metric<Number>("foo.bar", 2.3));
-		this.reader.set(new Metric<Number>("foo.spam", 1.3));
-		this.exporter.setGroups(Collections.singleton("bar"));
-		this.exporter.export();
-		assertEquals(0, Iterables.collection(this.writer.groups()).size());
-	}
+    @Test
+    public void unprefixedMetricsNotCopied() {
+        this.reader.set(new Metric<Number>("foo.bar", 2.3));
+        this.reader.set(new Metric<Number>("foo.spam", 1.3));
+        this.exporter.setGroups(Collections.singleton("bar"));
+        this.exporter.export();
+        assertEquals(0, Iterables.collection(this.writer.groups()).size());
+    }
 
-	@Test
-	public void onlyPrefixedMetricsCopied() {
-		this.reader.set(new Metric<Number>("foo.bar", 2.3));
-		this.reader.set(new Metric<Number>("foo.spam", 1.3));
-		this.reader.set(new Metric<Number>("foobar.spam", 1.3));
-		this.exporter.setGroups(Collections.singleton("foo"));
-		this.exporter.export();
-		assertEquals(1, Iterables.collection(this.writer.groups()).size());
-	}
+    @Test
+    public void onlyPrefixedMetricsCopied() {
+        this.reader.set(new Metric<Number>("foo.bar", 2.3));
+        this.reader.set(new Metric<Number>("foo.spam", 1.3));
+        this.reader.set(new Metric<Number>("foobar.spam", 1.3));
+        this.exporter.setGroups(Collections.singleton("foo"));
+        this.exporter.export();
+        assertEquals(1, Iterables.collection(this.writer.groups()).size());
+    }
 
 }

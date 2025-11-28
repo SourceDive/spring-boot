@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -27,43 +24,46 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * {@link Condition} that checks for specific resources.
- * 
+ *
  * @author Dave Syer
  * @see ConditionalOnResource
  */
 class OnResourceCondition extends SpringBootCondition {
 
-	private final ResourceLoader defaultResourceLoader = new DefaultResourceLoader();
+    private final ResourceLoader defaultResourceLoader = new DefaultResourceLoader();
 
-	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
-				ConditionalOnResource.class.getName(), true);
-		if (attributes != null) {
-			ResourceLoader loader = context.getResourceLoader() == null ? this.defaultResourceLoader
-					: context.getResourceLoader();
-			List<String> locations = new ArrayList<String>();
-			collectValues(locations, attributes.get("resources"));
-			Assert.isTrue(locations.size() > 0,
-					"@ConditionalOnResource annotations must specify at least one resource location");
-			for (String location : locations) {
-				if (!loader.getResource(location).exists()) {
-					return ConditionOutcome.noMatch("resource not found: " + location);
-				}
-			}
-		}
-		return ConditionOutcome.match();
-	}
+    @Override
+    public ConditionOutcome getMatchOutcome(ConditionContext context,
+                                            AnnotatedTypeMetadata metadata) {
+        MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
+                ConditionalOnResource.class.getName(), true);
+        if (attributes != null) {
+            ResourceLoader loader = context.getResourceLoader() == null ? this.defaultResourceLoader
+                    : context.getResourceLoader();
+            List<String> locations = new ArrayList<String>();
+            collectValues(locations, attributes.get("resources"));
+            Assert.isTrue(locations.size() > 0,
+                    "@ConditionalOnResource annotations must specify at least one resource location");
+            for (String location : locations) {
+                if (!loader.getResource(location).exists()) {
+                    return ConditionOutcome.noMatch("resource not found: " + location);
+                }
+            }
+        }
+        return ConditionOutcome.match();
+    }
 
-	private void collectValues(List<String> names, List<Object> values) {
-		for (Object value : values) {
-			for (Object item : (Object[]) value) {
-				names.add((String) item);
-			}
-		}
-	}
+    private void collectValues(List<String> names, List<Object> values) {
+        for (Object value : values) {
+            for (Object item : (Object[]) value) {
+                names.add((String) item);
+            }
+        }
+    }
 
 }

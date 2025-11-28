@@ -16,11 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.servlet.Filter;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
@@ -48,102 +43,106 @@ import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
+import javax.servlet.Filter;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Configuration triggered from {@link EndpointWebMvcAutoConfiguration} when a new
  * {@link EmbeddedServletContainer} running on a different port is required.
- * 
+ *
  * @author Dave Syer
  * @see EndpointWebMvcAutoConfiguration
  */
 @Configuration
 public class EndpointWebMvcChildContextConfiguration {
 
-	@Value("${error.path:/error}")
-	private String errorPath = "/error";
+    @Value("${error.path:/error}")
+    private String errorPath = "/error";
 
-	@Configuration
-	protected static class ServerCustomization implements
-			EmbeddedServletContainerCustomizer {
+    @Configuration
+    protected static class ServerCustomization implements
+            EmbeddedServletContainerCustomizer {
 
-		@Value("${error.path:/error}")
-		private String errorPath = "/error";
+        @Value("${error.path:/error}")
+        private String errorPath = "/error";
 
-		@Autowired
-		private ListableBeanFactory beanFactory;
+        @Autowired
+        private ListableBeanFactory beanFactory;
 
-		// This needs to be lazily initialized because EmbeddedServletContainerCustomizer
-		// instances get their callback very early in the context lifecycle.
-		private ManagementServerProperties managementServerProperties;
+        // This needs to be lazily initialized because EmbeddedServletContainerCustomizer
+        // instances get their callback very early in the context lifecycle.
+        private ManagementServerProperties managementServerProperties;
 
-		@Override
-		public void customize(ConfigurableEmbeddedServletContainer container) {
-			if (this.managementServerProperties == null) {
-				this.managementServerProperties = BeanFactoryUtils
-						.beanOfTypeIncludingAncestors(this.beanFactory,
-								ManagementServerProperties.class);
-			}
-			container.setPort(this.managementServerProperties.getPort());
-			container.setAddress(this.managementServerProperties.getAddress());
-			container.setContextPath(this.managementServerProperties.getContextPath());
-			container.addErrorPages(new ErrorPage(this.errorPath));
-		}
+        @Override
+        public void customize(ConfigurableEmbeddedServletContainer container) {
+            if (this.managementServerProperties == null) {
+                this.managementServerProperties = BeanFactoryUtils
+                        .beanOfTypeIncludingAncestors(this.beanFactory,
+                                ManagementServerProperties.class);
+            }
+            container.setPort(this.managementServerProperties.getPort());
+            container.setAddress(this.managementServerProperties.getAddress());
+            container.setContextPath(this.managementServerProperties.getContextPath());
+            container.addErrorPages(new ErrorPage(this.errorPath));
+        }
 
-	}
+    }
 
-	@Bean
-	public DispatcherServlet dispatcherServlet() {
-		DispatcherServlet dispatcherServlet = new DispatcherServlet();
+    @Bean
+    public DispatcherServlet dispatcherServlet() {
+        DispatcherServlet dispatcherServlet = new DispatcherServlet();
 
-		// Ensure the parent configuration does not leak down to us
-		dispatcherServlet.setDetectAllHandlerAdapters(false);
-		dispatcherServlet.setDetectAllHandlerExceptionResolvers(false);
-		dispatcherServlet.setDetectAllHandlerMappings(false);
-		dispatcherServlet.setDetectAllViewResolvers(false);
+        // Ensure the parent configuration does not leak down to us
+        dispatcherServlet.setDetectAllHandlerAdapters(false);
+        dispatcherServlet.setDetectAllHandlerExceptionResolvers(false);
+        dispatcherServlet.setDetectAllHandlerMappings(false);
+        dispatcherServlet.setDetectAllViewResolvers(false);
 
-		return dispatcherServlet;
-	}
+        return dispatcherServlet;
+    }
 
-	@Bean
-	public HandlerAdapter handlerAdapter(HttpMessageConverters converters) {
-		// TODO: maybe this needs more configuration for non-basic response use cases
-		RequestMappingHandlerAdapter adapter = new RequestMappingHandlerAdapter();
-		adapter.setMessageConverters(converters.getConverters());
-		return adapter;
-	}
+    @Bean
+    public HandlerAdapter handlerAdapter(HttpMessageConverters converters) {
+        // TODO: maybe this needs more configuration for non-basic response use cases
+        RequestMappingHandlerAdapter adapter = new RequestMappingHandlerAdapter();
+        adapter.setMessageConverters(converters.getConverters());
+        return adapter;
+    }
 
-	@Bean
-	public HandlerMapping handlerMapping(MvcEndpoints endpoints,
-			ListableBeanFactory beanFactory) {
-		Set<MvcEndpoint> set = new HashSet<MvcEndpoint>(endpoints.getEndpoints());
-		set.addAll(beanFactory.getBeansOfType(MvcEndpoint.class).values());
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(set);
-		// In a child context we definitely want to see the parent endpoints
-		mapping.setDetectHandlerMethodsInAncestorContexts(true);
-		return mapping;
-	}
+    @Bean
+    public HandlerMapping handlerMapping(MvcEndpoints endpoints,
+                                         ListableBeanFactory beanFactory) {
+        Set<MvcEndpoint> set = new HashSet<MvcEndpoint>(endpoints.getEndpoints());
+        set.addAll(beanFactory.getBeansOfType(MvcEndpoint.class).values());
+        EndpointHandlerMapping mapping = new EndpointHandlerMapping(set);
+        // In a child context we definitely want to see the parent endpoints
+        mapping.setDetectHandlerMethodsInAncestorContexts(true);
+        return mapping;
+    }
 
-	/*
-	 * The error controller is present but not mapped as an endpoint in this context
-	 * because of the DispatcherServlet having had it's HandlerMapping explicitly
-	 * disabled. So this tiny shim exposes the same feature but only for machine
-	 * endpoints.
-	 */
-	@Bean
-	public ManagementErrorEndpoint errorEndpoint(final ErrorController controller) {
-		return new ManagementErrorEndpoint(this.errorPath, controller);
-	}
+    /*
+     * The error controller is present but not mapped as an endpoint in this context
+     * because of the DispatcherServlet having had it's HandlerMapping explicitly
+     * disabled. So this tiny shim exposes the same feature but only for machine
+     * endpoints.
+     */
+    @Bean
+    public ManagementErrorEndpoint errorEndpoint(final ErrorController controller) {
+        return new ManagementErrorEndpoint(this.errorPath, controller);
+    }
 
-	@Configuration
-	@ConditionalOnClass({ EnableWebSecurity.class, Filter.class })
-	@ConditionalOnBean(name = "springSecurityFilterChain", search = SearchStrategy.PARENTS)
-	public static class EndpointWebMvcChildContextSecurityConfiguration {
+    @Configuration
+    @ConditionalOnClass({EnableWebSecurity.class, Filter.class})
+    @ConditionalOnBean(name = "springSecurityFilterChain", search = SearchStrategy.PARENTS)
+    public static class EndpointWebMvcChildContextSecurityConfiguration {
 
-		@Bean
-		public Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
-			BeanFactory parent = beanFactory.getParentBeanFactory();
-			return parent.getBean("springSecurityFilterChain", Filter.class);
-		}
+        @Bean
+        public Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
+            BeanFactory parent = beanFactory.getParentBeanFactory();
+            return parent.getBean("springSecurityFilterChain", Filter.class);
+        }
 
-	}
+    }
 
 }

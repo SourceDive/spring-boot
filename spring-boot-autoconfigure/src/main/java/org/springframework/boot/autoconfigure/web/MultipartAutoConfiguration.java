@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.Servlet;
-
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,22 +24,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.Servlet;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for multi-part uploads. Adds a
  * {@link StandardServletMultipartResolver} when a {@link MultipartConfigElement} bean is
  * defined. The {@link EmbeddedWebApplicationContext} will associated the
  * {@link MultipartConfigElement} bean to any {@link Servlet} beans.
- * 
+ *
  * @author Greg Turnquist
  */
 @Configuration
-@ConditionalOnClass({ Servlet.class, StandardServletMultipartResolver.class })
+@ConditionalOnClass({Servlet.class, StandardServletMultipartResolver.class})
 @ConditionalOnBean(MultipartConfigElement.class)
 public class MultipartAutoConfiguration {
 
-	@Bean
-	public StandardServletMultipartResolver multipartResolver() {
-		return new StandardServletMultipartResolver();
-	}
+    @Bean
+    public StandardServletMultipartResolver multipartResolver() {
+        return new StandardServletMultipartResolver();
+    }
 
 }

@@ -25,56 +25,56 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link ContextIdApplicationContextInitializer}.
- * 
+ *
  * @author Dave Syer
  */
 public class ContextIdApplicationContextInitializerTests {
 
-	private final ContextIdApplicationContextInitializer initializer = new ContextIdApplicationContextInitializer();
+    private final ContextIdApplicationContextInitializer initializer = new ContextIdApplicationContextInitializer();
 
-	@Test
-	public void testDefaults() {
-		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		this.initializer.initialize(context);
-		assertEquals("application", context.getId());
-	}
+    @Test
+    public void testDefaults() {
+        ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
+        this.initializer.initialize(context);
+        assertEquals("application", context.getId());
+    }
 
-	@Test
-	public void testNameAndPort() {
-		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.application.name:foo",
-				"PORT:8080");
-		this.initializer.initialize(context);
-		assertEquals("foo:8080", context.getId());
-	}
+    @Test
+    public void testNameAndPort() {
+        ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
+        EnvironmentTestUtils.addEnvironment(context, "spring.application.name:foo",
+                "PORT:8080");
+        this.initializer.initialize(context);
+        assertEquals("foo:8080", context.getId());
+    }
 
-	@Test
-	public void testNameAndProfiles() {
-		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.application.name:foo",
-				"spring.profiles.active: spam,bar", "spring.application.index:12");
-		this.initializer.initialize(context);
-		assertEquals("foo:spam,bar:12", context.getId());
-	}
+    @Test
+    public void testNameAndProfiles() {
+        ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
+        EnvironmentTestUtils.addEnvironment(context, "spring.application.name:foo",
+                "spring.profiles.active: spam,bar", "spring.application.index:12");
+        this.initializer.initialize(context);
+        assertEquals("foo:spam,bar:12", context.getId());
+    }
 
-	@Test
-	public void testCloudFoundry() {
-		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.config.name:foo",
-				"PORT:8080", "vcap.application.name:bar",
-				"vcap.application.instance_index:2");
-		this.initializer.initialize(context);
-		assertEquals("bar:2", context.getId());
-	}
+    @Test
+    public void testCloudFoundry() {
+        ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
+        EnvironmentTestUtils.addEnvironment(context, "spring.config.name:foo",
+                "PORT:8080", "vcap.application.name:bar",
+                "vcap.application.instance_index:2");
+        this.initializer.initialize(context);
+        assertEquals("bar:2", context.getId());
+    }
 
-	@Test
-	public void testExplicitName() {
-		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.application.name:spam",
-				"spring.config.name:foo", "PORT:8080", "vcap.application.name:bar",
-				"vcap.application.instance_index:2");
-		this.initializer.initialize(context);
-		assertEquals("bar:2", context.getId());
-	}
+    @Test
+    public void testExplicitName() {
+        ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
+        EnvironmentTestUtils.addEnvironment(context, "spring.application.name:spam",
+                "spring.config.name:foo", "PORT:8080", "vcap.application.name:bar",
+                "vcap.application.instance_index:2");
+        this.initializer.initialize(context);
+        assertEquals("bar:2", context.getId());
+    }
 
 }

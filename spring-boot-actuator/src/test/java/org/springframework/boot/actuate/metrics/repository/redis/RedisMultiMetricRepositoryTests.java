@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.metrics.repository.redis;
 
-import java.util.Arrays;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,59 +24,59 @@ import org.springframework.boot.actuate.metrics.Iterables;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import java.util.Arrays;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Dave Syer
  */
 public class RedisMultiMetricRepositoryTests {
 
-	@Rule
-	public RedisServer redis = RedisServer.running();
-	private RedisMultiMetricRepository repository;
+    @Rule
+    public RedisServer redis = RedisServer.running();
+    private RedisMultiMetricRepository repository;
 
-	@Before
-	public void init() {
-		this.repository = new RedisMultiMetricRepository(this.redis.getResource());
-	}
+    @Before
+    public void init() {
+        this.repository = new RedisMultiMetricRepository(this.redis.getResource());
+    }
 
-	@After
-	public void clear() {
-		assertTrue(new StringRedisTemplate(this.redis.getResource()).opsForZSet().size(
-				"spring.groups.foo") > 0);
-		this.repository.reset("foo");
-		this.repository.reset("bar");
-		assertNull(new StringRedisTemplate(this.redis.getResource()).opsForValue().get(
-				"spring.groups.foo"));
-		assertNull(new StringRedisTemplate(this.redis.getResource()).opsForValue().get(
-				"spring.groups.bar"));
-	}
+    @After
+    public void clear() {
+        assertTrue(new StringRedisTemplate(this.redis.getResource()).opsForZSet().size(
+                "spring.groups.foo") > 0);
+        this.repository.reset("foo");
+        this.repository.reset("bar");
+        assertNull(new StringRedisTemplate(this.redis.getResource()).opsForValue().get(
+                "spring.groups.foo"));
+        assertNull(new StringRedisTemplate(this.redis.getResource()).opsForValue().get(
+                "spring.groups.bar"));
+    }
 
-	@Test
-	public void setAndGet() {
-		this.repository.save("foo", Arrays.<Metric<?>> asList(new Metric<Number>(
-				"foo.val", 12.3), new Metric<Number>("foo.bar", 11.3)));
-		assertEquals(2, Iterables.collection(this.repository.findAll("foo")).size());
-	}
+    @Test
+    public void setAndGet() {
+        this.repository.save("foo", Arrays.<Metric<?>>asList(new Metric<Number>(
+                "foo.val", 12.3), new Metric<Number>("foo.bar", 11.3)));
+        assertEquals(2, Iterables.collection(this.repository.findAll("foo")).size());
+    }
 
-	@Test
-	public void groups() {
-		this.repository.save("foo", Arrays.<Metric<?>> asList(new Metric<Number>(
-				"foo.val", 12.3), new Metric<Number>("foo.bar", 11.3)));
-		this.repository.save("bar", Arrays.<Metric<?>> asList(new Metric<Number>(
-				"bar.val", 12.3), new Metric<Number>("bar.foo", 11.3)));
-		assertEquals(2, Iterables.collection(this.repository.groups()).size());
-	}
+    @Test
+    public void groups() {
+        this.repository.save("foo", Arrays.<Metric<?>>asList(new Metric<Number>(
+                "foo.val", 12.3), new Metric<Number>("foo.bar", 11.3)));
+        this.repository.save("bar", Arrays.<Metric<?>>asList(new Metric<Number>(
+                "bar.val", 12.3), new Metric<Number>("bar.foo", 11.3)));
+        assertEquals(2, Iterables.collection(this.repository.groups()).size());
+    }
 
-	@Test
-	public void count() {
-		this.repository.save("foo", Arrays.<Metric<?>> asList(new Metric<Number>(
-				"foo.val", 12.3), new Metric<Number>("foo.bar", 11.3)));
-		this.repository.save("bar", Arrays.<Metric<?>> asList(new Metric<Number>(
-				"bar.val", 12.3), new Metric<Number>("bar.foo", 11.3)));
-		assertEquals(2, this.repository.count());
-	}
+    @Test
+    public void count() {
+        this.repository.save("foo", Arrays.<Metric<?>>asList(new Metric<Number>(
+                "foo.val", 12.3), new Metric<Number>("foo.bar", 11.3)));
+        this.repository.save("bar", Arrays.<Metric<?>>asList(new Metric<Number>(
+                "bar.val", 12.3), new Metric<Number>("bar.foo", 11.3)));
+        assertEquals(2, this.repository.count());
+    }
 
 }

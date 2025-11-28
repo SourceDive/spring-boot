@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link IntegrationTest}
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -44,33 +44,33 @@ import static org.junit.Assert.assertEquals;
 @IntegrationTest
 public class SpringApplicationIntegrationTestTests {
 
-	@Test
-	public void runAndTestHttpEndpoint() {
-		String body = new RestTemplate().getForObject("http://localhost:8080/",
-				String.class);
-		assertEquals("Hello World", body);
-	}
+    @Test
+    public void runAndTestHttpEndpoint() {
+        String body = new RestTemplate().getForObject("http://localhost:8080/",
+                String.class);
+        assertEquals("Hello World", body);
+    }
 
-	@Configuration
-	@EnableWebMvc
-	@RestController
-	protected static class Config {
+    @Configuration
+    @EnableWebMvc
+    @RestController
+    protected static class Config {
 
-		@Bean
-		public DispatcherServlet dispatcherServlet() {
-			return new DispatcherServlet();
-		}
+        @Bean
+        public DispatcherServlet dispatcherServlet() {
+            return new DispatcherServlet();
+        }
 
-		@Bean
-		public EmbeddedServletContainerFactory embeddedServletContainer() {
-			return new TomcatEmbeddedServletContainerFactory();
-		}
+        @Bean
+        public EmbeddedServletContainerFactory embeddedServletContainer() {
+            return new TomcatEmbeddedServletContainerFactory();
+        }
 
-		@RequestMapping("/")
-		public String home() {
-			return "Hello World";
-		}
+        @RequestMapping("/")
+        public String home() {
+            return "Hello World";
+        }
 
-	}
+    }
 
 }

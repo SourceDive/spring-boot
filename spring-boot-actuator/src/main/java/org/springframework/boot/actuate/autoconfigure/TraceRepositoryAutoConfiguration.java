@@ -25,16 +25,16 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link TraceRepository tracing}.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
 public class TraceRepositoryAutoConfiguration {
 
-	@ConditionalOnMissingBean
-	@Bean
-	public TraceRepository traceRepository() {
-		return new InMemoryTraceRepository();
-	}
+    @ConditionalOnMissingBean
+    @Bean
+    public TraceRepository traceRepository() {
+        return new InMemoryTraceRepository();
+    }
 
 }

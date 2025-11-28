@@ -16,60 +16,60 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import javax.sql.DataSource;
-
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.sql.DataSource;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link DataSourceTransactionManagerAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class DataSourceTransactionManagerAutoConfigurationTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@Test
-	public void testDataSourceExists() throws Exception {
-		this.context.register(EmbeddedDataSourceConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-		assertNotNull(this.context.getBean(DataSourceTransactionManager.class));
-		assertNotNull(this.context
-				.getBean(AbstractTransactionManagementConfiguration.class));
-	}
+    @Test
+    public void testDataSourceExists() throws Exception {
+        this.context.register(EmbeddedDataSourceConfiguration.class,
+                DataSourceTransactionManagerAutoConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context.getBean(DataSource.class));
+        assertNotNull(this.context.getBean(DataSourceTransactionManager.class));
+        assertNotNull(this.context
+                .getBean(AbstractTransactionManagementConfiguration.class));
+    }
 
-	@Test
-	public void testNoDataSourceExists() throws Exception {
-		this.context.register(DataSourceTransactionManagerAutoConfiguration.class);
-		this.context.refresh();
-		assertEquals(0, this.context.getBeanNamesForType(DataSource.class).length);
-		assertEquals(
-				0,
-				this.context.getBeanNamesForType(DataSourceTransactionManager.class).length);
-	}
+    @Test
+    public void testNoDataSourceExists() throws Exception {
+        this.context.register(DataSourceTransactionManagerAutoConfiguration.class);
+        this.context.refresh();
+        assertEquals(0, this.context.getBeanNamesForType(DataSource.class).length);
+        assertEquals(
+                0,
+                this.context.getBeanNamesForType(DataSourceTransactionManager.class).length);
+    }
 
-	@Test
-	public void testManualConfiguration() throws Exception {
-		this.context.register(SwitchTransactionsOn.class,
-				EmbeddedDataSourceConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-		assertNotNull(this.context.getBean(DataSourceTransactionManager.class));
-	}
+    @Test
+    public void testManualConfiguration() throws Exception {
+        this.context.register(SwitchTransactionsOn.class,
+                EmbeddedDataSourceConfiguration.class,
+                DataSourceTransactionManagerAutoConfiguration.class);
+        this.context.refresh();
+        assertNotNull(this.context.getBean(DataSource.class));
+        assertNotNull(this.context.getBean(DataSourceTransactionManager.class));
+    }
 
-	@EnableTransactionManagement
-	protected static class SwitchTransactionsOn {
+    @EnableTransactionManagement
+    protected static class SwitchTransactionsOn {
 
-	}
+    }
 
 }

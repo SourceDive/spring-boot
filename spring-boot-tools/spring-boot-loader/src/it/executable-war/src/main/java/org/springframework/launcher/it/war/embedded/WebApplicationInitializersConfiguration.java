@@ -34,41 +34,40 @@ import org.springframework.web.WebApplicationInitializer;
  */
 public class WebApplicationInitializersConfiguration extends AbstractConfiguration {
 
-	private Class<?>[] webApplicationInitializers;
+    private Class<?>[] webApplicationInitializers;
 
-	public WebApplicationInitializersConfiguration(Class<?> webApplicationInitializer,
-			Class<?>... webApplicationInitializers) {
-		this.webApplicationInitializers = new Class<?>[webApplicationInitializers.length + 1];
-		this.webApplicationInitializers[0] = webApplicationInitializer;
-		System.arraycopy(webApplicationInitializers, 0, this.webApplicationInitializers,
-				1, webApplicationInitializers.length);
-		for (Class<?> i : webApplicationInitializers) {
-			Assert.notNull(i, "WebApplicationInitializer must not be null");
-			Assert.isAssignable(WebApplicationInitializer.class, i);
-		}
-	}
+    public WebApplicationInitializersConfiguration(Class<?> webApplicationInitializer,
+                                                   Class<?>... webApplicationInitializers) {
+        this.webApplicationInitializers = new Class<?>[webApplicationInitializers.length + 1];
+        this.webApplicationInitializers[0] = webApplicationInitializer;
+        System.arraycopy(webApplicationInitializers, 0, this.webApplicationInitializers,
+                1, webApplicationInitializers.length);
+        for (Class<?> i : webApplicationInitializers) {
+            Assert.notNull(i, "WebApplicationInitializer must not be null");
+            Assert.isAssignable(WebApplicationInitializer.class, i);
+        }
+    }
 
-	@Override
-	public void configure(WebAppContext context) throws Exception {
-		context.getServletContext().addListener(new ServletContextListener() {
+    @Override
+    public void configure(WebAppContext context) throws Exception {
+        context.getServletContext().addListener(new ServletContextListener() {
 
-			@Override
-			public void contextInitialized(ServletContextEvent sce) {
-				try {
-					for (Class<?> webApplicationInitializer : webApplicationInitializers) {
-						WebApplicationInitializer initializer = (WebApplicationInitializer) webApplicationInitializer.newInstance();
-						initializer.onStartup(sce.getServletContext());
-					}
-				}
-				catch (Exception ex) {
-					throw new RuntimeException(ex);
-				}
-			}
+            @Override
+            public void contextInitialized(ServletContextEvent sce) {
+                try {
+                    for (Class<?> webApplicationInitializer : webApplicationInitializers) {
+                        WebApplicationInitializer initializer = (WebApplicationInitializer) webApplicationInitializer.newInstance();
+                        initializer.onStartup(sce.getServletContext());
+                    }
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
 
-			@Override
-			public void contextDestroyed(ServletContextEvent sce) {
-			}
-		});
-	}
+            @Override
+            public void contextDestroyed(ServletContextEvent sce) {
+            }
+        });
+    }
 
 }

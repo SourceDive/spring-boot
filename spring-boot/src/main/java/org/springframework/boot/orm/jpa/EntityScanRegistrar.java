@@ -16,11 +16,6 @@
 
 package org.springframework.boot.orm.jpa;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -36,93 +31,98 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 /**
  * {@link ImportBeanDefinitionRegistrar} used by {@link EntityScan}.
- * 
+ *
  * @author Phillip Webb
  */
 class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 
-	private static final String BEAN_NAME = "entityScanBeanPostProcessor";
+    private static final String BEAN_NAME = "entityScanBeanPostProcessor";
 
-	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-			BeanDefinitionRegistry registry) {
-		if (!registry.containsBeanDefinition(BEAN_NAME)) {
-			GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-			beanDefinition.setBeanClass(EntityScanBeanPostProcessor.class);
-			beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(
-					getPackagesToScan(importingClassMetadata));
-			beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-			registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
-		}
-	}
+    @Override
+    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+                                        BeanDefinitionRegistry registry) {
+        if (!registry.containsBeanDefinition(BEAN_NAME)) {
+            GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
+            beanDefinition.setBeanClass(EntityScanBeanPostProcessor.class);
+            beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(
+                    getPackagesToScan(importingClassMetadata));
+            beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+            registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
+        }
+    }
 
-	private String[] getPackagesToScan(AnnotationMetadata metadata) {
-		AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
-				.getAnnotationAttributes(EntityScan.class.getName()));
-		String[] value = attributes.getStringArray("value");
-		String[] basePackages = attributes.getStringArray("basePackages");
-		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
+    private String[] getPackagesToScan(AnnotationMetadata metadata) {
+        AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
+                .getAnnotationAttributes(EntityScan.class.getName()));
+        String[] value = attributes.getStringArray("value");
+        String[] basePackages = attributes.getStringArray("basePackages");
+        Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
 
-		if (!ObjectUtils.isEmpty(value)) {
-			Assert.state(ObjectUtils.isEmpty(basePackages),
-					"@EntityScan basePackages and value attributes are mutually exclusive");
-		}
+        if (!ObjectUtils.isEmpty(value)) {
+            Assert.state(ObjectUtils.isEmpty(basePackages),
+                    "@EntityScan basePackages and value attributes are mutually exclusive");
+        }
 
-		Set<String> packagesToScan = new LinkedHashSet<String>();
-		packagesToScan.addAll(Arrays.asList(value));
-		packagesToScan.addAll(Arrays.asList(basePackages));
-		for (Class<?> basePackageClass : basePackageClasses) {
-			packagesToScan.add(ClassUtils.getPackageName(basePackageClass));
-		}
-		if (packagesToScan.isEmpty()) {
-			return new String[] { ClassUtils.getPackageName(metadata.getClassName()) };
-		}
-		return new ArrayList<String>(packagesToScan).toArray(new String[packagesToScan
-				.size()]);
-	}
+        Set<String> packagesToScan = new LinkedHashSet<String>();
+        packagesToScan.addAll(Arrays.asList(value));
+        packagesToScan.addAll(Arrays.asList(basePackages));
+        for (Class<?> basePackageClass : basePackageClasses) {
+            packagesToScan.add(ClassUtils.getPackageName(basePackageClass));
+        }
+        if (packagesToScan.isEmpty()) {
+            return new String[]{ClassUtils.getPackageName(metadata.getClassName())};
+        }
+        return new ArrayList<String>(packagesToScan).toArray(new String[packagesToScan
+                .size()]);
+    }
 
-	/**
-	 * {@link BeanPostProcessor} to set
-	 * {@link LocalContainerEntityManagerFactoryBean#setPackagesToScan(String...)} based
-	 * on an {@link EntityScan} annotation.
-	 */
-	static class EntityScanBeanPostProcessor implements BeanPostProcessor,
-			ApplicationListener<ContextRefreshedEvent> {
+    /**
+     * {@link BeanPostProcessor} to set
+     * {@link LocalContainerEntityManagerFactoryBean#setPackagesToScan(String...)} based
+     * on an {@link EntityScan} annotation.
+     */
+    static class EntityScanBeanPostProcessor implements BeanPostProcessor,
+            ApplicationListener<ContextRefreshedEvent> {
 
-		private final String[] packagesToScan;
+        private final String[] packagesToScan;
 
-		private boolean processed;
+        private boolean processed;
 
-		public EntityScanBeanPostProcessor(String[] packagesToScan) {
-			this.packagesToScan = packagesToScan;
-		}
+        public EntityScanBeanPostProcessor(String[] packagesToScan) {
+            this.packagesToScan = packagesToScan;
+        }
 
-		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
-				throws BeansException {
-			if (bean instanceof LocalContainerEntityManagerFactoryBean) {
-				LocalContainerEntityManagerFactoryBean factoryBean = (LocalContainerEntityManagerFactoryBean) bean;
-				factoryBean.setPackagesToScan(this.packagesToScan);
-				this.processed = true;
-			}
-			return bean;
-		}
+        @Override
+        public Object postProcessBeforeInitialization(Object bean, String beanName)
+                throws BeansException {
+            if (bean instanceof LocalContainerEntityManagerFactoryBean) {
+                LocalContainerEntityManagerFactoryBean factoryBean = (LocalContainerEntityManagerFactoryBean) bean;
+                factoryBean.setPackagesToScan(this.packagesToScan);
+                this.processed = true;
+            }
+            return bean;
+        }
 
-		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName)
-				throws BeansException {
-			return bean;
-		}
+        @Override
+        public Object postProcessAfterInitialization(Object bean, String beanName)
+                throws BeansException {
+            return bean;
+        }
 
-		@Override
-		public void onApplicationEvent(ContextRefreshedEvent event) {
-			Assert.state(this.processed, "Unable to configure "
-					+ "LocalContainerEntityManagerFactoryBean from @EntityScan, "
-					+ "ensure an appropriate bean is registered.");
-		}
+        @Override
+        public void onApplicationEvent(ContextRefreshedEvent event) {
+            Assert.state(this.processed, "Unable to configure "
+                    + "LocalContainerEntityManagerFactoryBean from @EntityScan, "
+                    + "ensure an appropriate bean is registered.");
+        }
 
-	}
+    }
 
 }

@@ -24,16 +24,16 @@ import java.lang.annotation.Target;
 /**
  * Hint for that an {@link EnableAutoConfiguration auto-configuration} should be applied
  * before other specified auto-configuration classes.
- * 
+ *
  * @author Phillip Webb
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE })
+@Target({ElementType.TYPE})
 public @interface AutoConfigureBefore {
 
-	/**
-	 * The auto-configure classes that should have not yet been applied.
-	 */
-	Class<?>[] value();
+    /**
+     * The auto-configure classes that should have not yet been applied.
+     */
+    Class<?>[] value();
 
 }

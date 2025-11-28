@@ -22,31 +22,31 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link RabbitProperties}.
- * 
+ *
  * @author Dave Syer
  */
 public class RabbitPropertiesTests {
 
-	private RabbitProperties properties = new RabbitProperties();
+    private RabbitProperties properties = new RabbitProperties();
 
-	@Test
-	public void addressesNotSet() {
-		assertEquals("localhost", this.properties.getHost());
-		assertEquals(5672, this.properties.getPort());
-	}
+    @Test
+    public void addressesNotSet() {
+        assertEquals("localhost", this.properties.getHost());
+        assertEquals(5672, this.properties.getPort());
+    }
 
-	@Test
-	public void addressesSingleValued() {
-		this.properties.setAddresses("myhost:9999");
-		assertEquals("myhost", this.properties.getHost());
-		assertEquals(9999, this.properties.getPort());
-	}
+    @Test
+    public void addressesSingleValued() {
+        this.properties.setAddresses("myhost:9999");
+        assertEquals("myhost", this.properties.getHost());
+        assertEquals(9999, this.properties.getPort());
+    }
 
-	@Test
-	public void addressesDoubleValued() {
-		this.properties.setAddresses("myhost:9999,otherhost:1111");
-		assertEquals(null, this.properties.getHost());
-		assertEquals(9999, this.properties.getPort());
-	}
+    @Test
+    public void addressesDoubleValued() {
+        this.properties.setAddresses("myhost:9999,otherhost:1111");
+        assertEquals(null, this.properties.getHost());
+        assertEquals(9999, this.properties.getPort());
+    }
 
 }

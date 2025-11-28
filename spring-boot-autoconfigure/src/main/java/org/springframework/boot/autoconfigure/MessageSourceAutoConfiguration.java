@@ -33,7 +33,7 @@ import static org.springframework.util.StringUtils.trimAllWhitespace;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link MessageSource}.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
@@ -41,24 +41,24 @@ import static org.springframework.util.StringUtils.trimAllWhitespace;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class MessageSourceAutoConfiguration implements EnvironmentAware {
 
-	private RelaxedPropertyResolver environment;
+    private RelaxedPropertyResolver environment;
 
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = new RelaxedPropertyResolver(environment, "spring.messages.");
-	}
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = new RelaxedPropertyResolver(environment, "spring.messages.");
+    }
 
-	@Bean
-	public MessageSource messageSource() {
-		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-		String basename = this.environment.getProperty("basename", "messages");
-		if (StringUtils.hasText(basename)) {
-			messageSource
-					.setBasenames(commaDelimitedListToStringArray(trimAllWhitespace(basename)));
-		}
-		String encoding = this.environment.getProperty("encoding", "utf-8");
-		messageSource.setDefaultEncoding(encoding);
-		return messageSource;
-	}
+    @Bean
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        String basename = this.environment.getProperty("basename", "messages");
+        if (StringUtils.hasText(basename)) {
+            messageSource
+                    .setBasenames(commaDelimitedListToStringArray(trimAllWhitespace(basename)));
+        }
+        String encoding = this.environment.getProperty("encoding", "utf-8");
+        messageSource.setDefaultEncoding(encoding);
+        return messageSource;
+    }
 
 }

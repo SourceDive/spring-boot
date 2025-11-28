@@ -19,24 +19,26 @@ package org.springframework.boot.cli.compiler.dependencies;
 /**
  * A resolver for artifacts' Maven coordinates, allowing a group id or version to be
  * obtained from an artifact ID.
- * 
+ *
  * @author Andy Wilkinson
  */
 public interface ArtifactCoordinatesResolver {
 
-	/**
-	 * Gets the group id of the artifact identified by the given {@code artifactId}.
-	 * Returns {@code null} if the artifact is unknown to the resolver.
-	 * @param artifactId The id of the artifact
-	 * @return The group id of the artifact
-	 */
-	String getGroupId(String artifactId);
+    /**
+     * Gets the group id of the artifact identified by the given {@code artifactId}.
+     * Returns {@code null} if the artifact is unknown to the resolver.
+     *
+     * @param artifactId The id of the artifact
+     * @return The group id of the artifact
+     */
+    String getGroupId(String artifactId);
 
-	/**
-	 * Gets the version of the artifact identified by the given {@code artifactId}.
-	 * Returns {@code null} if the artifact is unknown to the resolver.
-	 * @param artifactId The id of the artifact
-	 * @return The version of the artifact
-	 */
-	String getVersion(String artifactId);
+    /**
+     * Gets the version of the artifact identified by the given {@code artifactId}.
+     * Returns {@code null} if the artifact is unknown to the resolver.
+     *
+     * @param artifactId The id of the artifact
+     * @return The version of the artifact
+     */
+    String getVersion(String artifactId);
 }

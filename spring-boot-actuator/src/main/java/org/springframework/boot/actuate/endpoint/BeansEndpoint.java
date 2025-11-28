@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.List;
-
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.json.JsonParser;
@@ -27,36 +25,38 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.LiveBeansView;
 import org.springframework.core.env.Environment;
 
+import java.util.List;
+
 /**
  * Exposes JSON view of Spring beans. If the {@link Environment} contains a key setting
  * the {@link LiveBeansView#MBEAN_DOMAIN_PROPERTY_NAME} then all application contexts in
  * the JVM will be shown (and the corresponding MBeans will be registered per the standard
  * behavior of LiveBeansView). Otherwise only the current application context.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.beans", ignoreUnknownFields = false)
 public class BeansEndpoint extends AbstractEndpoint<List<Object>> implements
-		ApplicationContextAware {
+        ApplicationContextAware {
 
-	private final LiveBeansView liveBeansView = new LiveBeansView();
+    private final LiveBeansView liveBeansView = new LiveBeansView();
 
-	private final JsonParser parser = JsonParserFactory.getJsonParser();
+    private final JsonParser parser = JsonParserFactory.getJsonParser();
 
-	public BeansEndpoint() {
-		super("beans");
-	}
+    public BeansEndpoint() {
+        super("beans");
+    }
 
-	@Override
-	public void setApplicationContext(ApplicationContext context) throws BeansException {
-		if (context.getEnvironment()
-				.getProperty(LiveBeansView.MBEAN_DOMAIN_PROPERTY_NAME) == null) {
-			this.liveBeansView.setApplicationContext(context);
-		}
-	}
+    @Override
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+        if (context.getEnvironment()
+                .getProperty(LiveBeansView.MBEAN_DOMAIN_PROPERTY_NAME) == null) {
+            this.liveBeansView.setApplicationContext(context);
+        }
+    }
 
-	@Override
-	public List<Object> invoke() {
-		return this.parser.parseList(this.liveBeansView.getSnapshotAsJson());
-	}
+    @Override
+    public List<Object> invoke() {
+        return this.parser.parseList(this.liveBeansView.getSnapshotAsJson());
+    }
 }

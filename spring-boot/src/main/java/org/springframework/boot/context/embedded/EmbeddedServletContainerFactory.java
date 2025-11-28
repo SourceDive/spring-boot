@@ -24,7 +24,7 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
  * Factory interface that can be used to create {@link EmbeddedServletContainer}s.
  * Implementations are encouraged to extend
  * {@link AbstractEmbeddedServletContainerFactory} when possible.
- * 
+ *
  * @author Phillip Webb
  * @see EmbeddedServletContainer
  * @see AbstractEmbeddedServletContainerFactory
@@ -33,17 +33,18 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
  */
 public interface EmbeddedServletContainerFactory {
 
-	/**
-	 * Gets a new fully configured but paused {@link EmbeddedServletContainer} instance.
-	 * Clients should not be able to connect to the returned server until
-	 * {@link EmbeddedServletContainer#start()} is called (which happens when the
-	 * {@link ApplicationContext} has been fully refreshed).
-	 * @param initializers {@link ServletContextInitializer}s that should be applied as
-	 * the container starts
-	 * @return a fully configured and started {@link EmbeddedServletContainer}
-	 * @see EmbeddedServletContainer#stop()
-	 */
-	EmbeddedServletContainer getEmbeddedServletContainer(
-			ServletContextInitializer... initializers);
+    /**
+     * Gets a new fully configured but paused {@link EmbeddedServletContainer} instance.
+     * Clients should not be able to connect to the returned server until
+     * {@link EmbeddedServletContainer#start()} is called (which happens when the
+     * {@link ApplicationContext} has been fully refreshed).
+     *
+     * @param initializers {@link ServletContextInitializer}s that should be applied as
+     *                     the container starts
+     * @return a fully configured and started {@link EmbeddedServletContainer}
+     * @see EmbeddedServletContainer#stop()
+     */
+    EmbeddedServletContainer getEmbeddedServletContainer(
+            ServletContextInitializer... initializers);
 
 }

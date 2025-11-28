@@ -16,63 +16,62 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Simple wrapper around {@link Endpoint} implementations to enable JMX export.
- * 
+ *
  * @author Christian Dupuis
  */
 @ManagedResource
 public class EndpointMBean {
 
-	private final Endpoint<?> endpoint;
+    private final Endpoint<?> endpoint;
 
-	private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
-	public EndpointMBean(String beanName, Endpoint<?> endpoint) {
-		Assert.notNull(beanName, "BeanName must not be null");
-		Assert.notNull(endpoint, "Endpoint must not be null");
-		this.endpoint = endpoint;
-	}
+    public EndpointMBean(String beanName, Endpoint<?> endpoint) {
+        Assert.notNull(beanName, "BeanName must not be null");
+        Assert.notNull(endpoint, "Endpoint must not be null");
+        this.endpoint = endpoint;
+    }
 
-	@ManagedAttribute(description = "Returns the class of the underlying endpoint")
-	public String getEndpointClass() {
-		return ClassUtils.getQualifiedName(this.endpoint.getClass());
-	}
+    @ManagedAttribute(description = "Returns the class of the underlying endpoint")
+    public String getEndpointClass() {
+        return ClassUtils.getQualifiedName(this.endpoint.getClass());
+    }
 
-	@ManagedAttribute(description = "Indicates whether the underlying endpoint exposes sensitive information")
-	public boolean isSensitive() {
-		return this.endpoint.isSensitive();
-	}
+    @ManagedAttribute(description = "Indicates whether the underlying endpoint exposes sensitive information")
+    public boolean isSensitive() {
+        return this.endpoint.isSensitive();
+    }
 
-	public Endpoint<?> getEndpoint() {
-		return this.endpoint;
-	}
+    public Endpoint<?> getEndpoint() {
+        return this.endpoint;
+    }
 
-	protected Object convert(Object result) {
-		if (result == null) {
-			return null;
-		}
+    protected Object convert(Object result) {
+        if (result == null) {
+            return null;
+        }
 
-		if (result instanceof String) {
-			return result;
-		}
+        if (result instanceof String) {
+            return result;
+        }
 
-		if (result.getClass().isArray() || result instanceof List) {
-			return this.mapper.convertValue(result, List.class);
-		}
+        if (result.getClass().isArray() || result instanceof List) {
+            return this.mapper.convertValue(result, List.class);
+        }
 
-		return this.mapper.convertValue(result, Map.class);
-	}
+        return this.mapper.convertValue(result, Map.class);
+    }
 
 }

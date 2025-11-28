@@ -16,101 +16,99 @@
 
 package org.springframework.boot.autoconfigure.security;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.core.convert.support.DefaultConversionService;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link SecurityProperties}.
- * 
+ *
  * @author Dave Syer
  */
 public class SecurityPropertiesTests {
 
-	@Test
-	public void testBindingIgnoredSingleValued() {
-		SecurityProperties security = new SecurityProperties();
-		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"security.ignored", "/css/**")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals(1, security.getIgnored().size());
-	}
+    @Test
+    public void testBindingIgnoredSingleValued() {
+        SecurityProperties security = new SecurityProperties();
+        RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
+        binder.bind(new MutablePropertyValues(Collections.singletonMap(
+                "security.ignored", "/css/**")));
+        assertFalse(binder.getBindingResult().hasErrors());
+        assertEquals(1, security.getIgnored().size());
+    }
 
-	@Test
-	public void testBindingIgnoredEmpty() {
-		SecurityProperties security = new SecurityProperties();
-		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
-		binder.setConversionService(new DefaultConversionService());
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"security.ignored", "")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals(0, security.getIgnored().size());
-	}
+    @Test
+    public void testBindingIgnoredEmpty() {
+        SecurityProperties security = new SecurityProperties();
+        RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
+        binder.setConversionService(new DefaultConversionService());
+        binder.bind(new MutablePropertyValues(Collections.singletonMap(
+                "security.ignored", "")));
+        assertFalse(binder.getBindingResult().hasErrors());
+        assertEquals(0, security.getIgnored().size());
+    }
 
-	@Test
-	public void testBindingIgnoredDisable() {
-		SecurityProperties security = new SecurityProperties();
-		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
-		binder.setConversionService(new DefaultConversionService());
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"security.ignored", "none")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals(1, security.getIgnored().size());
-	}
+    @Test
+    public void testBindingIgnoredDisable() {
+        SecurityProperties security = new SecurityProperties();
+        RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
+        binder.setConversionService(new DefaultConversionService());
+        binder.bind(new MutablePropertyValues(Collections.singletonMap(
+                "security.ignored", "none")));
+        assertFalse(binder.getBindingResult().hasErrors());
+        assertEquals(1, security.getIgnored().size());
+    }
 
-	@Test
-	public void testBindingIgnoredMultiValued() {
-		SecurityProperties security = new SecurityProperties();
-		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
-		binder.setConversionService(new DefaultConversionService());
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"security.ignored", "/css/**,/images/**")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals(2, security.getIgnored().size());
-	}
+    @Test
+    public void testBindingIgnoredMultiValued() {
+        SecurityProperties security = new SecurityProperties();
+        RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
+        binder.setConversionService(new DefaultConversionService());
+        binder.bind(new MutablePropertyValues(Collections.singletonMap(
+                "security.ignored", "/css/**,/images/**")));
+        assertFalse(binder.getBindingResult().hasErrors());
+        assertEquals(2, security.getIgnored().size());
+    }
 
-	@Test
-	public void testBindingIgnoredMultiValuedList() {
-		SecurityProperties security = new SecurityProperties();
-		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
-		binder.setConversionService(new DefaultConversionService());
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("security.ignored[0]", "/css/**");
-		map.put("security.ignored[1]", "/foo/**");
-		binder.bind(new MutablePropertyValues(map));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals(2, security.getIgnored().size());
-		assertTrue(security.getIgnored().contains("/foo/**"));
-	}
+    @Test
+    public void testBindingIgnoredMultiValuedList() {
+        SecurityProperties security = new SecurityProperties();
+        RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
+        binder.setConversionService(new DefaultConversionService());
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("security.ignored[0]", "/css/**");
+        map.put("security.ignored[1]", "/foo/**");
+        binder.bind(new MutablePropertyValues(map));
+        assertFalse(binder.getBindingResult().hasErrors());
+        assertEquals(2, security.getIgnored().size());
+        assertTrue(security.getIgnored().contains("/foo/**"));
+    }
 
-	@Test
-	public void testDefaultPasswordAutogeneratedIfUnresolovedPlaceholder() {
-		SecurityProperties security = new SecurityProperties();
-		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"security.user.password", "${ADMIN_PASSWORD}")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertTrue(security.getUser().isDefaultPassword());
-	}
+    @Test
+    public void testDefaultPasswordAutogeneratedIfUnresolovedPlaceholder() {
+        SecurityProperties security = new SecurityProperties();
+        RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
+        binder.bind(new MutablePropertyValues(Collections.singletonMap(
+                "security.user.password", "${ADMIN_PASSWORD}")));
+        assertFalse(binder.getBindingResult().hasErrors());
+        assertTrue(security.getUser().isDefaultPassword());
+    }
 
-	@Test
-	public void testDefaultPasswordAutogeneratedIfEmpty() {
-		SecurityProperties security = new SecurityProperties();
-		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"security.user.password", "")));
-		assertFalse(binder.getBindingResult().hasErrors());
-		assertTrue(security.getUser().isDefaultPassword());
-	}
+    @Test
+    public void testDefaultPasswordAutogeneratedIfEmpty() {
+        SecurityProperties security = new SecurityProperties();
+        RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
+        binder.bind(new MutablePropertyValues(Collections.singletonMap(
+                "security.user.password", "")));
+        assertFalse(binder.getBindingResult().hasErrors());
+        assertTrue(security.getUser().isDefaultPassword());
+    }
 
 }

@@ -16,9 +16,6 @@
 
 package org.springframework.boot.logging.java;
 
-import java.io.IOException;
-import java.util.Locale;
-
 import org.apache.commons.logging.impl.Jdk14Logger;
 import org.junit.After;
 import org.junit.Before;
@@ -29,96 +26,99 @@ import org.springframework.boot.test.OutputCapture;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
+import java.util.Locale;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link JavaLoggingSystem}.
- * 
+ *
  * @author Dave Syer
  */
 public class JavaLoggerSystemTests {
 
-	private final JavaLoggingSystem loggingSystem = new JavaLoggingSystem(getClass()
-			.getClassLoader());
+    private final JavaLoggingSystem loggingSystem = new JavaLoggingSystem(getClass()
+            .getClassLoader());
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
+    @Rule
+    public OutputCapture output = new OutputCapture();
 
-	private Jdk14Logger logger;
+    private Jdk14Logger logger;
 
-	private Locale defaultLocale;
+    private Locale defaultLocale;
 
-	@Before
-	public void init() throws SecurityException, IOException {
-		this.defaultLocale = Locale.getDefault();
-		Locale.setDefault(Locale.ENGLISH);
-		this.logger = new Jdk14Logger(getClass().getName());
-	}
+    @Before
+    public void init() throws SecurityException, IOException {
+        this.defaultLocale = Locale.getDefault();
+        Locale.setDefault(Locale.ENGLISH);
+        this.logger = new Jdk14Logger(getClass().getName());
+    }
 
-	@After
-	public void clear() {
-		System.clearProperty("LOG_FILE");
-		System.clearProperty("LOG_PATH");
-		System.clearProperty("PID");
-		Locale.setDefault(this.defaultLocale);
-	}
+    @After
+    public void clear() {
+        System.clearProperty("LOG_FILE");
+        System.clearProperty("LOG_PATH");
+        System.clearProperty("PID");
+        Locale.setDefault(this.defaultLocale);
+    }
 
-	@Test
-	public void testCustomFormatter() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize();
-		this.logger.info("Hello world");
-		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertTrue("Wrong output:\n" + output, output.contains("???? INFO ["));
-	}
+    @Test
+    public void testCustomFormatter() throws Exception {
+        this.loggingSystem.beforeInitialize();
+        this.loggingSystem.initialize();
+        this.logger.info("Hello world");
+        String output = this.output.toString().trim();
+        assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
+        assertTrue("Wrong output:\n" + output, output.contains("???? INFO ["));
+    }
 
-	@Test
-	public void testSystemPropertyInitializesFormat() throws Exception {
-		System.setProperty("PID", "1234");
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize("classpath:"
-				+ ClassUtils.addResourcePathToPackagePath(getClass(),
-						"logging.properties"));
-		this.logger.info("Hello world");
-		this.logger.info("Hello world");
-		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertTrue("Wrong output:\n" + output, output.contains("1234 INFO ["));
-	}
+    @Test
+    public void testSystemPropertyInitializesFormat() throws Exception {
+        System.setProperty("PID", "1234");
+        this.loggingSystem.beforeInitialize();
+        this.loggingSystem.initialize("classpath:"
+                + ClassUtils.addResourcePathToPackagePath(getClass(),
+                "logging.properties"));
+        this.logger.info("Hello world");
+        this.logger.info("Hello world");
+        String output = this.output.toString().trim();
+        assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
+        assertTrue("Wrong output:\n" + output, output.contains("1234 INFO ["));
+    }
 
-	@Test
-	public void testNonDefaultConfigLocation() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize("classpath:logging-nondefault.properties");
-		this.logger.info("Hello world");
-		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("INFO: Hello"));
-	}
+    @Test
+    public void testNonDefaultConfigLocation() throws Exception {
+        this.loggingSystem.beforeInitialize();
+        this.loggingSystem.initialize("classpath:logging-nondefault.properties");
+        this.logger.info("Hello world");
+        String output = this.output.toString().trim();
+        assertTrue("Wrong output:\n" + output, output.contains("INFO: Hello"));
+    }
 
-	@Test(expected = IllegalStateException.class)
-	public void testNonexistentConfigLocation() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize("classpath:logging-nonexistent.properties");
-	}
+    @Test(expected = IllegalStateException.class)
+    public void testNonexistentConfigLocation() throws Exception {
+        this.loggingSystem.beforeInitialize();
+        this.loggingSystem.initialize("classpath:logging-nonexistent.properties");
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testNullConfigLocation() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null);
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullConfigLocation() throws Exception {
+        this.loggingSystem.beforeInitialize();
+        this.loggingSystem.initialize(null);
+    }
 
-	@Test
-	public void setLevel() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize();
-		this.logger.debug("Hello");
-		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
-		this.logger.debug("Hello");
-		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"),
-				equalTo(1));
-	}
+    @Test
+    public void setLevel() throws Exception {
+        this.loggingSystem.beforeInitialize();
+        this.loggingSystem.initialize();
+        this.logger.debug("Hello");
+        this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
+        this.logger.debug("Hello");
+        assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"),
+                equalTo(1));
+    }
 
 }

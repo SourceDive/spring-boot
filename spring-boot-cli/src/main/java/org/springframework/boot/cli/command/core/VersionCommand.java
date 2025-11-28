@@ -22,18 +22,18 @@ import org.springframework.boot.cli.util.Log;
 
 /**
  * {@link Command} to display the 'version' number.
- * 
+ *
  * @author Phillip Webb
  */
 public class VersionCommand extends AbstractCommand {
 
-	public VersionCommand() {
-		super("version", "Show the version");
-	}
+    public VersionCommand() {
+        super("version", "Show the version");
+    }
 
-	@Override
-	public void run(String... args) {
-		Log.info("Spring CLI v" + getClass().getPackage().getImplementationVersion());
-	}
+    @Override
+    public void run(String... args) {
+        Log.info("Spring CLI v" + getClass().getPackage().getImplementationVersion());
+    }
 
 }

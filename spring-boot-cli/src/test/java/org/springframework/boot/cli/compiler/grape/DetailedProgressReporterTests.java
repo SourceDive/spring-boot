@@ -16,9 +16,6 @@
 
 package org.springframework.boot.cli.compiler.grape;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.transfer.TransferCancelledException;
 import org.eclipse.aether.transfer.TransferEvent;
@@ -26,50 +23,53 @@ import org.eclipse.aether.transfer.TransferResource;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public final class DetailedProgressReporterTests {
 
-	private static final String REPOSITORY = "http://my.repository.com/";
+    private static final String REPOSITORY = "http://my.repository.com/";
 
-	private static final String ARTIFACT = "org/alpha/bravo/charlie/1.2.3/charlie-1.2.3.jar";
+    private static final String ARTIFACT = "org/alpha/bravo/charlie/1.2.3/charlie-1.2.3.jar";
 
-	private final TransferResource resource = new TransferResource(REPOSITORY, ARTIFACT,
-			null, null);
+    private final TransferResource resource = new TransferResource(REPOSITORY, ARTIFACT,
+            null, null);
 
-	private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-	private final PrintStream out = new PrintStream(this.baos);
+    private final PrintStream out = new PrintStream(this.baos);
 
-	private final DefaultRepositorySystemSession session = new DefaultRepositorySystemSession();
+    private final DefaultRepositorySystemSession session = new DefaultRepositorySystemSession();
 
-	@Before
-	public void initialize() {
-		new DetailedProgressReporter(this.session, this.out);
-	}
+    @Before
+    public void initialize() {
+        new DetailedProgressReporter(this.session, this.out);
+    }
 
-	@Test
-	public void downloading() throws TransferCancelledException {
-		TransferEvent startedEvent = new TransferEvent.Builder(this.session,
-				this.resource).build();
-		this.session.getTransferListener().transferStarted(startedEvent);
+    @Test
+    public void downloading() throws TransferCancelledException {
+        TransferEvent startedEvent = new TransferEvent.Builder(this.session,
+                this.resource).build();
+        this.session.getTransferListener().transferStarted(startedEvent);
 
-		assertEquals(String.format("Downloading: %s%s%n", REPOSITORY, ARTIFACT),
-				new String(this.baos.toByteArray()));
-	}
+        assertEquals(String.format("Downloading: %s%s%n", REPOSITORY, ARTIFACT),
+                new String(this.baos.toByteArray()));
+    }
 
-	@Test
-	public void downloaded() throws InterruptedException {
-		// Ensure some transfer time
-		Thread.sleep(100);
+    @Test
+    public void downloaded() throws InterruptedException {
+        // Ensure some transfer time
+        Thread.sleep(100);
 
-		TransferEvent completedEvent = new TransferEvent.Builder(this.session,
-				this.resource).addTransferredBytes(4096).build();
-		this.session.getTransferListener().transferSucceeded(completedEvent);
+        TransferEvent completedEvent = new TransferEvent.Builder(this.session,
+                this.resource).addTransferredBytes(4096).build();
+        this.session.getTransferListener().transferSucceeded(completedEvent);
 
-		assertTrue(new String(this.baos.toByteArray()).matches(String.format(
-				"Downloaded: %s%s \\(4KB at [0-9]+(\\.|,)[0-9]KB/sec\\)\\n", REPOSITORY,
-				ARTIFACT)));
-	}
+        assertTrue(new String(this.baos.toByteArray()).matches(String.format(
+                "Downloaded: %s%s \\(4KB at [0-9]+(\\.|,)[0-9]KB/sec\\)\\n", REPOSITORY,
+                ARTIFACT)));
+    }
 }

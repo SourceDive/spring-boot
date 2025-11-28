@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Basic integration tests for service demo application.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,12 +36,12 @@ import static org.junit.Assert.assertNotNull;
 @DirtiesContext
 public class SampleActuatorNoWebApplicationTests {
 
-	@Autowired
-	private MetricsEndpoint endpoint;
+    @Autowired
+    private MetricsEndpoint endpoint;
 
-	@Test
-	public void endpointsExist() throws Exception {
-		assertNotNull(this.endpoint);
-	}
+    @Test
+    public void endpointsExist() throws Exception {
+        assertNotNull(this.endpoint);
+    }
 
 }

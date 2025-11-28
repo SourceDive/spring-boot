@@ -16,56 +16,56 @@
 
 package org.springframework.boot.cli.compiler.grape;
 
-import java.io.File;
-
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
+
 /**
  * A {@link RepositorySystemSessionAutoConfiguration} that, in the absence of any
  * configuration, applies sensible defaults.
- * 
+ *
  * @author Andy Wilkinson
  */
 public class DefaultRepositorySystemSessionAutoConfiguration implements
-		RepositorySystemSessionAutoConfiguration {
+        RepositorySystemSessionAutoConfiguration {
 
-	@Override
-	public void apply(DefaultRepositorySystemSession session,
-			RepositorySystem repositorySystem) {
+    @Override
+    public void apply(DefaultRepositorySystemSession session,
+                      RepositorySystem repositorySystem) {
 
-		if (session.getLocalRepositoryManager() == null) {
-			LocalRepository localRepository = new LocalRepository(getM2RepoDirectory());
-			LocalRepositoryManager localRepositoryManager = repositorySystem
-					.newLocalRepositoryManager(session, localRepository);
-			session.setLocalRepositoryManager(localRepositoryManager);
-		}
+        if (session.getLocalRepositoryManager() == null) {
+            LocalRepository localRepository = new LocalRepository(getM2RepoDirectory());
+            LocalRepositoryManager localRepositoryManager = repositorySystem
+                    .newLocalRepositoryManager(session, localRepository);
+            session.setLocalRepositoryManager(localRepositoryManager);
+        }
 
-		if (session.getProxySelector() == null) {
-			session.setProxySelector(new JreProxySelector());
-		}
-	}
+        if (session.getProxySelector() == null) {
+            session.setProxySelector(new JreProxySelector());
+        }
+    }
 
-	private File getM2RepoDirectory() {
-		return new File(getM2HomeDirectory(), "repository");
-	}
+    private File getM2RepoDirectory() {
+        return new File(getM2HomeDirectory(), "repository");
+    }
 
-	private File getM2HomeDirectory() {
-		String grapeRoot = System.getProperty("grape.root");
-		if (StringUtils.hasLength(grapeRoot)) {
-			return new File(grapeRoot);
-		}
-		return getDefaultM2HomeDirectory();
-	}
+    private File getM2HomeDirectory() {
+        String grapeRoot = System.getProperty("grape.root");
+        if (StringUtils.hasLength(grapeRoot)) {
+            return new File(grapeRoot);
+        }
+        return getDefaultM2HomeDirectory();
+    }
 
-	private File getDefaultM2HomeDirectory() {
-		String mavenRoot = System.getProperty("maven.home");
-		if (StringUtils.hasLength(mavenRoot)) {
-			return new File(mavenRoot);
-		}
-		return new File(System.getProperty("user.home"), ".m2");
-	}
+    private File getDefaultM2HomeDirectory() {
+        String mavenRoot = System.getProperty("maven.home");
+        if (StringUtils.hasLength(mavenRoot)) {
+            return new File(mavenRoot);
+        }
+        return new File(System.getProperty("user.home"), ".m2");
+    }
 }

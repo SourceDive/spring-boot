@@ -25,39 +25,39 @@ import org.springframework.boot.groovy.EnableIntegrationPatterns;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Integration.
- * 
+ *
  * @author Dave Syer
  */
 public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
-	@Override
-	public boolean matches(ClassNode classNode) {
-		// Slightly weird detection algorithm because there is no @Enable annotation for
-		// Integration
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "MessageEndpoint",
-				"EnableIntegrationPatterns");
-	}
+    @Override
+    public boolean matches(ClassNode classNode) {
+        // Slightly weird detection algorithm because there is no @Enable annotation for
+        // Integration
+        return AstUtils.hasAtLeastOneAnnotation(classNode, "MessageEndpoint",
+                "EnableIntegrationPatterns");
+    }
 
-	@Override
-	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses("org.springframework.integration.Message").add(
-				"spring-boot-starter-integration");
-		dependencies.ifAnyMissingClasses("groovy.util.XmlParser").add("groovy-xml");
-	}
+    @Override
+    public void applyDependencies(DependencyCustomizer dependencies) {
+        dependencies.ifAnyMissingClasses("org.springframework.integration.Message").add(
+                "spring-boot-starter-integration");
+        dependencies.ifAnyMissingClasses("groovy.util.XmlParser").add("groovy-xml");
+    }
 
-	@Override
-	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("org.springframework.integration.Message",
-				"org.springframework.integration.support.MessageBuilder",
-				"org.springframework.integration.MessageChannel",
-				"org.springframework.integration.channel.DirectChannel",
-				"org.springframework.integration.channel.QueueChannel",
-				"org.springframework.integration.channel.ExecutorChannel",
-				"org.springframework.integration.MessageHeaders",
-				"org.springframework.integration.core.MessagingTemplate",
-				"org.springframework.integration.core.SubscribableChannel",
-				"org.springframework.integration.core.PollableChannel",
-				EnableIntegrationPatterns.class.getCanonicalName());
-		imports.addStarImports("org.springframework.integration.annotation");
-	}
+    @Override
+    public void applyImports(ImportCustomizer imports) {
+        imports.addImports("org.springframework.integration.Message",
+                "org.springframework.integration.support.MessageBuilder",
+                "org.springframework.integration.MessageChannel",
+                "org.springframework.integration.channel.DirectChannel",
+                "org.springframework.integration.channel.QueueChannel",
+                "org.springframework.integration.channel.ExecutorChannel",
+                "org.springframework.integration.MessageHeaders",
+                "org.springframework.integration.core.MessagingTemplate",
+                "org.springframework.integration.core.SubscribableChannel",
+                "org.springframework.integration.core.PollableChannel",
+                EnableIntegrationPatterns.class.getCanonicalName());
+        imports.addStarImports("org.springframework.integration.annotation");
+    }
 }
