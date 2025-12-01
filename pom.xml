@@ -74,6 +74,7 @@
 				<module>spring-boot-actuator</module>
 				<module>spring-boot-starters</module>
 				<module>spring-boot-cli</module>
+				<module>my-debug-module</module>
 			</modules>
 		</profile>
 		<profile>
