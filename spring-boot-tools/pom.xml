@@ -24,6 +24,7 @@
 		<module>spring-boot-loader</module>
 		<module>spring-boot-loader-tools</module>
 		<module>spring-boot-maven-plugin</module>
-		<module>spring-boot-gradle-plugin</module>
+		<!-- Gradle plugin skipped due to missing dependencies -->
+		<!-- <module>spring-boot-gradle-plugin</module> -->
 	</modules>
 </project>
