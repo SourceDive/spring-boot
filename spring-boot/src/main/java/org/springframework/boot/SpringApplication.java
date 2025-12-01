@@ -133,7 +133,7 @@ public class SpringApplication {
 
     private final Set<Object> sources = new LinkedHashSet<Object>();
 
-    private Class<?> mainApplicationClass;
+    private Class<?> mainApplicationClass; // 主应用类
 
     private boolean showBanner = true;
 
@@ -204,6 +204,9 @@ public class SpringApplication {
         this.mainApplicationClass = deduceMainApplicationClass();
     }
 
+    /**
+     * 推断web环境。
+     */
     private boolean deduceWebEnvironment() {
         for (String className : WEB_ENVIRONMENT_CLASSES) {
             if (!ClassUtils.isPresent(className, null)) {
@@ -213,6 +216,9 @@ public class SpringApplication {
         return true;
     }
 
+    /**
+     * 推断主应用类。
+     */
     private Class<?> deduceMainApplicationClass() {
         try {
             StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
@@ -255,12 +261,15 @@ public class SpringApplication {
                 runListener.environmentPrepared(environment);
             }
 
+            // 打印横幅。
             if (this.showBanner) {
                 printBanner();
             }
 
             // Create, load, refresh and run the ApplicationContext
             context = createApplicationContext();
+
+            // 注册关闭钩子。
             if (this.registerShutdownHook) {
                 try {
                     context.registerShutdownHook();
@@ -268,6 +277,7 @@ public class SpringApplication {
                     // Not allowed in some environments.
                 }
             }
+
             context.setEnvironment(environment);
             postProcessApplicationContext(context);
             applyInitializers(context);
@@ -286,6 +296,7 @@ public class SpringApplication {
                 runListener.contextLoaded(context);
             }
 
+            // 刷新上下文。
             // Refresh the context
             refresh(context);
             afterRefresh(context, args);
@@ -897,7 +908,7 @@ public class SpringApplication {
      * Static helper that can be used to run a {@link SpringApplication} from the
      * specified source using default settings.
      *
-     * @param source the source to load
+     * @param source the source to load 要加载的资源。
      * @param args   the application arguments (usually passed from a Java main method)
      * @return the running {@link ApplicationContext}
      */
@@ -909,7 +920,7 @@ public class SpringApplication {
      * Static helper that can be used to run a {@link SpringApplication} from the
      * specified sources using default settings and user supplied arguments.
      *
-     * @param sources the sources to load
+     * @param sources the sources to load 要加载的资源。
      * @param args    the application arguments (usually passed from a Java main method)
      * @return the running {@link ApplicationContext}
      */
