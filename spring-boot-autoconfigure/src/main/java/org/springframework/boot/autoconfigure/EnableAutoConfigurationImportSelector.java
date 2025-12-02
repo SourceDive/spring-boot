@@ -50,6 +50,7 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
     @Override
     public String[] selectImports(AnnotationMetadata metadata) {
         try {
+            // 获取注解 @EnableAutoConfiguration 属性。
             AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
                     .getAnnotationAttributes(EnableAutoConfiguration.class.getName(),
                             true));
