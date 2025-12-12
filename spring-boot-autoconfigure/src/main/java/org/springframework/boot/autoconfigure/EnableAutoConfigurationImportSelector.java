@@ -56,6 +56,7 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
                             true));
 
             // Find all possible auto configuration classes, filtering duplicates
+            // 获取依赖包下META-INF/spring.factories文件中以EnableAutoConfiguration为 key 对应的值。
             List<String> factories = new ArrayList<String>(new LinkedHashSet<String>(
                     SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
                             this.beanClassLoader)));
