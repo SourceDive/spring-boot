@@ -1,8 +1,10 @@
 package com.debug;
 
+import com.example.greeting.GreetingService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,7 +31,11 @@ public class DebugApplication implements CommandLineRunner {
     public static void main(String[] args) {
         // Spring Boot 应用启动入口
         // 可以在这里设置断点，跟踪 SpringApplication.run() 的执行流程
-        SpringApplication.run(DebugApplication.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(DebugApplication.class, args);
+        GreetingService bean = context.getBean(GreetingService.class);
+        String result = bean.greet("mike");
+        System.out.println(result);
+
     }
 }
 
